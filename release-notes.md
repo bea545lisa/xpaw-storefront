@@ -1,12 +1,17 @@
-Adds support for standard storefront events and a new section and block to display product disclosures.
+# Release Notes - Version 4.1.3
 
-### Added
+This release ships multiple bug fixes and performance improvements.
 
-- [Storefront Events & Actions] Added support for app, agent, and AI cart interactions without page reloads.
-- [Product disclosures] New section and block to display product disclosures on product pages.
+## What's Changed
 
 ### Fixes and improvements
 
-- [Accessibility] Fixed aria labels and focus management on search and filtering components
-- [Performance] Changed body layout styles for improved cumulative layout shift (CLS)
-- Fixed missing theme setting translation strings in "Icons with Text" section
+* Replace English-only section and block names with translated strings
+* Disable page view transitions in all Android web views to address reported errors
+* [Header] Open header submenus when hovering from below
+* [Filters] Color overrides apply to both horizontal and vertical filters
+* [Product page] Improve sold-out variant styling for readability
+* [Quick-add] Products with selling plans always link to product pages
+* [Search] Fix search result tracking parameters for Analytics reports
+* [Spacer] Prevent mobile pixel spacers from collapsing in columns
+* [Performance] Multiple updates to improve CSS bundle sizes
