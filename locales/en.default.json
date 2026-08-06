@@ -111,6 +111,9 @@
       "choose_product_options": "Choose options for {{ product_name }}",
       "description": "Description",
       "sustainability": "Sustainability",
+      "custom_metafields": {
+        "material": "Material"
+      },
       "inventory_in_stock": "In stock",
       "inventory_in_stock_show_count": "{{ quantity }} in stock",
       "inventory_low_stock": "Low stock",
