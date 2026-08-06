@@ -364,6 +364,50 @@
     }
   },
   "sections": {
+    "campaign_banner": {
+      "name": "Kampagnen-Banner",
+      "settings": {
+        "image": {
+          "label": "Hintergrundbild"
+        },
+        "overlay_opacity": {
+          "label": "Überlagerung (Opacity)"
+        },
+        "heading": {
+          "label": "Überschrift",
+          "default": "Kampagnen-Überschrift"
+        },
+        "text": {
+          "label": "Text",
+          "default": "Beschreibe hier deine Kampagne."
+        },
+        "button_label": {
+          "label": "Button-Text",
+          "default": "Jetzt einkaufen"
+        },
+        "button_link": {
+          "label": "Button-Link"
+        },
+        "text_alignment": {
+          "label": "Textausrichtung",
+          "options__1": {
+            "label": "Links"
+          },
+          "options__2": {
+            "label": "Mittig"
+          },
+          "options__3": {
+            "label": "Rechts"
+          }
+        },
+        "color_scheme": {
+          "label": "Farbschema"
+        }
+      },
+      "presets": {
+        "name": "Kampagnen-Banner"
+      }
+    },
     "all": {
       "padding": {
         "section_padding_heading": "Padding",

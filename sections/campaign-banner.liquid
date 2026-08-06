@@ -70,14 +70,14 @@
 
 {% schema %}
 {
-  "name": "Campaign Banner",
+  "name": "t:sections.campaign_banner.name",
   "tag": "section",
   "class": "section",
   "settings": [
     {
       "type": "image_picker",
       "id": "image",
-      "label": "Background image"
+      "label": "t:sections.campaign_banner.settings.image.label"
     },
     {
       "type": "range",
@@ -86,53 +86,53 @@
       "max": 100,
       "step": 10,
       "unit": "%",
-      "label": "Overlay opacity",
+      "label": "t:sections.campaign_banner.settings.overlay_opacity.label",
       "default": 40
     },
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
-      "default": "Campaign headline"
+      "label": "t:sections.campaign_banner.settings.heading.label",
+      "default": "t:sections.campaign_banner.settings.heading.default"
     },
     {
       "type": "textarea",
       "id": "text",
-      "label": "Text",
-      "default": "Describe your campaign here."
+      "label": "t:sections.campaign_banner.settings.text.label",
+      "default": "t:sections.campaign_banner.settings.text.default"
     },
     {
       "type": "text",
       "id": "button_label",
-      "label": "Button label",
-      "default": "Shop now"
+      "label": "t:sections.campaign_banner.settings.button_label.label",
+      "default": "t:sections.campaign_banner.settings.button_label.default"
     },
     {
       "type": "url",
       "id": "button_link",
-      "label": "Button link"
+      "label": "t:sections.campaign_banner.settings.button_link.label"
     },
     {
       "type": "select",
       "id": "text_alignment",
-      "label": "Text alignment",
+      "label": "t:sections.campaign_banner.settings.text_alignment.label",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        { "value": "left", "label": "t:sections.campaign_banner.settings.text_alignment.options__1.label" },
+        { "value": "center", "label": "t:sections.campaign_banner.settings.text_alignment.options__2.label" },
+        { "value": "right", "label": "t:sections.campaign_banner.settings.text_alignment.options__3.label" }
       ],
       "default": "center"
     },
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Color scheme",
+      "label": "t:sections.campaign_banner.settings.color_scheme.label",
       "default": "scheme-1"
     }
   ],
   "presets": [
     {
-      "name": "Campaign Banner"
+      "name": "t:sections.campaign_banner.presets.name"
     }
   ]
 }
