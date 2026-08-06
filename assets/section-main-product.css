@@ -1507,3 +1507,18 @@ a.product__text {
 .product__specifications dd {
   margin: 0;
 }
+
+.product__custom-metafields dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.4rem 1.5rem;
+  margin: 0;
+}
+
+.product__custom-metafields dt {
+  font-weight: 600;
+}
+
+.product__custom-metafields dd {
+  margin: 0;
+}
