@@ -230,6 +230,11 @@
                   {%- endif -%}
                 {%- when 'custom_metafields' -%}
                   {%- assign cm_exclude = 'nachhaltigkeit,eigenschaften,option_abbreviations' | split: ',' -%}
+                  {%- comment -%}
+                    Shop-Labels werden in der Admin-App (Metafields-Seite) gepflegt und landen als
+                    JSON im Shop-Metafield custom.field_labels — keine Liquid-Änderung pro Feld nötig.
+                  {%- endcomment -%}
+                  {%- assign cm_labels = shop.metafields.custom.field_labels.value -%}
                   <div class="product__meta-block quick-add-hidden" {{ block.shopify_attributes }}>
                     <dl class="product__meta-list">
                       {%- for mf in product.metafields.custom -%}
@@ -237,17 +242,10 @@
                         {%- assign cm_field = mf[1] -%}
                         {%- unless cm_exclude contains cm_key or cm_field.type contains 'list' or cm_field.type contains 'reference' -%}
                           {%- if cm_field.value != blank -%}
-                            {%- comment -%}
-                              Liquid kann den Namen einer Metafield-Definition nicht auslesen.
-                              Übersetzte Labels daher hier eintragen (siehe locales/*.json unter
-                              "products.custom_metafields.<key>"), sonst Fallback auf den Key.
-                            {%- endcomment -%}
-                            {%- case cm_key -%}
-                              {%- when 'material' -%}
-                                {%- assign cm_label = 'products.product.custom_metafields.material' | t -%}
-                              {%- else -%}
-                                {%- assign cm_label = cm_key | replace: '_', ' ' | capitalize -%}
-                            {%- endcase -%}
+                            {%- assign cm_label = cm_labels[cm_key] -%}
+                            {%- if cm_label == blank -%}
+                              {%- assign cm_label = cm_key | replace: '_', ' ' | capitalize -%}
+                            {%- endif -%}
                             <dt>{{ cm_label }}</dt>
                             <dd>{{ cm_field.value }}</dd>
                           {%- endif -%}
