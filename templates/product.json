@@ -49,6 +49,18 @@
           "type": "description",
           "settings": {}
         },
+        "specifications_di9YWQ": {
+          "type": "specifications",
+          "settings": {}
+        },
+        "custom_metafields_mXpzc7": {
+          "type": "custom_metafields",
+          "settings": {}
+        },
+        "sustainability_G6rhJD": {
+          "type": "sustainability",
+          "settings": {}
+        },
         "share": {
           "type": "share",
           "settings": {
@@ -64,6 +76,9 @@
         "quantity_selector",
         "buy_buttons",
         "description",
+        "specifications_di9YWQ",
+        "custom_metafields_mXpzc7",
+        "sustainability_G6rhJD",
         "share"
       ],
       "settings": {
