@@ -364,6 +364,21 @@
     }
   },
   "sections": {
+    "recently_viewed": {
+      "name": "Recently Viewed",
+      "settings": {
+        "heading": {
+          "label": "Heading",
+          "default": "Recently viewed"
+        },
+        "product_limit": {
+          "label": "Number of products"
+        }
+      },
+      "presets": {
+        "name": "Recently Viewed"
+      }
+    },
     "campaign_banner": {
       "name": "Campaign Banner",
       "settings": {

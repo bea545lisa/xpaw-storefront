@@ -364,6 +364,21 @@
     }
   },
   "sections": {
+    "recently_viewed": {
+      "name": "Zuletzt angesehen",
+      "settings": {
+        "heading": {
+          "label": "Überschrift",
+          "default": "Zuletzt angesehen"
+        },
+        "product_limit": {
+          "label": "Anzahl Produkte"
+        }
+      },
+      "presets": {
+        "name": "Zuletzt angesehen"
+      }
+    },
     "campaign_banner": {
       "name": "Kampagnen-Banner",
       "settings": {

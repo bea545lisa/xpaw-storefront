@@ -1,0 +1,58 @@
+{{ 'recently-viewed.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'recently-viewed.js' | asset_url }}" defer="defer"></script>
+
+{%- if template contains 'product' -%}
+  <span data-record-recently-viewed="{{ product.handle }}" hidden></span>
+{%- endif -%}
+
+<div class="recently-viewed color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
+  <div class="page-width">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="recently-viewed__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    <div
+      class="recently-viewed__grid"
+      data-recently-viewed-list
+      data-current-handle="{{ product.handle }}"
+      data-currency="{{ cart.currency.iso_code | default: shop.currency }}"
+      data-limit="{{ section.settings.product_limit }}"
+    ></div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.recently_viewed.name",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.recently_viewed.settings.heading.label",
+      "default": "t:sections.recently_viewed.settings.heading.default"
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4,
+      "label": "t:sections.recently_viewed.settings.product_limit.label"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.recently_viewed.presets.name"
+    }
+  ]
+}
+{% endschema %}
