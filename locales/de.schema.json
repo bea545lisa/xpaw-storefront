@@ -2017,6 +2017,9 @@
             }
           }
         },
+        "material": {
+          "name": "Material"
+        },
         "sku": {
           "name": "SKU",
           "settings": {

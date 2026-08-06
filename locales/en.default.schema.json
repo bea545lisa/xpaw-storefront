@@ -2082,6 +2082,9 @@
         "description": {
           "name": "Description"
         },
+        "material": {
+          "name": "Material"
+        },
         "sku": {
           "name": "SKU",
           "settings": {
