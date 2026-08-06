@@ -2082,8 +2082,8 @@
         "description": {
           "name": "Description"
         },
-        "material": {
-          "name": "Material"
+        "sustainability": {
+          "name": "Sustainability"
         },
         "specifications": {
           "name": "Specifications"

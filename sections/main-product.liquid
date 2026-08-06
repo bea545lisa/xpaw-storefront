@@ -198,11 +198,11 @@
                       {{ product.description }}
                     </div>
                   {%- endif -%}
-                {%- when 'material' -%}
-                  {%- if product.metafields.custom.material != blank -%}
-                    <p class="product__material quick-add-hidden" {{ block.shopify_attributes }}>
-                      <strong>{{ 'products.product.material' | t }}:</strong>
-                      {{ product.metafields.custom.material }}
+                {%- when 'sustainability' -%}
+                  {%- if product.metafields.custom.nachhaltigkeit != blank -%}
+                    <p class="product__sustainability quick-add-hidden" {{ block.shopify_attributes }}>
+                      <strong>{{ 'products.product.sustainability' | t }}:</strong>
+                      {{ product.metafields.custom.nachhaltigkeit }}
                     </p>
                   {%- endif -%}
                 {%- when 'specifications' -%}
@@ -823,8 +823,8 @@
       "limit": 1
     },
     {
-      "type": "material",
-      "name": "t:sections.main-product.blocks.material.name",
+      "type": "sustainability",
+      "name": "t:sections.main-product.blocks.sustainability.name",
       "limit": 1
     },
     {

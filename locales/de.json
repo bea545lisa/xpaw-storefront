@@ -108,7 +108,7 @@
     "product": {
       "add_to_cart": "In den Warenkorb legen",
       "description": "Beschreibung",
-      "material": "Material",
+      "sustainability": "Nachhaltigkeit",
       "on_sale": "Sale",
       "quantity": {
         "label": "Anzahl",
