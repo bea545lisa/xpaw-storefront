@@ -2088,6 +2088,9 @@
         "specifications": {
           "name": "Specifications"
         },
+        "custom_metafields": {
+          "name": "Custom metafields"
+        },
         "sku": {
           "name": "SKU",
           "settings": {

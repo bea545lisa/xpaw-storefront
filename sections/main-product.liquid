@@ -216,6 +216,26 @@
                       </dl>
                     </div>
                   {%- endif -%}
+                {%- when 'custom_metafields' or 'custom_metafield' -%}
+                  {%- assign cm_exclude = 'nachhaltigkeit,eigenschaften,option_abbreviations' | split: ',' -%}
+                  <div class="product__custom-metafields quick-add-hidden" {{ block.shopify_attributes }}>
+                    <dl>
+                      {%- for mf in product.metafields.custom -%}
+                        {%- assign cm_key = mf[0] -%}
+                        {%- assign cm_field = mf[1] -%}
+                        {%- unless cm_exclude contains cm_key or cm_field.type contains 'list' or cm_field.type contains 'reference' -%}
+                          {%- if cm_field.value != blank -%}
+                            {%- assign cm_label = cm_field.definition.name -%}
+                            {%- if cm_label == blank -%}
+                              {%- assign cm_label = cm_field.key | replace: '_', ' ' | capitalize -%}
+                            {%- endif -%}
+                            <dt>{{ cm_label }}</dt>
+                            <dd>{{ cm_field.value }}</dd>
+                          {%- endif -%}
+                        {%- endunless -%}
+                      {%- endfor -%}
+                    </dl>
+                  </div>
                 {%- when 'sku' -%}
                   <p
                     class="product__sku{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.sku.size == 0 %} visibility-hidden{% endif %}"
@@ -830,6 +850,16 @@
     {
       "type": "specifications",
       "name": "t:sections.main-product.blocks.specifications.name",
+      "limit": 1
+    },
+    {
+      "type": "custom_metafields",
+      "name": "t:sections.main-product.blocks.custom_metafields.name",
+      "limit": 1
+    },
+    {
+      "type": "custom_metafield",
+      "name": "t:sections.main-product.blocks.custom_metafields.name",
       "limit": 1
     },
     {
