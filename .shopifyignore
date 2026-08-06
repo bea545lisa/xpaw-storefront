@@ -1,0 +1,11 @@
+# Content-Dateien, die Marketing/Content-Team im Theme-Editor pflegt.
+# Diese Dateien werden von `theme push`/`theme pull` NIE automatisch angefasst,
+# damit Code-Deploys niemals Editor-Änderungen überschreiben können.
+#
+# Willst du eine Editor-Änderung bewusst nach Git übernehmen (z.B. eine neue
+# Section-Platzierung sichern), nutze `--only` gezielt für diesen einen Befehl —
+# `--only` überschreibt die Ignore-Liste für die genannten Dateien:
+#   shopify theme pull --only "templates/product.json"
+
+templates/*.json
+config/settings_data.json
