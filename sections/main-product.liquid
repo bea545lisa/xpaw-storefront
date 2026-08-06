@@ -234,7 +234,7 @@
                               {%- when 'material' -%}
                                 {%- assign cm_label = 'products.product.custom_metafields.material' | t -%}
                               {%- else -%}
-                                {%- assign cm_label = cm_field.key | replace: '_', ' ' | capitalize -%}
+                                {%- assign cm_label = cm_key | replace: '_', ' ' | capitalize -%}
                             {%- endcase -%}
                             <dt>{{ cm_label }}</dt>
                             <dd>{{ cm_field.value }}</dd>
