@@ -200,21 +200,11 @@
                   {%- endif -%}
                 {%- when 'sustainability' -%}
                   {%- if product.metafields.custom.nachhaltigkeit != blank -%}
-                    <div class="product__accordion accordion quick-add-hidden" {{ block.shopify_attributes }}>
-                      <details id="Details-{{ block.id }}-{{ section.id }}">
-                        <summary>
-                          <div class="summary__title">
-                            <h2 class="h4 accordion__title">{{ 'products.product.sustainability' | t }}</h2>
-                          </div>
-                          {{- 'icon-caret.svg' | inline_asset_content -}}
-                        </summary>
-                        <div class="accordion__content rte" id="ProductAccordion-{{ block.id }}-{{ section.id }}">
-                          <dl class="product__meta-list">
-                            <dt>{{ 'products.product.sustainability' | t }}</dt>
-                            <dd>{{ product.metafields.custom.nachhaltigkeit }}</dd>
-                          </dl>
-                        </div>
-                      </details>
+                    <div class="product__meta-block quick-add-hidden" {{ block.shopify_attributes }}>
+                      <dl class="product__meta-list">
+                        <dt>{{ 'products.product.sustainability' | t }}</dt>
+                        <dd>{{ product.metafields.custom.nachhaltigkeit }}</dd>
+                      </dl>
                     </div>
                   {%- endif -%}
                 {%- when 'specifications' -%}

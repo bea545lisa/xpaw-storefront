@@ -1522,3 +1522,7 @@ a.product__text {
 .product__custom-metafields dd {
   margin: 0;
 }
+
+.product__meta-block {
+  margin: 1.2rem 0;
+}
