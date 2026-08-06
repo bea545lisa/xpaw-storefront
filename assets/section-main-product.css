@@ -1493,18 +1493,18 @@ a.product__text {
   }
 }
 
-.product__specifications dl {
+.product__meta-list {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.4rem 1.5rem;
+  grid-template-columns: 14rem 1fr;
+  gap: 0.6rem 1.5rem;
   margin: 0;
 }
 
-.product__specifications dt {
+.product__meta-list dt {
   font-weight: 600;
 }
 
-.product__specifications dd {
+.product__meta-list dd {
   margin: 0;
 }
 

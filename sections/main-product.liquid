@@ -200,48 +200,80 @@
                   {%- endif -%}
                 {%- when 'sustainability' -%}
                   {%- if product.metafields.custom.nachhaltigkeit != blank -%}
-                    <p class="product__sustainability quick-add-hidden" {{ block.shopify_attributes }}>
-                      <strong>{{ 'products.product.sustainability' | t }}:</strong>
-                      {{ product.metafields.custom.nachhaltigkeit }}
-                    </p>
+                    <div class="product__accordion accordion quick-add-hidden" {{ block.shopify_attributes }}>
+                      <details id="Details-{{ block.id }}-{{ section.id }}">
+                        <summary>
+                          <div class="summary__title">
+                            <h2 class="h4 accordion__title">{{ 'products.product.sustainability' | t }}</h2>
+                          </div>
+                          {{- 'icon-caret.svg' | inline_asset_content -}}
+                        </summary>
+                        <div class="accordion__content rte" id="ProductAccordion-{{ block.id }}-{{ section.id }}">
+                          <dl class="product__meta-list">
+                            <dt>{{ 'products.product.sustainability' | t }}</dt>
+                            <dd>{{ product.metafields.custom.nachhaltigkeit }}</dd>
+                          </dl>
+                        </div>
+                      </details>
+                    </div>
                   {%- endif -%}
                 {%- when 'specifications' -%}
                   {%- if product.metafields.custom.eigenschaften.value.size > 0 -%}
-                    <div class="product__specifications quick-add-hidden" {{ block.shopify_attributes }}>
-                      <dl>
-                        {%- for spec in product.metafields.custom.eigenschaften.value -%}
-                          <dt>{{ spec.bezeichnung.value }}</dt>
-                          <dd>{{ spec.wert.value }}</dd>
-                        {%- endfor -%}
-                      </dl>
+                    <div class="product__accordion accordion quick-add-hidden" {{ block.shopify_attributes }}>
+                      <details id="Details-{{ block.id }}-{{ section.id }}">
+                        <summary>
+                          <div class="summary__title">
+                            <h2 class="h4 accordion__title">{{ 'sections.main-product.blocks.specifications.name' | t }}</h2>
+                          </div>
+                          {{- 'icon-caret.svg' | inline_asset_content -}}
+                        </summary>
+                        <div class="accordion__content rte" id="ProductAccordion-{{ block.id }}-{{ section.id }}">
+                          <dl class="product__meta-list">
+                            {%- for spec in product.metafields.custom.eigenschaften.value -%}
+                              <dt>{{ spec.bezeichnung.value }}</dt>
+                              <dd>{{ spec.wert.value }}</dd>
+                            {%- endfor -%}
+                          </dl>
+                        </div>
+                      </details>
                     </div>
                   {%- endif -%}
                 {%- when 'custom_metafields' -%}
                   {%- assign cm_exclude = 'nachhaltigkeit,eigenschaften,option_abbreviations' | split: ',' -%}
-                  <div class="product__custom-metafields quick-add-hidden" {{ block.shopify_attributes }}>
-                    <dl>
-                      {%- for mf in product.metafields.custom -%}
-                        {%- assign cm_key = mf[0] -%}
-                        {%- assign cm_field = mf[1] -%}
-                        {%- unless cm_exclude contains cm_key or cm_field.type contains 'list' or cm_field.type contains 'reference' -%}
-                          {%- if cm_field.value != blank -%}
-                            {%- comment -%}
-                              Liquid kann den Namen einer Metafield-Definition nicht auslesen.
-                              Übersetzte Labels daher hier eintragen (siehe locales/*.json unter
-                              "products.custom_metafields.<key>"), sonst Fallback auf den Key.
-                            {%- endcomment -%}
-                            {%- case cm_key -%}
-                              {%- when 'material' -%}
-                                {%- assign cm_label = 'products.product.custom_metafields.material' | t -%}
-                              {%- else -%}
-                                {%- assign cm_label = cm_key | replace: '_', ' ' | capitalize -%}
-                            {%- endcase -%}
-                            <dt>{{ cm_label }}</dt>
-                            <dd>{{ cm_field.value }}</dd>
-                          {%- endif -%}
-                        {%- endunless -%}
-                      {%- endfor -%}
-                    </dl>
+                  <div class="product__accordion accordion quick-add-hidden" {{ block.shopify_attributes }}>
+                    <details id="Details-{{ block.id }}-{{ section.id }}">
+                      <summary>
+                        <div class="summary__title">
+                          <h2 class="h4 accordion__title">{{ 'sections.main-product.blocks.custom_metafields.name' | t }}</h2>
+                        </div>
+                        {{- 'icon-caret.svg' | inline_asset_content -}}
+                      </summary>
+                      <div class="accordion__content rte" id="ProductAccordion-{{ block.id }}-{{ section.id }}">
+                        <dl class="product__meta-list">
+                          {%- for mf in product.metafields.custom -%}
+                            {%- assign cm_key = mf[0] -%}
+                            {%- assign cm_field = mf[1] -%}
+                            {%- unless cm_exclude contains cm_key or cm_field.type contains 'list' or cm_field.type contains 'reference' -%}
+                              {%- if cm_field.value != blank -%}
+                                {%- comment -%}
+                                  Liquid kann den Namen einer Metafield-Definition nicht auslesen.
+                                  Übersetzte Labels daher hier eintragen (siehe locales/*.json unter
+                                  "products.custom_metafields.<key>"), sonst Fallback auf den Key.
+                                {%- endcomment -%}
+                                {%- case cm_key -%}
+                                  {%- when 'material' -%}
+                                    {%- assign cm_label = 'products.product.custom_metafields.material' | t -%}
+                                  {%- else -%}
+                                    {%- assign cm_label = cm_key | replace: '_', ' ' | capitalize -%}
+                                {%- endcase -%}
+                                <dt>{{ cm_label }}</dt>
+                                <dd>{{ cm_field.value }}</dd>
+                              {%- endif -%}
+                            {%- endunless -%}
+                          {%- endfor -%}
+                        </dl>
+                      </div>
+                    </details>
                   </div>
                 {%- when 'sku' -%}
                   <p
