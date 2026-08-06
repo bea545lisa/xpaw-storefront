@@ -217,7 +217,7 @@
                           </div>
                           {{- 'icon-caret.svg' | inline_asset_content -}}
                         </summary>
-                        <div class="accordion__content rte" id="ProductAccordion-{{ block.id }}-{{ section.id }}">
+                        <div class="accordion__content rte product__meta-accordion-content" id="ProductAccordion-{{ block.id }}-{{ section.id }}">
                           <dl class="product__meta-list">
                             {%- for spec in product.metafields.custom.eigenschaften.value -%}
                               <dt>{{ spec.bezeichnung.value }}</dt>
