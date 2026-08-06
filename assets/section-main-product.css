@@ -1527,7 +1527,7 @@ a.product__text {
   margin: 1.2rem 0;
 }
 
-.product__meta-accordion-content {
+.accordion__content.product__meta-accordion-content {
   padding-left: 0;
   padding-right: 0;
 }
