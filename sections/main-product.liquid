@@ -205,6 +205,17 @@
                       {{ product.metafields.custom.material }}
                     </p>
                   {%- endif -%}
+                {%- when 'specifications' -%}
+                  {%- if product.metafields.custom.eigenschaften.value.size > 0 -%}
+                    <div class="product__specifications quick-add-hidden" {{ block.shopify_attributes }}>
+                      <dl>
+                        {%- for spec in product.metafields.custom.eigenschaften.value -%}
+                          <dt>{{ spec.bezeichnung.value }}</dt>
+                          <dd>{{ spec.wert.value }}</dd>
+                        {%- endfor -%}
+                      </dl>
+                    </div>
+                  {%- endif -%}
                 {%- when 'sku' -%}
                   <p
                     class="product__sku{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.sku.size == 0 %} visibility-hidden{% endif %}"
@@ -814,6 +825,11 @@
     {
       "type": "material",
       "name": "t:sections.main-product.blocks.material.name",
+      "limit": 1
+    },
+    {
+      "type": "specifications",
+      "name": "t:sections.main-product.blocks.specifications.name",
       "limit": 1
     },
     {

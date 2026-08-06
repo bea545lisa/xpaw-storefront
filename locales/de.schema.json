@@ -2020,6 +2020,9 @@
         "material": {
           "name": "Material"
         },
+        "specifications": {
+          "name": "Eigenschaften"
+        },
         "sku": {
           "name": "SKU",
           "settings": {
