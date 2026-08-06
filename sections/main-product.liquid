@@ -234,7 +234,9 @@
                     Shop-Labels werden in der Admin-App (Metafields-Seite) gepflegt und landen als
                     JSON im Shop-Metafield custom.field_labels — keine Liquid-Änderung pro Feld nötig.
                   {%- endcomment -%}
-                  {%- assign cm_labels = shop.metafields.custom.field_labels.value -%}
+                  {%- assign cm_lang = localization.language.iso_code | downcase -%}
+                  {%- assign cm_labels_all = shop.metafields.custom.field_labels.value -%}
+                  {%- assign cm_labels = cm_labels_all[cm_lang] -%}
                   <div class="product__meta-block quick-add-hidden" {{ block.shopify_attributes }}>
                     <dl class="product__meta-list">
                       {%- for mf in product.metafields.custom -%}
