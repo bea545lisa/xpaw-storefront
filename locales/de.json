@@ -109,6 +109,7 @@
       "add_to_cart": "In den Warenkorb legen",
       "description": "Beschreibung",
       "sustainability": "Nachhaltigkeit",
+      "specifications": "Eigenschaften",
       "custom_metafields": {
         "material": "Material"
       },

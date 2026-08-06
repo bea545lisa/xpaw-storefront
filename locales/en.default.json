@@ -111,6 +111,7 @@
       "choose_product_options": "Choose options for {{ product_name }}",
       "description": "Description",
       "sustainability": "Sustainability",
+      "specifications": "Specifications",
       "custom_metafields": {
         "material": "Material"
       },
