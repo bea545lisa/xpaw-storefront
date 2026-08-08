@@ -3,6 +3,10 @@
   Accepts:
   - swatch: {Object} a swatch object
   - shape: {String} swatch shape. Accepts 'square', defaults to circle.
+  - custom_image_url: {String} fallback image URL (already a full CDN URL), used when
+    swatch.image/swatch.color are blank - for products using a custom metafield-based
+    swatch system (custom.option_swatches) instead of Shopify's native option swatches.
+  - custom_color: {String} fallback CSS color value (e.g. a hex string), same fallback purpose.
 
   Usage:
   {% render 'swatch',
@@ -19,6 +23,10 @@
     assign swatch_focal_point = swatch.image.presentation.focal_point
   elsif swatch.color
     assign swatch_value = 'rgb(' | append: swatch.color.rgb | append: ')'
+  elsif custom_image_url
+    assign swatch_value = 'url(' | append: custom_image_url | append: ')'
+  elsif custom_color
+    assign swatch_value = custom_color
   endif
 -%}
 

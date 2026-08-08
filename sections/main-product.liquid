@@ -229,7 +229,7 @@
                     </div>
                   {%- endif -%}
                 {%- when 'custom_metafields' -%}
-                  {%- assign cm_exclude = 'nachhaltigkeit,eigenschaften,option_abbreviations' | split: ',' -%}
+                  {%- assign cm_exclude = 'nachhaltigkeit,eigenschaften,option_abbreviations,option_swatches,field_labels' | split: ',' -%}
                   {%- comment -%}
                     Shop-Labels werden in der Admin-App (Metafields-Seite) gepflegt und landen als
                     JSON im Shop-Metafield custom.field_labels — keine Liquid-Änderung pro Feld nötig.

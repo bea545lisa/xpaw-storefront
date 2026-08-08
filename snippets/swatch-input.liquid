@@ -6,6 +6,8 @@
   - name: {String} input name,
   - value: {ProductOptionValueDrop} input value
   - swatch: {SwatchDrop} the swatch drop
+  - custom_image_url: {String} (optional) fallback swatch image URL for custom.option_swatches
+  - custom_color: {String} (optional) fallback swatch color for custom.option_swatches
   - product_form_id: {String} id of the form associted with the input
   - checked: {Boolean} default checked status
   - disabled: {Boolean} default disabled status (optional)
@@ -47,6 +49,6 @@
   title="{{ value }}"
   class="swatch-input__label{% if shape == 'square' %} swatch-input__label--square{% endif %}"
 >
-  {% render 'swatch', swatch: swatch, shape: shape %}
+  {% render 'swatch', swatch: swatch, shape: shape, custom_image_url: custom_image_url, custom_color: custom_color %}
   {{ help_text }}
 </label>
