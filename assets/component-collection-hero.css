@@ -96,3 +96,24 @@
     min-height: 20rem;
   }
 }
+
+.collection-hero__subcategories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.6rem;
+}
+
+.collection-hero__subcategory-link {
+  display: inline-block;
+  padding: 0.7rem 1.6rem;
+  border: 0.1rem solid rgba(var(--color-foreground), 0.2);
+  border-radius: var(--variant-pills-radius, 3rem);
+  text-decoration: none;
+  color: rgb(var(--color-foreground));
+  font-size: 1.3rem;
+}
+
+.collection-hero__subcategory-link:hover {
+  border-color: rgba(var(--color-foreground), 0.5);
+}

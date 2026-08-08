@@ -24,11 +24,6 @@
   }
 }
 
-.collection-list__item:only-child {
-  max-width: 100%;
-  width: 100%;
-}
-
 @media screen and (max-width: 749px) {
   .slider.collection-list--1-items {
     padding-bottom: 0;
@@ -58,4 +53,12 @@
 
 .collection-list-view-all {
   margin-top: 2rem;
+}
+
+/* Ob eine einzelne Kollektionskachel auf volle Breite geht, oder bei der
+   regulären Spaltenbreite bleibt, ist über die Section-Einstellung
+   "Einzelne Kachel auf volle Breite" (stretch_single_item) wählbar. */
+.collection-list--stretch-single-item .collection-list__item:only-child {
+  max-width: 100%;
+  width: 100%;
 }

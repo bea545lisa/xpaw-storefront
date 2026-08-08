@@ -20,6 +20,24 @@
       {%- if section.settings.show_collection_description -%}
         <div class="collection-hero__description rte">{{ collection.description }}</div>
       {%- endif -%}
+
+      {%- if section.settings.show_subcategories -%}
+        {%- comment -%}
+          Shopify-Kollektionen sind flach (keine echte Eltern-Kind-Beziehung).
+          "Unterkategorien" werden hier per Namenskonvention erkannt: eine
+          Kollektion "Hosen > Jeans" gilt als Unterkategorie von "Hosen".
+        {%- endcomment -%}
+        <div class="collection-hero__subcategories">
+          {%- for subcategory in collections -%}
+            {%- assign subcategory_parts = subcategory.title | split: ' > ' -%}
+            {%- if subcategory_parts.size == 2 and subcategory_parts[0] == collection.title -%}
+              <a href="{{ subcategory.url }}" class="collection-hero__subcategory-link">
+                {{ subcategory_parts[1] }}
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
     </div>
 
     {%- if section.settings.show_collection_image and collection.image -%}
@@ -65,6 +83,12 @@
       "id": "show_collection_image",
       "default": false,
       "label": "t:sections.main-collection-banner.settings.show_collection_image.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_subcategories",
+      "default": true,
+      "label": "t:sections.main-collection-banner.settings.show_subcategories.label"
     },
     {
       "type": "color_scheme",

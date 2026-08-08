@@ -685,6 +685,9 @@
         "columns_desktop": {
           "label": "Columns"
         },
+        "stretch_single_item": {
+          "label": "Stretch single tile to full width"
+        },
         "show_view_all": {
           "label": "\"View all\" button",
           "info": "Visible if list has more collections than shown"
@@ -1818,6 +1821,9 @@
         },
         "show_collection_image": {
           "label": "Image"
+        },
+        "show_subcategories": {
+          "label": "Show subcategories (e.g. \"Pants > Jeans\")"
         }
       }
     },

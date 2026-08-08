@@ -678,6 +678,9 @@
         "columns_desktop": {
           "label": "Spalten"
         },
+        "stretch_single_item": {
+          "label": "Einzelne Kachel auf volle Breite strecken"
+        },
         "header_mobile": {
           "content": "Mobiles Layout"
         },
@@ -1505,6 +1508,9 @@
         },
         "show_collection_image": {
           "label": "Bild"
+        },
+        "show_subcategories": {
+          "label": "Unterkategorien anzeigen (z.B. \"Hosen > Jeans\")"
         }
       }
     },
