@@ -1531,3 +1531,15 @@ a.product__text {
   padding-left: 0;
   padding-right: 0;
 }
+
+/* Swatches links bündig mit den Pill-Buttons (Größe), statt zentriert */
+.product-form__input.product-form__input--swatch {
+  margin-left: 0;
+  margin-right: 0;
+  justify-content: flex-start;
+}
+
+/* Größere Swatches für die Farb-/Bild-Auswahl */
+.product-form__input--swatch {
+  --swatch-input--size: 5.6rem;
+}
