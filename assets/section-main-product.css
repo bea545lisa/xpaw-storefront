@@ -1543,11 +1543,11 @@ a.product__text {
    die component-product-variant-picker.css direkt am Label setzt
    (inkl. Desktop-Breakpoint, der sie sonst auf 2.8rem verkleinert). */
 .product-form__input--swatch.product-form__input--swatch .swatch-input__input + .swatch-input__label {
-  --swatch-input--size: 5.6rem;
+  --swatch-input--size: 4.25rem;
 }
 
 @media screen and (min-width: 750px) {
   .product-form__input--swatch.product-form__input--swatch .swatch-input__input + .swatch-input__label {
-    --swatch-input--size: 5.6rem;
+    --swatch-input--size: 4.25rem;
   }
 }
