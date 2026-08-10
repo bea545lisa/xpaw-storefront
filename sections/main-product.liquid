@@ -198,6 +198,28 @@
                       {{ product.description }}
                     </div>
                   {%- endif -%}
+                {%- when 'variant_metafield' -%}
+                  {%- comment -%}
+                    Zeigt ein Metafield der aktuell ausgewählten Variante (nicht des
+                    Produkts) - aktualisiert sich live bei Variantenwechsel über
+                    assets/product-info.js (updateSourceFromDestination('VariantMetafield')).
+                  {%- endcomment -%}
+                  {%- liquid
+                    assign vm_variant = product.selected_or_first_available_variant
+                    assign vm_value = vm_variant.metafields.custom[block.settings.metafield_key]
+                  -%}
+                  <div
+                    id="VariantMetafield-{{ section.id }}"
+                    class="product__meta-block quick-add-hidden{% if vm_value == blank %} hidden{% endif %}"
+                    {{ block.shopify_attributes }}
+                  >
+                    {%- if vm_value != blank -%}
+                      <dl class="product__meta-list">
+                        <dt>{{ block.settings.label | default: block.settings.metafield_key }}</dt>
+                        <dd>{{ vm_value }}</dd>
+                      </dl>
+                    {%- endif -%}
+                  </div>
                 {%- when 'sustainability' -%}
                   {%- if product.metafields.custom.nachhaltigkeit != blank -%}
                     <div class="product__meta-block quick-add-hidden" {{ block.shopify_attributes }}>
@@ -860,6 +882,23 @@
       "type": "price",
       "name": "t:sections.main-product.blocks.price.name",
       "limit": 1
+    },
+    {
+      "type": "variant_metafield",
+      "name": "t:sections.main-product.blocks.variant_metafield.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "metafield_key",
+          "label": "t:sections.main-product.blocks.variant_metafield.settings.metafield_key.label",
+          "info": "t:sections.main-product.blocks.variant_metafield.settings.metafield_key.info"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.main-product.blocks.variant_metafield.settings.label.label"
+        }
+      ]
     },
     {
       "type": "sustainability",
