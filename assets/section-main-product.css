@@ -1555,9 +1555,22 @@ a.product__text {
 /* Engerer Abstand zwischen aufeinanderfolgenden Meta-Blöcken
    (Varianten-Metafield, Eigenschaften, Individuelle Metafields, Nachhaltigkeit),
    statt des generischen 1.5rem-Blockabstands. */
-.product__info-container > .product__meta-block + .product__accordion,
-.product__info-container > .product__accordion + .product__meta-block,
 .product__info-container > .product__meta-block + .product__meta-block,
 .product__info-container > .product__accordion + .product__accordion {
   margin-top: 0.4rem;
+}
+
+/* Accordion (z.B. "Eigenschaften") hat von Haus aus weniger sichtbaren
+   Abstand nach unten als eine reine Textzeile - etwas mehr Margin, damit
+   es optisch genauso wirkt wie zwischen zwei einfachen Meta-Blöcken. */
+.product__info-container > .product__meta-block + .product__accordion,
+.product__info-container > .product__accordion + .product__meta-block {
+  margin-top: 1.2rem;
+}
+
+/* Mehr Luft zwischen der Variantenauswahl (variant-selects, z.B. Farbe/Größe)
+   und dem ersten Meta-Block direkt danach (z.B. Varianten-Metafield "Maße"). */
+.product__info-container > variant-selects + .product__meta-block,
+.product__info-container > variant-selects + .product__accordion {
+  margin-top: 2.4rem;
 }
