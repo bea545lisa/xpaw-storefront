@@ -1551,3 +1551,13 @@ a.product__text {
     --swatch-input--size: 4.25rem;
   }
 }
+
+/* Engerer Abstand zwischen aufeinanderfolgenden Meta-Blöcken
+   (Varianten-Metafield, Eigenschaften, Individuelle Metafields, Nachhaltigkeit),
+   statt des generischen 1.5rem-Blockabstands. */
+.product__info-container > .product__meta-block + .product__accordion,
+.product__info-container > .product__accordion + .product__meta-block,
+.product__info-container > .product__meta-block + .product__meta-block,
+.product__info-container > .product__accordion + .product__accordion {
+  margin-top: 0.4rem;
+}
