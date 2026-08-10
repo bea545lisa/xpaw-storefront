@@ -2091,6 +2091,18 @@
         "sustainability": {
           "name": "Sustainability"
         },
+        "variant_metafield": {
+          "name": "Variant metafield",
+          "settings": {
+            "metafield_key": {
+              "label": "Metafield key",
+              "info": "Key of the metafield under the \"custom\" namespace on the variant, e.g. \"material_note\""
+            },
+            "label": {
+              "label": "Label"
+            }
+          }
+        },
         "specifications": {
           "name": "Specifications"
         },
