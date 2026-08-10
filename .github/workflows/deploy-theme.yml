@@ -18,4 +18,4 @@ jobs:
         env:
           SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
           SHOPIFY_FLAG_STORE: xpaw-maylyf4d.myshopify.com
-        run: npx shopify theme push --theme 161577599081
+        run: npx shopify theme push --theme 161577599081 --force
