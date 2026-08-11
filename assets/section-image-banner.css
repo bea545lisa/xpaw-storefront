@@ -65,6 +65,7 @@
 .banner__logo--inline {
   position: static;
   margin: 0 auto 1.5rem;
+  transform: none;
 }
 
 .banner__logo--inline.banner__logo--h-left {
