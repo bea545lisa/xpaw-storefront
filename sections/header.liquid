@@ -158,9 +158,15 @@
     }
   {%- endif -%}
 
-  .section-header.scrolled-past-header {
-    --color-foreground: {{ scrolled_fg }};
-  }
+  {%- if section.settings.transparent_header -%}
+    .section-header.header-past-banner {
+      --color-foreground: {{ scrolled_fg }};
+    }
+  {%- else -%}
+    .section-header.scrolled-past-header {
+      --color-foreground: {{ scrolled_fg }};
+    }
+  {%- endif -%}
 
   .section-header,
   .section-header .header-wrapper,
@@ -170,12 +176,17 @@
     transition: top 0.35s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.35s ease, padding 0.35s cubic-bezier(0.4, 0, 0.2, 1), -webkit-backdrop-filter 0.35s ease, backdrop-filter 0.35s ease, color 0.35s ease, fill 0.35s ease;
   }
 
-  .section-header.scrolled-past-header {
+  {%- assign solid_class = 'scrolled-past-header' -%}
+  {%- if section.settings.transparent_header -%}
+    {%- assign solid_class = 'header-past-banner' -%}
+  {%- endif -%}
+
+  .section-header.{{ solid_class }} {
     -webkit-backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
     backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
   }
 
-  .section-header.scrolled-past-header .header-wrapper {
+  .section-header.{{ solid_class }} .header-wrapper {
     background: {{ scrolled_bg }} !important;
   }
 
@@ -194,6 +205,41 @@
 {%- endstyle -%}
 
 <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
+
+{%- if section.settings.transparent_header -%}
+  <script>
+    (function () {
+      // Header/Ankündigungsleiste sollen erst "solide" werden, wenn das ganze
+      // Banner durchgescrollt ist — nicht schon nach ein paar Pixeln (das würde
+      // die eingebaute 'scrolled-past-header'-Klasse zu früh auslösen, da die
+      // nur an der Höhe des Headers selbst hängt, nicht am Banner).
+      function markPastBanner() {
+        var hero = document.querySelector('.banner');
+        var targets = document.querySelectorAll('.section-header, .announcement-bar-section');
+        if (!hero || !targets.length) return;
+
+        function update() {
+          var rect = hero.getBoundingClientRect();
+          var headerHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 80;
+          var pastBanner = rect.bottom <= headerHeight;
+          targets.forEach(function (el) {
+            el.classList.toggle('header-past-banner', pastBanner);
+          });
+        }
+
+        update();
+        window.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', markPastBanner);
+      } else {
+        markPastBanner();
+      }
+    })();
+  </script>
+{%- endif -%}
 
 {%- if section.settings.transparent_header and section.settings.adaptive_text_color -%}
   <script>
