@@ -16,6 +16,14 @@
   <link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 {%- endif -%}
 
+{%- comment -%}
+  Transparenter Header läuft auf jeder Seite gleich — findet das Skript unten
+  aber keine Banner-Sektion auf der Seite (z.B. Kollektions-/Produktseiten ohne
+  Bild-Banner), wird sofort der solide Zustand gesetzt statt dauerhaft
+  transparent zu bleiben und den Inhalt zu überlappen.
+{%- endcomment -%}
+{%- assign is_transparent_active = section.settings.transparent_header -%}
+
 <style>
   header-drawer {
     justify-self: start;
@@ -28,7 +36,7 @@
     }
   {%- endif -%}
 
-  {%- if section.settings.transparent_header -%}
+  {%- if is_transparent_active -%}
     .section-header .header__heading-logo-wrapper {
       transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -147,7 +155,7 @@
     endif
   -%}
 
-  {%- if section.settings.transparent_header -%}
+  {%- if is_transparent_active -%}
     .section-header {
       position: absolute;
       top: var(--announcement-bar-height, 0px);
@@ -174,7 +182,7 @@
     }
   {%- endif -%}
 
-  {%- if section.settings.transparent_header -%}
+  {%- if is_transparent_active -%}
     .section-header.header-past-banner {
       --color-foreground: {{ scrolled_fg }};
     }
@@ -192,7 +200,7 @@
     transition: top 0.35s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.35s ease, padding 0.35s cubic-bezier(0.4, 0, 0.2, 1), -webkit-backdrop-filter 0.35s ease, backdrop-filter 0.35s ease, color 0.35s ease, fill 0.35s ease;
   }
 
-  {%- if section.settings.transparent_header -%}
+  {%- if is_transparent_active -%}
     {#- Phase 1: sobald sticky, aber noch über dem Banner -> dunkel-verschwommen -#}
     .section-header.scrolled-past-header:not(.header-past-banner) {
       -webkit-backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
@@ -251,7 +259,7 @@
 
 <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
 
-{%- if section.settings.transparent_header -%}
+{%- if is_transparent_active -%}
   <script>
     (function () {
       // Header/Ankündigungsleiste sollen erst "solide" werden, wenn das ganze
@@ -261,8 +269,15 @@
       function markPastBanner() {
         var hero = document.querySelector('.banner');
         var targets = document.querySelectorAll('.section-header, .announcement-bar-section');
-        if (!hero || !targets.length) {
-          console.warn('[header] Kein .banner-Element gefunden – Verkleinerungslogik übersprungen.');
+        if (!targets.length) return;
+
+        if (!hero) {
+          // Keine Banner-Sektion auf dieser Seite (z.B. Kollektions-/Produktseite) ->
+          // sofort solide, damit Header/Leiste nicht dauerhaft transparent über dem
+          // normalen Seiteninhalt hängen bleiben.
+          targets.forEach(function (el) {
+            el.classList.add('header-past-banner');
+          });
           return;
         }
 
@@ -290,7 +305,7 @@
   </script>
 {%- endif -%}
 
-{%- if section.settings.transparent_header and section.settings.adaptive_text_color -%}
+{%- if is_transparent_active and section.settings.adaptive_text_color -%}
   <script>
     (function () {
       // Ermittelt die Helligkeit im oberen Bereich des ersten Banner-Bilds
@@ -366,7 +381,7 @@
   {% if header_tag == 'sticky-header' %}
     data-sticky-type="{{ section.settings.sticky_header_type }}"
   {% endif %}
-  class="header-wrapper{% unless section.settings.transparent_header %} color-{{ section.settings.color_scheme }} gradient{% endunless %}{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}"
+  class="header-wrapper{% unless is_transparent_active %} color-{{ section.settings.color_scheme }} gradient{% endunless %}{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}"
 >
   {%- liquid
     assign social_links = false
