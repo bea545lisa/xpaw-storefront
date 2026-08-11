@@ -3,7 +3,9 @@
 
 {%- if section.settings.transparent_header -%}
   {%- style -%}
-    .announcement-bar-section {
+    {#- .hero-overlay-active wird per JS nur gesetzt, wenn die Seite wirklich eine
+       Banner-Sektion hat. Ohne Banner bleibt die Leiste ganz normal im Textfluss. -#}
+    .announcement-bar-section.hero-overlay-active {
       position: absolute;
       top: 0;
       left: 0;
@@ -14,12 +16,12 @@
       transition: transform 0.25s ease, opacity 0.25s ease;
     }
 
-    .announcement-bar-section .utility-bar {
+    .announcement-bar-section.hero-overlay-active .utility-bar {
       background: transparent !important;
       --color-foreground: var(--adaptive-color-foreground, 255,255,255);
     }
 
-    .announcement-bar-section.announcement-bar--hidden {
+    .announcement-bar-section.hero-overlay-active.announcement-bar--hidden {
       transform: translateY(-100%);
       opacity: 0;
       pointer-events: none;
@@ -34,9 +36,6 @@
       function setHeight() {
         document.documentElement.style.setProperty('--announcement-bar-height', bar.offsetHeight + 'px');
       }
-      // Beim ersten Aufruf ist der Inhalt der Leiste oft noch nicht gerendert
-      // (Skript steht vor dem eigentlichen Markup) -> Höhe wäre 0. Deshalb
-      // mehrfach verzögert nachmessen, bis Layout/Schrift fertig geladen sind.
       setHeight();
       requestAnimationFrame(function () {
         requestAnimationFrame(setHeight);
@@ -44,11 +43,24 @@
       window.addEventListener('load', setHeight);
       window.addEventListener('resize', setHeight);
 
-      var hideThreshold = 40;
-      window.addEventListener('scroll', function () {
-        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        bar.classList.toggle('announcement-bar--hidden', scrollTop > hideThreshold);
-      }, { passive: true });
+      function checkHero() {
+        var hasHero = !!document.querySelector('.banner');
+        bar.classList.toggle('hero-overlay-active', hasHero);
+
+        if (hasHero) {
+          var hideThreshold = 40;
+          window.addEventListener('scroll', function () {
+            var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            bar.classList.toggle('announcement-bar--hidden', scrollTop > hideThreshold);
+          }, { passive: true });
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', checkHero);
+      } else {
+        checkHero();
+      }
     })();
   </script>
 {%- endif -%}
@@ -71,7 +83,7 @@
 {% endif %}
 
 <div
-  class="utility-bar{% unless section.settings.transparent_header %} color-{{ section.settings.color_scheme }} gradient{% endunless %}{% if section.settings.show_line_separator and section.blocks.size > 0 %} utility-bar--bottom-border{% elsif section.settings.show_line_separator and section.settings.show_social and social_icons%} utility-bar--bottom-border-social-only{% endif %}{% if section.settings.enable_country_selector or section.settings.enable_language_selector %} header-localization{% endif %}"
+  class="utility-bar color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator and section.blocks.size > 0 %} utility-bar--bottom-border{% elsif section.settings.show_line_separator and section.settings.show_social and social_icons%} utility-bar--bottom-border-social-only{% endif %}{% if section.settings.enable_country_selector or section.settings.enable_language_selector %} header-localization{% endif %}"
 >
   <div class="page-width utility-bar__grid{% if announcement_bar and language_country_selector or section.settings.show_social and social_icons %} utility-bar__grid--3-col{% elsif language_country_selector or section.settings.show_social and social_icons %} utility-bar__grid--2-col{% endif %}">
     {%- if section.settings.show_social and social_icons -%}

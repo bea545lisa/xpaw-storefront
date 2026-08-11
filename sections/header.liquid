@@ -155,8 +155,14 @@
     endif
   -%}
 
+  {%- comment -%}
+    .hero-overlay-active wird per JS nur gesetzt, wenn auf der Seite wirklich
+    eine Banner-Sektion existiert. Ohne diese Klasse bleibt der Header immer im
+    normalen, soliden Standard-Zustand (wie für hellen Hintergrund gedacht) —
+    unabhängig davon, ob die Einstellung "Transparent anzeigen" aktiv ist.
+  {%- endcomment -%}
   {%- if is_transparent_active -%}
-    .section-header {
+    .section-header.hero-overlay-active {
       position: absolute;
       top: var(--announcement-bar-height, 0px);
       left: 0;
@@ -168,26 +174,20 @@
       transition: top 0.25s ease;
     }
 
-    .section-header .header-wrapper {
+    .section-header.hero-overlay-active .header-wrapper {
       background: transparent !important;
     }
 
-    .section-header:not(.header-past-banner) {
+    .section-header.hero-overlay-active:not(.header-past-banner) {
       --color-foreground: var(--adaptive-color-foreground, 255,255,255);
     }
 
-    .section-header.scrolled-past-header {
+    .section-header.hero-overlay-active.scrolled-past-header {
       position: fixed;
       top: 0;
     }
-  {%- endif -%}
 
-  {%- if is_transparent_active -%}
-    .section-header.header-past-banner {
-      --color-foreground: {{ scrolled_fg }};
-    }
-  {%- else -%}
-    .section-header.scrolled-past-header {
+    .section-header.hero-overlay-active.header-past-banner {
       --color-foreground: {{ scrolled_fg }};
     }
   {%- endif -%}
@@ -201,39 +201,41 @@
   }
 
   {%- if is_transparent_active -%}
-    {#- Phase 1: sobald sticky, aber noch über dem Banner -> dunkel-verschwommen -#}
-    .section-header.scrolled-past-header:not(.header-past-banner) {
+    {#- Phase 1: über dem Banner, sticky, aber noch nicht komplett durchgescrollt -> dunkel-verschwommen -#}
+    .section-header.hero-overlay-active.scrolled-past-header:not(.header-past-banner) {
       -webkit-backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
       backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
     }
 
-    .section-header.scrolled-past-header:not(.header-past-banner) .header-wrapper {
+    .section-header.hero-overlay-active.scrolled-past-header:not(.header-past-banner) .header-wrapper {
       background: rgba(20, 20, 20, 0.55) !important;
     }
 
-    .section-header.scrolled-past-header:not(.header-past-banner) {
+    .section-header.hero-overlay-active.scrolled-past-header:not(.header-past-banner) {
       --color-foreground: 255,255,255;
     }
 
     {#- Phase 2: Banner komplett durchgescrollt -> eingestellte Hell/Dunkel-Farbe -#}
-    .section-header.header-past-banner {
+    .section-header.hero-overlay-active.header-past-banner {
       -webkit-backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
       backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
     }
 
-    .section-header.header-past-banner .header-wrapper {
-      background: {{ scrolled_bg }} !important;
-    }
-  {%- else -%}
-    .section-header.scrolled-past-header {
-      -webkit-backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
-      backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
-    }
-
-    .section-header.scrolled-past-header .header-wrapper {
+    .section-header.hero-overlay-active.header-past-banner .header-wrapper {
       background: {{ scrolled_bg }} !important;
     }
   {%- endif -%}
+
+  {#- Standard-Zustand ohne Banner auf der Seite (oder Feature aus): normaler
+     sticky Header, wird beim Scrollen einfach solide/verschwommen wie gewohnt. -#}
+  .section-header.scrolled-past-header:not(.hero-overlay-active) {
+    -webkit-backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
+    backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
+  }
+
+  .section-header.scrolled-past-header:not(.hero-overlay-active) .header-wrapper {
+    background: {{ scrolled_bg }} !important;
+  }
 
   .section-header.scrolled-past-header .header {
     padding-top: calc({{ section.settings.padding_top }}px * {{ section.settings.scrolled_shrink }} / 100 * 0.3);
@@ -273,13 +275,13 @@
 
         if (!hero) {
           // Keine Banner-Sektion auf dieser Seite (z.B. Kollektions-/Produktseite) ->
-          // sofort solide, damit Header/Leiste nicht dauerhaft transparent über dem
-          // normalen Seiteninhalt hängen bleiben.
-          targets.forEach(function (el) {
-            el.classList.add('header-past-banner');
-          });
+          // .hero-overlay-active bleibt weg, Header läuft komplett normal (siehe CSS).
           return;
         }
+
+        targets.forEach(function (el) {
+          el.classList.add('hero-overlay-active');
+        });
 
         function update() {
           var rect = hero.getBoundingClientRect();
@@ -381,7 +383,7 @@
   {% if header_tag == 'sticky-header' %}
     data-sticky-type="{{ section.settings.sticky_header_type }}"
   {% endif %}
-  class="header-wrapper{% unless is_transparent_active %} color-{{ section.settings.color_scheme }} gradient{% endunless %}{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}"
+  class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}"
 >
   {%- liquid
     assign social_links = false
