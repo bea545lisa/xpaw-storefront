@@ -314,13 +314,18 @@
 }
 
 .footer__legal-links {
-  margin-top: 1.5rem;
+  margin-top: 0;
 }
 
 .footer__legal-links .policies {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
+}
+
+.footer__legal-links .policies li:first-child::before {
+  content: none;
+  padding: 0;
 }
 
 @media screen and (max-width: 749px) {

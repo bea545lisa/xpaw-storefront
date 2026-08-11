@@ -1,6 +1,50 @@
 {{ 'component-slideshow.css' | asset_url | stylesheet_tag }}
 {{ 'component-slider.css' | asset_url | stylesheet_tag }}
 
+{%- if section.settings.transparent_header -%}
+  {%- style -%}
+    .announcement-bar-section {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 11;
+      background: transparent;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    .announcement-bar-section .utility-bar {
+      background: transparent !important;
+    }
+
+    .announcement-bar-section.announcement-bar--hidden {
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+  {%- endstyle -%}
+
+  <script>
+    (function () {
+      var bar = document.currentScript.closest('.announcement-bar-section') || document.querySelector('.announcement-bar-section');
+      if (!bar) return;
+
+      function setHeight() {
+        document.documentElement.style.setProperty('--announcement-bar-height', bar.offsetHeight + 'px');
+      }
+      setHeight();
+      window.addEventListener('resize', setHeight);
+
+      var hideThreshold = 40;
+      window.addEventListener('scroll', function () {
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        bar.classList.toggle('announcement-bar--hidden', scrollTop > hideThreshold);
+      }, { passive: true });
+    })();
+  </script>
+{%- endif -%}
+
 {%- liquid
   assign social_icons = true
   if settings.social_facebook_link == blank and settings.social_instagram_link == blank and settings.social_youtube_link == blank and settings.social_tiktok_link == blank and settings.social_twitter_link == blank and settings.social_pinterest_link == blank and settings.social_snapchat_link == blank and settings.social_tumblr_link == blank and settings.social_vimeo_link == blank
@@ -198,6 +242,13 @@
       "id": "show_line_separator",
       "default": true,
       "label": "t:sections.header.settings.show_line_separator.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_header",
+      "default": false,
+      "label": "Transparent über erstem Abschnitt anzeigen",
+      "info": "Liegt zusammen mit dem Header über dem Bild-Banner und verschwindet beim Herunterscrollen. Sollte zusammen mit der gleichnamigen Header-Einstellung aktiviert werden."
     },
     {
       "type": "header",
