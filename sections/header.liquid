@@ -260,6 +260,10 @@
   .section-header.header-compact .header__menu {
     padding: 0 calc(1rem * {{ section.settings.scrolled_shrink }} / 100);
   }
+
+  .section-header.header-compact .header-wrapper {
+    border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.12);
+  }
 {%- endstyle -%}
 
 <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
