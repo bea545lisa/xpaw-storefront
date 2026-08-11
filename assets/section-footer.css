@@ -503,12 +503,14 @@
 }
 
 .policies li::before {
-  content: '\00B7';
-  padding: 0 0.8rem;
-  display: inline-flex;
-  align-items: center;
-  align-self: stretch;
-  line-height: 1;
+  content: '';
+  width: 0.4rem;
+  height: 0.4rem;
+  margin: 0 0.8rem;
+  border-radius: 50%;
+  background: currentColor;
+  display: inline-block;
+  flex-shrink: 0;
 }
 
 .policies li a {

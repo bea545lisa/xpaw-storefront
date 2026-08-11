@@ -183,6 +183,14 @@
     padding-top: calc({{ section.settings.padding_top }}px * {{ section.settings.scrolled_shrink }} / 100 * 0.3);
     padding-bottom: calc({{ section.settings.padding_bottom }}px * {{ section.settings.scrolled_shrink }} / 100 * 0.3);
   }
+
+  @media screen and (min-width: 990px) {
+    .section-header.scrolled-past-header .header--middle-left,
+    .section-header.scrolled-past-header .header--middle-center {
+      column-gap: calc(2rem * {{ section.settings.scrolled_shrink }} / 100);
+      transition: column-gap 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  }
 {%- endstyle -%}
 
 <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
