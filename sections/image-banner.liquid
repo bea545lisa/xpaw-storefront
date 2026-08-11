@@ -56,7 +56,7 @@
   class="banner banner--content-align-{{ section.settings.desktop_content_alignment }} banner--content-align-mobile-{{ section.settings.mobile_content_alignment }} banner--{{ section.settings.image_height }}{% if section.settings.stack_images_on_mobile and section.settings.image != blank and section.settings.image_2 != blank %} banner--stacked{% endif %}{% if section.settings.image_height == 'adapt' and section.settings.image != blank %} banner--adapt{% endif %}{% if section.settings.show_text_below %} banner--mobile-bottom{%- endif -%}{% if section.settings.show_text_box == false %} banner--desktop-transparent{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
 >
   {%- for block in section.blocks -%}
-    {%- if block.type == 'logo_image' and block.settings.logo != blank -%}
+    {%- if block.type == 'logo_image' and block.settings.logo != blank and block.settings.logo_position_vertical != 'middle' -%}
       <div
         class="banner__logo banner__logo--v-{{ block.settings.logo_position_vertical }} banner__logo--h-{{ block.settings.logo_position_horizontal }}"
         style="--logo-width: {{ block.settings.logo_width }}px;"
@@ -149,6 +149,22 @@
               <p>{{ block.settings.text }}</p>
             </div>
           {%- when 'logo_image' -%}
+            {%- if block.settings.logo != blank and block.settings.logo_position_vertical == 'middle' -%}
+              <div
+                class="banner__logo banner__logo--inline banner__logo--h-{{ block.settings.logo_position_horizontal }}"
+                style="--logo-width: {{ block.settings.logo_width }}px;"
+                {{ block.shopify_attributes }}
+              >
+                {{
+                  block.settings.logo
+                  | image_url: width: 600
+                  | image_tag:
+                    class: 'banner__logo-image',
+                    widths: '150, 300, 450, 600',
+                    sizes: '(min-width: 750px) 20vw, 40vw'
+                }}
+              </div>
+            {%- endif -%}
           {%- when 'buttons' -%}
             <div
               class="banner__buttons{% if block.settings.button_label_1 != blank and block.settings.button_label_2 != blank %} banner__buttons--multiple{% endif %}"

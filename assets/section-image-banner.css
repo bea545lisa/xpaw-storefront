@@ -60,6 +60,23 @@
   transform: translate(-50%, -50%);
 }
 
+/* "Mitte" wird nicht frei schwebend gerendert (würde immer mit Überschrift/Text
+   kollidieren), sondern normal im Textfluss über der restlichen Banner-Box. */
+.banner__logo--inline {
+  position: static;
+  margin: 0 auto 1.5rem;
+}
+
+.banner__logo--inline.banner__logo--h-left {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.banner__logo--inline.banner__logo--h-right {
+  margin-left: auto;
+  margin-right: 0;
+}
+
 @media screen and (max-width: 749px) {
   .banner__logo {
     width: calc(var(--logo-width, 120px) * 0.6);
