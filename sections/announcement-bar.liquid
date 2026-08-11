@@ -34,7 +34,14 @@
       function setHeight() {
         document.documentElement.style.setProperty('--announcement-bar-height', bar.offsetHeight + 'px');
       }
+      // Beim ersten Aufruf ist der Inhalt der Leiste oft noch nicht gerendert
+      // (Skript steht vor dem eigentlichen Markup) -> Höhe wäre 0. Deshalb
+      // mehrfach verzögert nachmessen, bis Layout/Schrift fertig geladen sind.
       setHeight();
+      requestAnimationFrame(function () {
+        requestAnimationFrame(setHeight);
+      });
+      window.addEventListener('load', setHeight);
       window.addEventListener('resize', setHeight);
 
       var hideThreshold = 40;
