@@ -178,7 +178,8 @@
       background: transparent !important;
     }
 
-    .section-header.hero-overlay-active:not(.header-past-banner) {
+    .section-header.hero-overlay-active:not(.header-past-banner),
+    .section-header.hero-overlay-active:not(.header-past-banner) .header-wrapper {
       --color-foreground: var(--adaptive-color-foreground, 255,255,255);
     }
 
@@ -187,7 +188,8 @@
       top: 0;
     }
 
-    .section-header.hero-overlay-active.header-past-banner {
+    .section-header.hero-overlay-active.header-past-banner,
+    .section-header.hero-overlay-active.header-past-banner .header-wrapper {
       --color-foreground: {{ scrolled_fg }};
     }
   {%- endif -%}
@@ -211,7 +213,8 @@
       background: rgba(20, 20, 20, 0.55) !important;
     }
 
-    .section-header.hero-overlay-active.scrolled-past-header:not(.header-past-banner) {
+    .section-header.hero-overlay-active.scrolled-past-header:not(.header-past-banner),
+    .section-header.hero-overlay-active.scrolled-past-header:not(.header-past-banner) .header-wrapper {
       --color-foreground: 255,255,255;
     }
 
