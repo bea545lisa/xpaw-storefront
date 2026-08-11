@@ -28,6 +28,16 @@
     }
   {%- endif -%}
 
+  {%- if section.settings.transparent_header -%}
+    .section-header .header__heading-logo-wrapper {
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .section-header.scrolled-past-header .header__heading-logo-wrapper {
+      width: 60%;
+    }
+  {%- endif -%}
+
   {%- if section.settings.menu_type_desktop != "drawer" -%}
     @media screen and (min-width: 990px) {
       header-drawer {
@@ -122,19 +132,32 @@
     }
   {%- endif -%}
 
+  {%- liquid
+    if section.settings.scrolled_style == 'dark'
+      assign scrolled_bg = 'rgba(20, 20, 20, 0.55)'
+    else
+      assign scrolled_bg = 'rgba(255, 255, 255, 0.65)'
+    endif
+  -%}
+
+  .section-header,
+  .section-header .header-wrapper,
+  .section-header .header {
+    transition: top 0.35s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.35s ease, padding 0.35s cubic-bezier(0.4, 0, 0.2, 1), -webkit-backdrop-filter 0.35s ease, backdrop-filter 0.35s ease;
+  }
+
   .section-header.scrolled-past-header {
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
+    backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
   }
 
   .section-header.scrolled-past-header .header-wrapper {
-    background: rgba(255, 255, 255, 0.8) !important;
+    background: {{ scrolled_bg }} !important;
   }
 
   .section-header.scrolled-past-header .header {
-    padding-top: {{ section.settings.padding_top | times: 0.35 | round: 0 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | times: 0.35 | round: 0 }}px;
-    transition: padding 0.2s ease;
+    padding-top: 6px;
+    padding-bottom: 6px;
   }
 {%- endstyle -%}
 
@@ -606,7 +629,27 @@
       "id": "transparent_header",
       "default": false,
       "label": "Transparent über erstem Abschnitt anzeigen",
-      "info": "Kopfzeile liegt ohne Hintergrund über dem Bild-Banner. Wird beim Scrollen automatisch niedriger, weiß und mit Weichzeichner hinterlegt. Funktioniert nur, wenn 'Sticky-Header-Typ' nicht auf 'Kein' steht."
+      "info": "Kopfzeile liegt ohne Hintergrund über dem Bild-Banner. Wird beim Scrollen niedriger, kleiner und mit Weichzeichner hinterlegt. Funktioniert nur, wenn 'Sticky-Header-Typ' nicht auf 'Kein' steht."
+    },
+    {
+      "type": "select",
+      "id": "scrolled_style",
+      "label": "Hintergrund beim Scrollen",
+      "options": [
+        { "value": "light", "label": "Hell" },
+        { "value": "dark", "label": "Dunkel" }
+      ],
+      "default": "light"
+    },
+    {
+      "type": "range",
+      "id": "scrolled_blur",
+      "label": "Weichzeichner-Stärke beim Scrollen",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 6
     },
     {
       "type": "checkbox",
