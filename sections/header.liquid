@@ -38,12 +38,19 @@
     }
 
     .section-header .header__heading-link {
-      transform-origin: left center;
-      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .section-header.scrolled-past-header .header__heading-link {
-      transform: scale(calc({{ section.settings.scrolled_shrink }} / 100));
+      padding: calc(0.75rem * {{ section.settings.scrolled_shrink }} / 100);
+    }
+
+    .section-header .header__heading {
+      transition: font-size 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .section-header.scrolled-past-header .header__heading {
+      font-size: calc(1em * {{ section.settings.scrolled_shrink }} / 100);
     }
   {%- endif -%}
 
