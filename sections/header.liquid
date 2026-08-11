@@ -102,6 +102,13 @@
     }
   }
 
+  {%- if section.settings.menu_font_size != blank -%}
+    .header__inline-menu .header__menu-item,
+    .menu-drawer__menu-item {
+      font-size: {{ section.settings.menu_font_size }}px;
+    }
+  {%- endif -%}
+
   @media screen and (min-width: 990px) {
     .header {
       padding-top: {{ section.settings.padding_top }}px;
@@ -591,6 +598,16 @@
       "id": "menu",
       "default": "main-menu",
       "label": "t:sections.header.settings.menu.label"
+    },
+    {
+      "type": "range",
+      "id": "menu_font_size",
+      "label": "Schriftgröße Hauptmenü",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
     },
     {
       "type": "select",
