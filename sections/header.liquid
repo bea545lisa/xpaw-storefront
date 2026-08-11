@@ -268,7 +268,7 @@
     // Klasse erst nach ca. der ganzen Header-Höhe.
     var header = document.querySelector('.section-header');
     if (!header) return;
-    var threshold = 12;
+    var threshold = 0;
     function update() {
       var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       header.classList.toggle('header-compact', scrollTop > threshold);
