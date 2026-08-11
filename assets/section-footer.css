@@ -505,6 +505,10 @@
 .policies li::before {
   content: '\00B7';
   padding: 0 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  align-self: stretch;
+  line-height: 1;
 }
 
 .policies li a {
