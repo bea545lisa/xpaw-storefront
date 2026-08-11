@@ -41,7 +41,7 @@
       transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .section-header.scrolled-past-header .header__heading-logo-wrapper {
+    .section-header.header-compact .header__heading-logo-wrapper {
       width: {{ section.settings.scrolled_shrink }}%;
     }
 
@@ -49,7 +49,7 @@
       transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .section-header.scrolled-past-header .header__heading-link {
+    .section-header.header-compact .header__heading-link {
       padding: calc(0.75rem * {{ section.settings.scrolled_shrink }} / 100);
     }
 
@@ -57,7 +57,7 @@
       transition: font-size 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .section-header.scrolled-past-header .header__heading {
+    .section-header.header-compact .header__heading {
       font-size: calc(1em * {{ section.settings.scrolled_shrink }} / 100);
     }
   {%- endif -%}
@@ -133,7 +133,7 @@
       transition: font-size 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .scrolled-past-header .header__inline-menu .header__menu-item {
+    .header-compact .header__inline-menu .header__menu-item {
       font-size: calc({{ section.settings.menu_font_size }}px * {{ section.settings.scrolled_shrink }} / 100);
     }
   {%- endif -%}
@@ -237,14 +237,14 @@
     background: {{ scrolled_bg }} !important;
   }
 
-  .section-header.scrolled-past-header .header {
+  .section-header.header-compact .header {
     padding-top: calc({{ section.settings.padding_top }}px * {{ section.settings.scrolled_shrink }} / 100 * 0.3);
     padding-bottom: calc({{ section.settings.padding_bottom }}px * {{ section.settings.scrolled_shrink }} / 100 * 0.3);
   }
 
   @media screen and (min-width: 990px) {
-    .section-header.scrolled-past-header .header--middle-left,
-    .section-header.scrolled-past-header .header--middle-center {
+    .section-header.header-compact .header--middle-left,
+    .section-header.header-compact .header--middle-center {
       column-gap: calc(1rem * {{ section.settings.scrolled_shrink }} / 100);
       transition: column-gap 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -254,12 +254,29 @@
     transition: padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .section-header.scrolled-past-header .header__menu {
+  .section-header.header-compact .header__menu {
     padding: 0 calc(1rem * {{ section.settings.scrolled_shrink }} / 100);
   }
 {%- endstyle -%}
 
 <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
+
+<script>
+  (function () {
+    // Eigener, schneller Trigger fürs Verkleinern (Logo/Schrift/Padding) — reagiert
+    // schon nach wenigen Pixeln, statt wie Shopifys eingebaute 'scrolled-past-header'-
+    // Klasse erst nach ca. der ganzen Header-Höhe.
+    var header = document.querySelector('.section-header');
+    if (!header) return;
+    var threshold = 12;
+    function update() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      header.classList.toggle('header-compact', scrollTop > threshold);
+    }
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+  })();
+</script>
 
 {%- if is_transparent_active -%}
   <script>
