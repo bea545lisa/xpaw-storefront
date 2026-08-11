@@ -109,6 +109,16 @@
     }
   }
 
+  {%- liquid
+    if section.settings.scrolled_style == 'dark'
+      assign scrolled_bg = 'rgba(20, 20, 20, 0.55)'
+      assign scrolled_fg = '255,255,255'
+    else
+      assign scrolled_bg = 'rgba(255, 255, 255, 0.65)'
+      assign scrolled_fg = '18,18,18'
+    endif
+  -%}
+
   {%- if section.settings.transparent_header -%}
     .section-header {
       position: absolute;
@@ -126,24 +136,26 @@
       background: transparent !important;
     }
 
+    .section-header:not(.scrolled-past-header) {
+      --color-foreground: 255,255,255;
+    }
+
     .section-header.scrolled-past-header {
       position: fixed;
       top: 0;
     }
   {%- endif -%}
 
-  {%- liquid
-    if section.settings.scrolled_style == 'dark'
-      assign scrolled_bg = 'rgba(20, 20, 20, 0.55)'
-    else
-      assign scrolled_bg = 'rgba(255, 255, 255, 0.65)'
-    endif
-  -%}
+  .section-header.scrolled-past-header {
+    --color-foreground: {{ scrolled_fg }};
+  }
 
   .section-header,
   .section-header .header-wrapper,
-  .section-header .header {
-    transition: top 0.35s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.35s ease, padding 0.35s cubic-bezier(0.4, 0, 0.2, 1), -webkit-backdrop-filter 0.35s ease, backdrop-filter 0.35s ease;
+  .section-header .header,
+  .section-header a,
+  .section-header svg {
+    transition: top 0.35s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.35s ease, padding 0.35s cubic-bezier(0.4, 0, 0.2, 1), -webkit-backdrop-filter 0.35s ease, backdrop-filter 0.35s ease, color 0.35s ease, fill 0.35s ease;
   }
 
   .section-header.scrolled-past-header {
