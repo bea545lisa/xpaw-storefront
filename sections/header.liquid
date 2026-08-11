@@ -34,7 +34,7 @@
     }
 
     .section-header.scrolled-past-header .header__heading-logo-wrapper {
-      width: 45%;
+      width: {{ section.settings.scrolled_shrink }}%;
     }
   {%- endif -%}
 
@@ -110,7 +110,7 @@
     }
 
     .scrolled-past-header .header__inline-menu .header__menu-item {
-      font-size: calc({{ section.settings.menu_font_size }}px * 0.7);
+      font-size: calc({{ section.settings.menu_font_size }}px * {{ section.settings.scrolled_shrink }} / 100);
     }
   {%- endif -%}
 
@@ -180,8 +180,8 @@
   }
 
   .section-header.scrolled-past-header .header {
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding-top: calc({{ section.settings.padding_top }}px * {{ section.settings.scrolled_shrink }} / 100 * 0.3);
+    padding-bottom: calc({{ section.settings.padding_bottom }}px * {{ section.settings.scrolled_shrink }} / 100 * 0.3);
   }
 {%- endstyle -%}
 
@@ -684,6 +684,17 @@
       "step": 1,
       "unit": "px",
       "default": 6
+    },
+    {
+      "type": "range",
+      "id": "scrolled_shrink",
+      "label": "Verkleinerung beim Scrollen (Leiste, Schrift, Logo)",
+      "info": "Prozentualer Zielwert, auf den Logo und Menü-Schrift beim Scrollen schrumpfen (z.B. 60 = 60% der Ausgangsgröße). Steuert auch, wie flach die Leiste wird.",
+      "min": 20,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "default": 55
     },
     {
       "type": "checkbox",
