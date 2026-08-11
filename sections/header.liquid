@@ -214,7 +214,12 @@
       // die eingebaute 'scrolled-past-header'-Klasse zu früh auslösen, da die
       // nur an der Höhe des Headers selbst hängt, nicht am Banner).
       function markPastBanner() {
-        var hero = document.querySelector('.banner');
+        var headerEl = document.querySelector('.section-header');
+        var hero = headerEl ? headerEl.nextElementSibling : null;
+        while (hero && (!hero.classList.contains('shopify-section') || hero.classList.contains('announcement-bar-section'))) {
+          hero = hero.nextElementSibling;
+        }
+        if (!hero) hero = document.querySelector('.banner');
         var targets = document.querySelectorAll('.section-header, .announcement-bar-section');
         if (!hero || !targets.length) return;
 
@@ -230,6 +235,7 @@
         update();
         window.addEventListener('scroll', update, { passive: true });
         window.addEventListener('resize', update);
+        window.addEventListener('load', update);
       }
 
       if (document.readyState === 'loading') {
