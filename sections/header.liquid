@@ -36,6 +36,15 @@
     .section-header.scrolled-past-header .header__heading-logo-wrapper {
       width: {{ section.settings.scrolled_shrink }}%;
     }
+
+    .section-header .header__heading-link {
+      transform-origin: left center;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .section-header.scrolled-past-header .header__heading-link {
+      transform: scale(calc({{ section.settings.scrolled_shrink }} / 100));
+    }
   {%- endif -%}
 
   {%- if section.settings.menu_type_desktop != "drawer" -%}
