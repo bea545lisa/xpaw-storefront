@@ -149,7 +149,7 @@
     }
 
     .section-header:not(.scrolled-past-header) {
-      --color-foreground: 255,255,255;
+      --color-foreground: var(--adaptive-color-foreground, 255,255,255);
     }
 
     .section-header.scrolled-past-header {
@@ -186,6 +186,62 @@
 {%- endstyle -%}
 
 <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
+
+{%- if section.settings.transparent_header and section.settings.adaptive_text_color -%}
+  <script>
+    (function () {
+      // Ermittelt die Helligkeit im oberen Bereich des ersten Banner-Bilds
+      // (dort, wo Header/Ankündigungsleiste transparent drüberliegen) und setzt
+      // die Textfarbe entsprechend hell/dunkel, bevor gescrollt wird.
+      function analyze() {
+        var img = document.querySelector('.banner__media img');
+        if (!img) return;
+
+        function sample() {
+          try {
+            var canvas = document.createElement('canvas');
+            var sampleWidth = 200;
+            var headerHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 100;
+            var scale = sampleWidth / img.naturalWidth;
+            var sampleHeight = Math.max(1, Math.round(headerHeight * scale));
+
+            canvas.width = sampleWidth;
+            canvas.height = sampleHeight;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, sampleWidth, sampleHeight);
+
+            var data = ctx.getImageData(0, 0, sampleWidth, sampleHeight).data;
+            var total = 0;
+            var count = 0;
+            for (var i = 0; i < data.length; i += 4) {
+              // Wahrgenommene Helligkeit (relative Luminanz)
+              total += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+              count++;
+            }
+            var brightness = total / count;
+            var fg = brightness < 130 ? '255,255,255' : '18,18,18';
+            document.documentElement.style.setProperty('--adaptive-color-foreground', fg);
+          } catch (e) {
+            // Bild von fremder Domain ohne CORS-Freigabe -> Canvas gesperrt.
+            // In dem Fall bleibt die weiße Standardfarbe erhalten.
+          }
+        }
+
+        if (img.complete && img.naturalWidth > 0) {
+          sample();
+        } else {
+          img.addEventListener('load', sample, { once: true });
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', analyze);
+      } else {
+        analyze();
+      }
+    })();
+  </script>
+{%- endif -%}
 
 {%- liquid
   for block in section.blocks
@@ -695,6 +751,13 @@
       "step": 5,
       "unit": "%",
       "default": 55
+    },
+    {
+      "type": "checkbox",
+      "id": "adaptive_text_color",
+      "default": false,
+      "label": "Textfarbe automatisch aus Banner-Bild ermitteln",
+      "info": "Prüft beim Laden die Helligkeit im oberen Bereich des ersten Banner-Bilds und wählt automatisch Weiß oder Dunkel für Text/Logo, solange Header transparent über dem Bild liegt."
     },
     {
       "type": "checkbox",
