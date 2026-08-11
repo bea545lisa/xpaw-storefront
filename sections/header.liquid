@@ -192,19 +192,40 @@
     transition: top 0.35s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.35s ease, padding 0.35s cubic-bezier(0.4, 0, 0.2, 1), -webkit-backdrop-filter 0.35s ease, backdrop-filter 0.35s ease, color 0.35s ease, fill 0.35s ease;
   }
 
-  {%- assign solid_class = 'scrolled-past-header' -%}
   {%- if section.settings.transparent_header -%}
-    {%- assign solid_class = 'header-past-banner' -%}
+    {#- Phase 1: sobald sticky, aber noch über dem Banner -> dunkel-verschwommen -#}
+    .section-header.scrolled-past-header:not(.header-past-banner) {
+      -webkit-backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
+      backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
+    }
+
+    .section-header.scrolled-past-header:not(.header-past-banner) .header-wrapper {
+      background: rgba(20, 20, 20, 0.55) !important;
+    }
+
+    .section-header.scrolled-past-header:not(.header-past-banner) {
+      --color-foreground: 255,255,255;
+    }
+
+    {#- Phase 2: Banner komplett durchgescrollt -> eingestellte Hell/Dunkel-Farbe -#}
+    .section-header.header-past-banner {
+      -webkit-backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
+      backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
+    }
+
+    .section-header.header-past-banner .header-wrapper {
+      background: {{ scrolled_bg }} !important;
+    }
+  {%- else -%}
+    .section-header.scrolled-past-header {
+      -webkit-backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
+      backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
+    }
+
+    .section-header.scrolled-past-header .header-wrapper {
+      background: {{ scrolled_bg }} !important;
+    }
   {%- endif -%}
-
-  .section-header.{{ solid_class }} {
-    -webkit-backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
-    backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
-  }
-
-  .section-header.{{ solid_class }} .header-wrapper {
-    background: {{ scrolled_bg }} !important;
-  }
 
   .section-header.scrolled-past-header .header {
     padding-top: calc({{ section.settings.padding_top }}px * {{ section.settings.scrolled_shrink }} / 100 * 0.3);
