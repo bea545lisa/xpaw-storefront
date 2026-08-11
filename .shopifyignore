@@ -13,6 +13,13 @@
 # gelöscht (kein Versionsverlauf auf diesem Plan verfügbar). Datei bleibt daher
 # konsequent hier drin, auch wenn das heißt: Übersetzungs-/Code-Änderungen an
 # Templates müssen manuell mit obigem Trick gepusht werden, NIE automatisch.
+#
+# ZWEITER VORFALL (2026-08-11): sections/header-group.json war NICHT in dieser
+# Liste — Editor-Einstellungen am Header/an der Ankündigungsleiste (Farbschema,
+# "Transparent anzeigen" etc.) gingen dadurch bei jedem Deploy verloren. Aus
+# demselben Grund gehören auch *-group.json-Dateien grundsätzlich hier rein.
 
 templates/*.json
 config/settings_data.json
+sections/header-group.json
+sections/footer-group.json
