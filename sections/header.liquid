@@ -98,6 +98,42 @@
       padding-bottom: {{ section.settings.padding_bottom }}px;
     }
   }
+
+  {%- if section.settings.transparent_header -%}
+    .section-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 10;
+      background: transparent;
+      border-bottom: none;
+    }
+
+    .section-header .header-wrapper {
+      background: transparent !important;
+    }
+
+    .section-header.scrolled-past-header {
+      position: fixed;
+    }
+  {%- endif -%}
+
+  .section-header.scrolled-past-header {
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .section-header.scrolled-past-header .header-wrapper {
+    background: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  .section-header.scrolled-past-header .header {
+    padding-top: {{ section.settings.padding_top | times: 0.35 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.35 | round: 0 }}px;
+    transition: padding 0.2s ease;
+  }
 {%- endstyle -%}
 
 <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
@@ -562,6 +598,13 @@
       ],
       "default": "on-scroll-up",
       "label": "t:sections.header.settings.sticky_header_type.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_header",
+      "default": false,
+      "label": "Transparent über erstem Abschnitt anzeigen",
+      "info": "Kopfzeile liegt ohne Hintergrund über dem Bild-Banner. Wird beim Scrollen automatisch niedriger, weiß und mit Weichzeichner hinterlegt. Funktioniert nur, wenn 'Sticky-Header-Typ' nicht auf 'Kein' steht."
     },
     {
       "type": "checkbox",
