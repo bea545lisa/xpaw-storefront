@@ -130,6 +130,19 @@
             <div class="banner__text rte {{ block.settings.text_style }}" {{ block.shopify_attributes }}>
               <p>{{ block.settings.text }}</p>
             </div>
+          {%- when 'logo_image' -%}
+            {%- if block.settings.logo != blank -%}
+              <div class="banner__logo banner__logo--{{ block.settings.logo_size }}" {{ block.shopify_attributes }}>
+                {{
+                  block.settings.logo
+                  | image_url: width: 600
+                  | image_tag:
+                    class: 'banner__logo-image',
+                    widths: '150, 300, 450, 600',
+                    sizes: '(min-width: 750px) 20vw, 40vw'
+                }}
+              </div>
+            {%- endif -%}
           {%- when 'buttons' -%}
             <div
               class="banner__buttons{% if block.settings.button_label_1 != blank and block.settings.button_label_2 != blank %} banner__buttons--multiple{% endif %}"
@@ -361,6 +374,29 @@
     }
   ],
   "blocks": [
+    {
+      "type": "logo_image",
+      "name": "Logo",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "Logo-Bild"
+        },
+        {
+          "type": "select",
+          "id": "logo_size",
+          "label": "Größe",
+          "options": [
+            { "value": "small", "label": "Klein" },
+            { "value": "medium", "label": "Mittel" },
+            { "value": "large", "label": "Groß" }
+          ],
+          "default": "medium"
+        }
+      ]
+    },
     {
       "type": "heading",
       "name": "t:sections.image-banner.blocks.heading.name",
