@@ -60,6 +60,23 @@
     .section-header.header-compact .header__heading {
       font-size: calc(1em * {{ section.settings.scrolled_shrink }} / 100);
     }
+
+    {%- if section.settings.text_instead_of_logo_on_banner -%}
+      {#- Solange transparent über dem Banner (noch nicht gescrollt): Shopname als
+         Text statt Logo-Bild zeigen, damit nicht 2x das Logo zu sehen ist
+         (einmal im Banner-Block, einmal im Header). Nach dem Scrollen: echtes Logo. -#}
+      .header__heading-text-fallback {
+        display: none;
+      }
+
+      .section-header.hero-overlay-active:not(.header-compact) .header__heading-logo-wrapper {
+        display: none;
+      }
+
+      .section-header.hero-overlay-active:not(.header-compact) .header__heading-text-fallback {
+        display: inline-block;
+      }
+    {%- endif -%}
   {%- endif -%}
 
   {%- if section.settings.menu_type_desktop != "drawer" -%}
@@ -456,6 +473,9 @@
                 preload: true
             }}
           </div>
+          {%- if section.settings.text_instead_of_logo_on_banner -%}
+            <span class="h2 header__heading-text-fallback">{{ shop.name }}</span>
+          {%- endif -%}
         {%- else -%}
           <span class="h2">{{ shop.name }}</span>
         {%- endif -%}
@@ -499,6 +519,9 @@
                 preload: true
             }}
           </div>
+          {%- if section.settings.text_instead_of_logo_on_banner -%}
+            <span class="h2 header__heading-text-fallback">{{ shop.name }}</span>
+          {%- endif -%}
         {%- else -%}
           <span class="h2">{{ shop.name }}</span>
         {%- endif -%}
@@ -864,6 +887,13 @@
       "default": false,
       "label": "Transparent über erstem Abschnitt anzeigen",
       "info": "Kopfzeile liegt ohne Hintergrund über dem Bild-Banner. Wird beim Scrollen niedriger, kleiner und mit Weichzeichner hinterlegt. Funktioniert nur, wenn 'Sticky-Header-Typ' nicht auf 'Kein' steht."
+    },
+    {
+      "type": "checkbox",
+      "id": "text_instead_of_logo_on_banner",
+      "default": true,
+      "label": "Shopname statt Logo, solange über dem Banner",
+      "info": "Praktisch, wenn im Bild-Banner selbst schon ein Logo-Block liegt — vermeidet doppeltes Logo. Sobald man scrollt, erscheint das echte Logo im Header."
     },
     {
       "type": "select",
