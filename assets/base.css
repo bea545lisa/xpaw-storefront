@@ -3614,14 +3614,16 @@ details-disclosure > details {
   padding: 0;
 }
 
-.theme-toggle__icon--dark {
+/* Zeigt das Icon des Modus, in den man wechseln WÜRDE (nicht den aktuellen):
+   hell = Mond sichtbar (Einladung zu dunkel), dunkel = Sonne sichtbar. */
+.theme-toggle__icon--light {
   display: none;
 }
 
 [data-theme="dark"] .theme-toggle__icon--light {
-  display: none;
+  display: flex;
 }
 
 [data-theme="dark"] .theme-toggle__icon--dark {
-  display: flex;
+  display: none;
 }
