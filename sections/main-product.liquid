@@ -202,14 +202,19 @@
                   {%- comment -%}
                     Zeigt ein Metafield der aktuell ausgewählten Variante (nicht des
                     Produkts) - aktualisiert sich live bei Variantenwechsel über
-                    assets/product-info.js (updateSourceFromDestination('VariantMetafield')).
+                    assets/product-info.js (updateSourceFromDestination('VariantMetafield-{{ block.id }}')).
+                    Die ID enthält block.id, da pro Produkt mehrere solcher Blöcke
+                    (z.B. Farbe, Kopfumfang) existieren können - ohne block.id würden
+                    alle dieselbe ID teilen und getElementById/querySelector würde immer
+                    nur den ersten Block treffen, die übrigen blieben beim Variantenwechsel
+                    für immer auf dem Stand des ersten Seitenaufrufs eingefroren.
                   {%- endcomment -%}
                   {%- liquid
                     assign vm_variant = product.selected_or_first_available_variant
                     assign vm_value = vm_variant.metafields.custom[block.settings.metafield_key]
                   -%}
                   <div
-                    id="VariantMetafield-{{ section.id }}"
+                    id="VariantMetafield-{{ block.id }}-{{ section.id }}"
                     class="product__meta-block quick-add-hidden{% if vm_value == blank %} hidden{% endif %}"
                     {{ block.shopify_attributes }}
                   >

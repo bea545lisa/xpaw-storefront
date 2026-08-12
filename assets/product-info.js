@@ -207,7 +207,18 @@ if (!customElements.get('product-info')) {
           updateSourceFromDestination('Inventory', ({ innerText }) => innerText === '');
           updateSourceFromDestination('Volume');
           updateSourceFromDestination('Price-Per-Item', ({ classList }) => classList.contains('hidden'));
-          updateSourceFromDestination('VariantMetafield', ({ innerText }) => innerText.trim() === '');
+          // Mehrere "Varianten-Metafield"-Blöcke (z.B. Farbe, Kopfumfang) können auf derselben
+          // Seite existieren - jeder hat seine eigene block.id im DOM-Id-Suffix. Alle im neu
+          // geladenen HTML gefundenen Blöcke einzeln aktualisieren, statt nur den ersten
+          // (sonst würden getElementById/querySelector immer nur einen einzigen treffen und
+          // die übrigen blieben beim Variantenwechsel für immer eingefroren).
+          const variantMetafieldPrefix = 'VariantMetafield-';
+          const variantMetafieldSuffix = `-${this.sectionId}`;
+          html.querySelectorAll(`[id^="${variantMetafieldPrefix}"]`).forEach(({ id }) => {
+            if (!id.endsWith(variantMetafieldSuffix)) return;
+            const blockId = id.slice(variantMetafieldPrefix.length, -variantMetafieldSuffix.length);
+            updateSourceFromDestination(`${variantMetafieldPrefix}${blockId}`, ({ innerText }) => innerText.trim() === '');
+          });
 
           this.updateQuantityRules(this.sectionId, html);
           this.querySelector(`#Quantity-Rules-${this.dataset.section}`)?.classList.remove('hidden');
