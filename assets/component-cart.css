@@ -189,8 +189,10 @@ cart-items {
 }
 
 .cart__checkout-button {
-  max-width: none;
+  max-width: 60%;
   width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .cart__ctas {
