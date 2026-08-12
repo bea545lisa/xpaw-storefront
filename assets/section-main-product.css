@@ -19,6 +19,37 @@ product-info {
   padding-left: 0;
 }
 
+@media screen and (max-width: 749px) {
+  slider-component.slider-mobile-gutter {
+    position: relative;
+    display: block;
+  }
+
+  slider-component.slider-mobile-gutter .slider-buttons {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0.5rem;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  slider-component.slider-mobile-gutter .slider-buttons .slider-button {
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.75);
+    border-radius: 50%;
+    color: rgba(18, 18, 18, 0.85);
+  }
+
+  slider-component.slider-mobile-gutter .slider-buttons .slider-counter {
+    display: none;
+  }
+}
+
 @media screen and (min-width: 750px) {
   .product__column-sticky {
     display: block;
