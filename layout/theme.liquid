@@ -7,6 +7,14 @@
     <meta name="theme-color" content="">
     <link rel="canonical" href="{{ canonical_url }}">
 
+    <script>
+      (function () {
+        var stored = localStorage.getItem('rexpaw:theme');
+        var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+
     {%- if settings.favicon != blank -%}
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
     {%- endif -%}
@@ -52,6 +60,7 @@
     <script src="{{ 'constants.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'pubsub.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'theme-toggle.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'cart-disclosure-modal.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'cart-disclosure-tooltip.js' | asset_url }}" defer="defer"></script>
     <script src="{{ 'details-disclosure.js' | asset_url }}" defer="defer"></script>
@@ -116,6 +125,34 @@
         --color-badge-border: {{ scheme.settings.text.red }},{{ scheme.settings.text.green }},{{ scheme.settings.text.blue }};
         --payment-terms-background-color: rgb({{ scheme.settings.background.rgb }});
       }
+      {% endfor %}
+
+      {%- comment -%}
+        Dark Mode: eine einheitliche dunkle Palette, die auf ALLE Farbschemata
+        angewendet wird, sobald [data-theme="dark"] aktiv ist - so bleibt jede
+        Section konsistent dunkel, unabhängig davon, welches Schema sie im
+        Theme-Editor zugewiesen bekommen hat.
+      {%- endcomment -%}
+      {% for scheme in settings.color_schemes -%}
+        {% if forloop.index == 1 -%}
+          [data-theme="dark"],
+        {%- endif %}
+        [data-theme="dark"] .color-{{ scheme.id }} {
+          --color-background: 18,18,18;
+          --gradient-background: 18,18,18;
+          --color-foreground: 237,237,237;
+          --color-background-contrast: 45,45,45;
+          --color-shadow: 0,0,0;
+          --color-button: 237,237,237;
+          --color-button-text: 18,18,18;
+          --color-secondary-button: 30,30,30;
+          --color-secondary-button-text: 237,237,237;
+          --color-link: 180,180,255;
+          --color-badge-foreground: 237,237,237;
+          --color-badge-background: 45,45,45;
+          --color-badge-border: 237,237,237;
+          --payment-terms-background-color: rgb(18,18,18);
+        }
       {% endfor %}
 
       {{ scheme_classes | prepend: 'body' }} {

@@ -275,6 +275,7 @@
     "header": {
       "announcement": "Ankündigung",
       "menu": "Menü",
+      "toggle_theme": "Dunklen/hellen Modus umschalten",
       "cart_count": {
         "one": "{{ count }} Artikel",
         "other": "{{ count }} Artikel"

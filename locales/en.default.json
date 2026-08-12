@@ -283,6 +283,7 @@
     "header": {
       "announcement": "Announcement",
       "menu": "Menu",
+      "toggle_theme": "Toggle dark/light mode",
       "cart_count": {
         "one": "{{ count }} item",
         "other": "{{ count }} items"
