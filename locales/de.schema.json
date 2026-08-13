@@ -694,6 +694,15 @@
           },
           "options__2": {
             "label": "2"
+          },
+          "options__3": {
+            "label": "3"
+          },
+          "options__4": {
+            "label": "4"
+          },
+          "options__5": {
+            "label": "5"
           }
         },
         "header_layout": {
@@ -1634,6 +1643,9 @@
           },
           "options__3": {
             "label": "Quadrat"
+          },
+          "options__4": {
+            "label": "Rund"
           }
         },
         "columns_desktop": {
@@ -1649,6 +1661,15 @@
           },
           "options__2": {
             "label": "2"
+          },
+          "options__3": {
+            "label": "3"
+          },
+          "options__4": {
+            "label": "4"
+          },
+          "options__5": {
+            "label": "5"
           }
         }
       }

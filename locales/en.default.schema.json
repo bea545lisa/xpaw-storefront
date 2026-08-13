@@ -705,6 +705,15 @@
           },
           "options__2": {
             "label": "2"
+          },
+          "options__3": {
+            "label": "3"
+          },
+          "options__4": {
+            "label": "4"
+          },
+          "options__5": {
+            "label": "5"
           }
         },
         "swipe_on_mobile": {
@@ -1947,6 +1956,9 @@
           },
           "options__3": {
             "label": "Square"
+          },
+          "options__4": {
+            "label": "Round"
           }
         },
         "columns_desktop": {
@@ -1962,6 +1974,15 @@
           },
           "options__2": {
             "label": "2"
+          },
+          "options__3": {
+            "label": "3"
+          },
+          "options__4": {
+            "label": "4"
+          },
+          "options__5": {
+            "label": "5"
           }
         }
       }
