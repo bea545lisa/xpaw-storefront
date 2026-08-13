@@ -605,3 +605,14 @@
 .card--round .card__content {
   text-align: center;
 }
+
+/* Kleinere Schrift und kein Pfeil-Icon bei runden Icon-Kacheln, sonst
+   bricht der Titel bei schmalen Spalten (viele Icons pro Reihe) um. */
+.card--round .card__heading {
+  font-size: 1.3rem;
+  line-height: 1.3;
+}
+
+.card--round .card__heading .icon-wrap {
+  display: none;
+}
