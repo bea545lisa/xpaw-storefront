@@ -248,7 +248,7 @@
                       {%- assign vms_field = mf[1] -%}
                       {%- unless vms_exclude contains vms_key or vms_field.type contains 'list' or vms_field.type contains 'reference' -%}
                         {%- if vms_field.value != blank -%}
-                          {%- assign vms_label = vms_key | replace: '_', ' ' | capitalize -%}
+                          {%- assign vms_label = vms_key | replace: '_', ' ' | downcase | capitalize -%}
                           {%- if vms_inline -%}
                             <span class="product__meta-inline-item">{{ vms_label }}: {{ vms_field.value }}</span>
                           {%- else -%}
@@ -320,7 +320,7 @@
                           {%- if cm_field.value != blank -%}
                             {%- assign cm_label = cm_labels[cm_key] -%}
                             {%- if cm_label == blank -%}
-                              {%- assign cm_label = cm_key | replace: '_', ' ' | capitalize -%}
+                              {%- assign cm_label = cm_key | replace: '_', ' ' | downcase | capitalize -%}
                             {%- endif -%}
                             <dt>{{ cm_label }}</dt>
                             <dd>{{ cm_field.value }}</dd>
