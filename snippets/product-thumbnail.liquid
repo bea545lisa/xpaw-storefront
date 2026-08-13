@@ -53,9 +53,11 @@
     endif
   endif
 
-  assign dark_media_light_class = ''
+  assign light_image_class = image_class
+  assign dark_image_class = image_class
   if dark_media
-    assign dark_media_light_class = ' product__media-image--light'
+    assign light_image_class = image_class | append: ' product__media-image--light'
+    assign dark_image_class = image_class | append: ' product__media-image--dark'
   endif
 -%}
 
@@ -96,7 +98,7 @@
         media.preview_image
         | image_url: width: 1946
         | image_tag:
-          class: image_class | append: dark_media_light_class,
+          class: light_image_class,
           loading: lazy,
           sizes: sizes,
           widths: '246, 493, 600, 713, 823, 990, 1100, 1206, 1346, 1426, 1646, 1946'
@@ -106,7 +108,7 @@
           dark_media
           | image_url: width: 1946
           | image_tag:
-            class: image_class | append: ' product__media-image--dark',
+            class: dark_image_class,
             loading: lazy,
             sizes: sizes,
             widths: '246, 493, 600, 713, 823, 990, 1100, 1206, 1346, 1426, 1646, 1946',
