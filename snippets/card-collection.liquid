@@ -23,6 +23,11 @@
   if ratio == 0 or ratio == null
     assign ratio = 1
   endif
+  assign card_round = false
+  if media_aspect_ratio == 'round'
+    assign card_round = true
+    assign ratio = 1
+  endif
   assign card_color_scheme = settings.card_color_scheme
   assign card_style = settings.card_style
   if wrapper_class == null or wrapper_class == 'none'
@@ -40,6 +45,7 @@
       {% if card_style == 'card' %} color-{{ card_color_scheme }} gradient{% endif %}
       {% if extend_height %} card--extend-height{% endif %}
       {% if card_collection.featured_image == nil and card_style == 'card' %} ratio{% endif %}
+      {% if card_round %} card--round{% endif %}
     "
     style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
   >

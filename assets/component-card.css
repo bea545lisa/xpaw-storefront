@@ -593,3 +593,15 @@
     clip-path: polygon(var(--shape--blob-5));
   }
 }
+
+/* Runde Kollektions-Icons (media_aspect_ratio: round) */
+.card--round .card__inner,
+.card--round .card__media,
+.card--round .card__media .media {
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.card--round .card__content {
+  text-align: center;
+}
