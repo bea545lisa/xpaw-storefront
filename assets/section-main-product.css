@@ -1618,3 +1618,11 @@ a.product__text {
   content: '\00b7';
   margin: 0 0.6rem;
 }
+
+/* Weniger Abstand, wenn direkt ein Meta-Block vor der Beschreibung steht
+   (dessen 1.5rem Abstand + die 2.5rem der Beschreibung addieren sich sonst,
+   da .product__info-container Flex ist und Margins nicht kollabieren). */
+.product__info-container > .product__meta-block + .product__description,
+.product__info-container > .product__accordion + .product__description {
+  margin-top: 1.2rem;
+}
