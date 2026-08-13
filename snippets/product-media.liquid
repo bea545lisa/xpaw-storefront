@@ -22,12 +22,21 @@
     assign dark_light_ids = product.metafields.custom.dark_mode_images_light_ids.value
     if dark_images.size > 0 and dark_light_ids.size > 0
       assign media_id_str = media.id | append: ''
+      assign dark_match_index = -1
       for light_id in dark_light_ids
         if light_id == media_id_str
-          assign dark_media = dark_images[forloop.index0]
+          assign dark_match_index = forloop.index0
           break
         endif
       endfor
+      if dark_match_index > -1
+        for candidate in dark_images
+          if forloop.index0 == dark_match_index
+            assign dark_media = candidate
+            break
+          endif
+        endfor
+      endif
     endif
   -%}
   <img
