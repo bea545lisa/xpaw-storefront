@@ -1617,3 +1617,13 @@ a.product__text {
   display: block;
   margin-top: 0.6rem;
 }
+
+/* Weniger Abstand zwischen Absätzen in der Beschreibung (nur Margin,
+   line-height/Zeilenabstand innerhalb eines Absatzes bleibt unverändert). */
+.product__description p {
+  margin: 0 0 0.6rem;
+}
+
+.product__description p:last-child {
+  margin-bottom: 0;
+}
