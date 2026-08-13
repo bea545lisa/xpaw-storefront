@@ -2133,6 +2133,15 @@
             "exclude_keys": {
               "label": "Excluded keys",
               "info": "Comma-separated list of metafield keys that should NOT be shown here"
+            },
+            "display_style": {
+              "label": "Display",
+              "options__1": {
+                "label": "Stacked"
+              },
+              "options__2": {
+                "label": "Inline (single line)"
+              }
             }
           }
         },
