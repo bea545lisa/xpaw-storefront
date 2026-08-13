@@ -5,7 +5,12 @@
   - card_collection: {Object} Collection Liquid object
   - media_aspect_ratio: {String} Size of the product image card. Values are "square" and "portrait". Default is "square" (optional)
   - columns: {Number}
+  - columns_desktop: {Number} the section's configured desktop column count - bei
+    "round"-Bildformat wird ab 5 Spalten automatisch das Pfeil-Icon ausgeblendet
+    und die Schrift verkleinert, damit der Titel nicht umbricht (optional)
   - extend_height: {Boolean} Card height extends to available container space. Default: false (optional)
+  - is_current: {Boolean} hebt die Karte hervor (fett + Umrandung), z.B. wenn sie
+    die gerade angezeigte Kollektion repräsentiert (optional)
   - wrapper_class: {String} Wrapper class for card (optional)
   - placeholder_image: {String} Placeholder image when collection is empty (optional)
 
@@ -24,9 +29,15 @@
     assign ratio = 1
   endif
   assign card_round = false
+  assign card_round_compact = false
   if media_aspect_ratio == 'round'
     assign card_round = true
     assign ratio = 1
+    # Ab 5 Spalten wird's pro Kachel zu eng für den Titel + Pfeil-Icon -
+    # bei wenigen Spalten (großzügiger Platz) bleibt der Pfeil sichtbar.
+    if columns_desktop > 4
+      assign card_round_compact = true
+    endif
   endif
   assign card_color_scheme = settings.card_color_scheme
   assign card_style = settings.card_style
@@ -46,8 +57,10 @@
       {% if extend_height %} card--extend-height{% endif %}
       {% if card_collection.featured_image == nil and card_style == 'card' %} ratio{% endif %}
       {% if card_round %} card--round{% endif %}
+      {% if card_round_compact %} card--round-compact{% endif %}
+      {% if is_current %} card--current{% endif %}
     "
-    style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
+    style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;{% if card_round %} --round-columns: {{ columns_desktop | default: 4 }};{% endif %}"
   >
     <div
       class="card__inner {% if card_style == 'standard' %}color-{{ card_color_scheme }} gradient{% endif %}{% if card_collection.featured_image or card_style == 'standard' %} ratio{% endif %}"

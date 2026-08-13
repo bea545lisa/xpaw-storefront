@@ -606,13 +606,34 @@
   text-align: center;
 }
 
-/* Kleinere Schrift und kein Pfeil-Icon bei runden Icon-Kacheln, sonst
-   bricht der Titel bei schmalen Spalten (viele Icons pro Reihe) um. */
+/* Schriftgröße bei runden Icon-Kacheln skaliert stufenlos mit der
+   Spaltenzahl (--round-columns, gesetzt in card-collection.liquid) - bei
+   wenigen Spalten (viel Platz pro Kachel) große Schrift, bei vielen Spalten
+   automatisch kleiner. clamp() verhindert zu große/zu kleine Extreme. */
 .card--round .card__heading {
-  font-size: 1.3rem;
+  font-size: clamp(1.2rem, calc(2.6rem - (var(--round-columns, 4) * 0.14rem)), 2.6rem);
   line-height: 1.3;
 }
 
-.card--round .card__heading .icon-wrap {
+/* Pfeil-Icon nur bei VIELEN Spalten ausblenden (ab 5, siehe
+   card_round_compact in card-collection.liquid) - bei wenigen Spalten
+   bleibt er sichtbar, da genug Platz vorhanden ist. */
+.card--round-compact .card__heading .icon-wrap {
   display: none;
+}
+
+/* Aktuelle Kollektion (z.B. Icon-Leiste über einer Kollektionsseite)
+   hervorheben: fetter Titel + Umrandung um die runde/eckige Kachel. */
+.card--current .card__heading {
+  font-weight: 700;
+}
+
+.card--current.card--round .card__inner {
+  outline: 0.2rem solid rgb(var(--color-foreground));
+  outline-offset: 0.4rem;
+}
+
+.card--current:not(.card--round) .card__inner {
+  outline: 0.2rem solid rgb(var(--color-foreground));
+  outline-offset: -0.2rem;
 }
