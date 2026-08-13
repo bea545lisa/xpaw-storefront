@@ -1658,3 +1658,9 @@ a.product__text {
 .product__description p:last-child {
   margin-bottom: 0;
 }
+
+/* Mehr Abstand nach den Warenkorb-/Checkout-Buttons zum folgenden Text
+   (Beschreibung, Meta-Blöcke etc.), statt der generischen 2.5rem. */
+.product__info-container .product-form {
+  margin-bottom: 3.5rem;
+}
