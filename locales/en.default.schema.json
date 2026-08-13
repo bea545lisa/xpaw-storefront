@@ -669,7 +669,7 @@
         },
          "header_layout": {
         "content": "Layout"
-        },        
+        },
         "image_ratio": {
           "label": "Image ratio",
           "options__1": {
@@ -680,6 +680,9 @@
           },
           "options__3": {
             "label": "Square"
+          },
+          "options__4": {
+            "label": "Round"
           }
         },
         "columns_desktop": {

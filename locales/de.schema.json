@@ -666,6 +666,9 @@
           },
           "options__3": {
             "label": "Quadrat"
+          },
+          "options__4": {
+            "label": "Rund"
           }
         },
         "swipe_on_mobile": {
