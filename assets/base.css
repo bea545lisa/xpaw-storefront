@@ -3701,3 +3701,10 @@ details-disclosure > details {
 [data-theme="dark"] .product__media-image--dark {
   display: block;
 }
+
+/* Sprach-/Länder-Dropdown im Dark Mode überall dunkel, nicht das ererbte
+   helle Schema-Weiß (Header, Menü-Drawer, Footer). */
+[data-theme="dark"] .disclosure__list-wrapper {
+  background-color: rgb(18, 18, 18) !important;
+  border-color: rgba(237, 237, 237, 0.15) !important;
+}
