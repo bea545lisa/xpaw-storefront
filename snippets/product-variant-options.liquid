@@ -41,6 +41,24 @@
     elsif custom_swatch_value.imageUrl
       assign custom_image_url = custom_swatch_value.imageUrl
       assign swatch_value = 'url(' | append: custom_image_url | append: ')'
+    elsif custom_swatch_value.colors and custom_swatch_value.colors.size > 1
+      # Mehrfarben-Swatch (z.B. "türkis/beige", siehe rexpaw-admin) - als Farbkreis-Segmente
+      # per conic-gradient darstellen, ein Segment pro Farbe.
+      assign color_count = custom_swatch_value.colors.size
+      assign gradient_stops = ''
+      for c in custom_swatch_value.colors
+        assign start_pct = forloop.index0 | times: 100 | divided_by: color_count
+        assign end_index = forloop.index0 | plus: 1
+        assign end_pct = end_index | times: 100 | divided_by: color_count
+        assign stop = c | append: ' ' | append: start_pct | append: '% ' | append: end_pct | append: '%'
+        if forloop.first
+          assign gradient_stops = stop
+        else
+          assign gradient_stops = gradient_stops | append: ', ' | append: stop
+        endif
+      endfor
+      assign custom_color = 'conic-gradient(' | append: gradient_stops | append: ')'
+      assign swatch_value = custom_color
     elsif custom_swatch_value.color
       assign custom_color = custom_swatch_value.color
       assign swatch_value = custom_color

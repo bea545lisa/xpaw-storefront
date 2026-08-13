@@ -78,6 +78,23 @@
                 assign selected_custom_swatch = custom_swatches_all[option.name][option.selected_value.name]
                 assign selected_custom_image_url = selected_custom_swatch.imageUrl
                 assign selected_custom_color = selected_custom_swatch.color
+                if selected_custom_swatch.colors and selected_custom_swatch.colors.size > 1
+                  # Mehrfarben-Swatch - gleiche conic-gradient-Logik wie in product-variant-options.liquid
+                  assign sc_count = selected_custom_swatch.colors.size
+                  assign sc_stops = ''
+                  for c in selected_custom_swatch.colors
+                    assign sc_start = forloop.index0 | times: 100 | divided_by: sc_count
+                    assign sc_end_index = forloop.index0 | plus: 1
+                    assign sc_end = sc_end_index | times: 100 | divided_by: sc_count
+                    assign sc_stop = c | append: ' ' | append: sc_start | append: '% ' | append: sc_end | append: '%'
+                    if forloop.first
+                      assign sc_stops = sc_stop
+                    else
+                      assign sc_stops = sc_stops | append: ', ' | append: sc_stop
+                    endif
+                  endfor
+                  assign selected_custom_color = 'conic-gradient(' | append: sc_stops | append: ')'
+                endif
               -%}
               <span
                 data-selected-value
