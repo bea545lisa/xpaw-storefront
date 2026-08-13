@@ -3072,6 +3072,12 @@ details-disclosure > details {
   background-color: rgb(var(--color-background));
 }
 
+/* Im Dark Mode wirkt der helle (foreground-basierte) Bilderrahmen als
+   auffälliger weißer Ring auf dunklem Grund - deutlich subtiler machen. */
+[data-theme="dark"] .global-media-settings {
+  border-color: rgba(var(--color-foreground), 0.08);
+}
+
 .global-media-settings:after {
   content: '';
   position: absolute;
