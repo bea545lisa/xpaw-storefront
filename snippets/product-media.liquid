@@ -5,6 +5,7 @@
   - media: {Object} Product Media object
   - loop: {Boolean} Enable video looping (optional)
   - variant_image: {Boolean} Whether or not media is associated with a variant
+  - position: {Number} Position of the media within product.media (optional, used to match a dark-mode alternate image)
 
   Usage:
   {% render 'product-media',
@@ -15,8 +16,16 @@
 {% endcomment %}
 
 {%- if media.media_type == 'image' -%}
+  {%- liquid
+    assign dark_media = null
+    assign dark_images = product.metafields.custom.dark_mode_images.value
+    if dark_images.size > 0 and position
+      assign dark_index = position | minus: 1
+      assign dark_media = dark_images[dark_index]
+    endif
+  -%}
   <img
-    class="global-media-settings global-media-settings--no-shadow{% if variant_image %} product__media-item--variant{% endif %}"
+    class="global-media-settings global-media-settings--no-shadow{% if dark_media %} product__media-image--light{% endif %}{% if variant_image %} product__media-item--variant{% endif %}"
     srcset="
       {%- if media.preview_image.width >= 550 -%}{{ media.preview_image | image_url: width: 550 }} 550w,{%- endif -%}
       {%- if media.preview_image.width >= 1100 -%}{{ media.preview_image | image_url: width: 1100 }} 1100w,{%- endif -%}
@@ -36,6 +45,26 @@
     height="{{ 1100 | divided_by: media.preview_image.aspect_ratio | ceil }}"
     data-media-id="{{ media.id }}"
   >
+  {%- if dark_media -%}
+    <img
+      class="global-media-settings global-media-settings--no-shadow product__media-image--dark{% if variant_image %} product__media-item--variant{% endif %}"
+      srcset="
+        {%- if dark_media.width >= 550 -%}{{ dark_media | image_url: width: 550 }} 550w,{%- endif -%}
+        {%- if dark_media.width >= 1100 -%}{{ dark_media | image_url: width: 1100 }} 1100w,{%- endif -%}
+        {%- if dark_media.width >= 1445 -%}{{ dark_media | image_url: width: 1445 }} 1445w,{%- endif -%}
+        {%- if dark_media.width >= 1680 -%}{{ dark_media | image_url: width: 1680 }} 1680w,{%- endif -%}
+        {%- if dark_media.width >= 2048 -%}{{ dark_media | image_url: width: 2048 }} 2048w,{%- endif -%}
+        {{ dark_media | image_url }} {{ dark_media.width }}w
+      "
+      sizes="(min-width: 750px) calc(100vw - 22rem), 1100px"
+      src="{{ dark_media | image_url: width: 1445 }}"
+      alt="{{ media.alt | escape }}"
+      loading="lazy"
+      width="1100"
+      height="{{ 1100 | divided_by: dark_media.aspect_ratio | ceil }}"
+      data-media-id="{{ media.id }}"
+    >
+  {%- endif -%}
 {%- else -%}
   {%- if media.media_type == 'model' -%}
     <div class="product-media-modal__model" data-media-id="{{ media.id }}">

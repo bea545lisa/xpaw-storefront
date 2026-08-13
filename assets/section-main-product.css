@@ -1533,13 +1533,11 @@ a.product__text {
 
 .product__meta-list dt {
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.05rem;
 }
 
 .product__meta-list dd {
   margin: 0;
-  text-transform: uppercase;
   font-weight: 400;
 }
 
@@ -1646,11 +1644,12 @@ a.product__text {
 .product__description br {
   content: '';
   display: block;
-  margin-top: 0.6rem;
+  padding-top: 0.3rem;
 }
 
-/* Weniger Abstand zwischen Absätzen in der Beschreibung (nur Margin,
-   line-height/Zeilenabstand innerhalb eines Absatzes bleibt unverändert). */
+/* Weniger Abstand zwischen Absätzen in der Beschreibung, die per <br><br>
+   statt echten <p>-Tags getrennt sind (padding statt margin, damit sich
+   die Abstände zweier aufeinanderfolgender <br> nicht wegkollabieren). */
 .product__description p {
   margin: 0 0 0.6rem;
 }

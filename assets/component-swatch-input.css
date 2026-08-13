@@ -24,6 +24,13 @@
   outline: 0.1rem solid rgb(var(--color-foreground));
 }
 
+/* Dark Mode: Auswahl-Umrandung etwas kräftiger, damit sie klar als
+   ausgewählt erkennbar ist (dünne 0.1rem-Linie ging auf Schwarz unter). */
+[data-theme="dark"] .swatch-input__input:active + .swatch-input__label,
+[data-theme="dark"] .swatch-input__input:checked + .swatch-input__label {
+  outline-width: 0.2rem;
+}
+
 /* Hover state */
 .swatch-input__input + .swatch-input__label:hover,
 .swatch-input__input:hover + .swatch-input__label {
