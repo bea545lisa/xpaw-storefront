@@ -1508,6 +1508,8 @@ a.product__text {
 
 .product__meta-list dd {
   margin: 0;
+  text-transform: uppercase;
+  font-weight: 400;
 }
 
 .product__custom-metafields dl {
@@ -1583,6 +1585,8 @@ a.product__text {
   margin: 0;
   font-size: 1.2rem;
   opacity: 0.75;
+  text-transform: uppercase;
+  font-weight: 400;
 }
 
 .product__meta-inline-label {
