@@ -3686,3 +3686,18 @@ details-disclosure > details {
 [data-theme="dark"] .header__icon--theme-toggle .theme-toggle__icon--dark {
   display: none;
 }
+
+/* Produktbilder mit separater Dark-Mode-Variante (Metafield
+   custom.dark_mode_images): standardmäßig wird das helle Bild gezeigt,
+   im Dark Mode blendet CSS auf die dunkle Variante um. */
+.product__media-image--dark {
+  display: none;
+}
+
+[data-theme="dark"] .product__media-image--light {
+  display: none;
+}
+
+[data-theme="dark"] .product__media-image--dark {
+  display: block;
+}

@@ -15,6 +15,12 @@
   border-radius: var(--swatch--border-radius);
 }
 
+/* Dark Mode: Umrandung deutlich sichtbarer machen, sonst verschwimmt sie
+   auf schwarzem Hintergrund (0.15 Deckkraft war dort kaum erkennbar). */
+[data-theme="dark"] .swatch {
+  border-color: rgba(var(--color-foreground), 0.45);
+}
+
 .swatch--square {
   --swatch--border-radius: var(--swatch-input--border-radius, 0.2rem);
 }

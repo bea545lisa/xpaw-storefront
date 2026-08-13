@@ -43,6 +43,20 @@
   if media.media_type == 'image'
     assign image_class = 'image-magnify-' | append: section.settings.image_zoom
   endif
+
+  assign dark_media = null
+  if media.media_type == 'image'
+    assign dark_images = product.metafields.custom.dark_mode_images.value
+    if dark_images.size > 0
+      assign dark_index = position | minus: 1
+      assign dark_media = dark_images[dark_index]
+    endif
+  endif
+
+  assign dark_media_light_class = ''
+  if dark_media
+    assign dark_media_light_class = ' product__media-image--light'
+  endif
 -%}
 
 {%- capture sizes -%}
@@ -77,16 +91,28 @@
       {% endcase %}
     </span>
     {%- render 'loading-spinner' -%}
-    <div class="product__media media media--transparent">
+    <div class="product__media media media--transparent{% if dark_media %} product__media--has-dark{% endif %}">
       {{
         media.preview_image
         | image_url: width: 1946
         | image_tag:
-          class: image_class,
+          class: image_class | append: dark_media_light_class,
           loading: lazy,
           sizes: sizes,
           widths: '246, 493, 600, 713, 823, 990, 1100, 1206, 1346, 1426, 1646, 1946'
       }}
+      {%- if dark_media -%}
+        {{
+          dark_media
+          | image_url: width: 1946
+          | image_tag:
+            class: image_class | append: ' product__media-image--dark',
+            loading: lazy,
+            sizes: sizes,
+            widths: '246, 493, 600, 713, 823, 990, 1100, 1206, 1346, 1426, 1646, 1946',
+            alt: media.alt
+        }}
+      {%- endif -%}
     </div>
     <button
       class="product__media-toggle quick-add-hidden product__media-zoom-{{ section.settings.image_zoom }}"
