@@ -1605,3 +1605,16 @@ a.product__text {
 .product__info-container > variant-selects + .product__accordion {
   margin-top: 2.4rem;
 }
+
+/* Inline-Darstellung für Varianten-Metafields (display_style: inline):
+   eine Zeile, kleinere Schrift, mit "·" getrennt statt gestapelter Liste. */
+.product__meta-inline {
+  margin: 0;
+  font-size: 1.2rem;
+  opacity: 0.75;
+}
+
+.product__meta-inline-item:not(:last-child)::after {
+  content: '\00b7';
+  margin: 0 0.6rem;
+}

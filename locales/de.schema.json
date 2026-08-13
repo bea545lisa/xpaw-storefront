@@ -2068,6 +2068,15 @@
             "exclude_keys": {
               "label": "Auszuschließende Keys",
               "info": "Kommagetrennte Liste von Metafield-Keys, die hier NICHT angezeigt werden sollen"
+            },
+            "display_style": {
+              "label": "Anzeige",
+              "options__1": {
+                "label": "Gestapelt"
+              },
+              "options__2": {
+                "label": "Inline (eine Zeile)"
+              }
             }
           }
         },
