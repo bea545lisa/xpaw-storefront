@@ -225,6 +225,41 @@
                       </dl>
                     {%- endif -%}
                   </div>
+                {%- when 'variant_metafields' -%}
+                  {%- comment -%}
+                    Zeigt automatisch ALLE Metafields der aktuell gewählten Variante,
+                    ohne dass pro Feld ein eigener Block mit Key konfiguriert werden
+                    muss (im Gegensatz zu 'variant_metafield'). Nutzt dieselbe
+                    ID-Konvention (VariantMetafield-{block.id}-{section.id}) und wird
+                    dadurch automatisch von der bestehenden Live-Update-Logik in
+                    assets/product-info.js mit abgedeckt.
+                  {%- endcomment -%}
+                  {%- liquid
+                    assign vms_variant = product.selected_or_first_available_variant
+                    assign vms_exclude = block.settings.exclude_keys | split: ','
+                  -%}
+                  {%- capture vms_rows -%}
+                    {%- for mf in vms_variant.metafields.custom -%}
+                      {%- assign vms_key = mf[0] -%}
+                      {%- assign vms_field = mf[1] -%}
+                      {%- unless vms_exclude contains vms_key or vms_field.type contains 'list' or vms_field.type contains 'reference' -%}
+                        {%- if vms_field.value != blank -%}
+                          {%- assign vms_label = vms_key | replace: '_', ' ' | capitalize -%}
+                          <dt>{{ vms_label }}</dt>
+                          <dd>{{ vms_field.value }}</dd>
+                        {%- endif -%}
+                      {%- endunless -%}
+                    {%- endfor -%}
+                  {%- endcapture -%}
+                  <div
+                    id="VariantMetafield-{{ block.id }}-{{ section.id }}"
+                    class="product__meta-block quick-add-hidden{% if vms_rows == blank %} hidden{% endif %}"
+                    {{ block.shopify_attributes }}
+                  >
+                    {%- if vms_rows != blank -%}
+                      <dl class="product__meta-list">{{ vms_rows }}</dl>
+                    {%- endif -%}
+                  </div>
                 {%- when 'sustainability' -%}
                   {%- if product.metafields.custom.nachhaltigkeit != blank -%}
                     <div class="product__meta-block quick-add-hidden" {{ block.shopify_attributes }}>
@@ -902,6 +937,18 @@
           "type": "text",
           "id": "label",
           "label": "t:sections.main-product.blocks.variant_metafield.settings.label.label"
+        }
+      ]
+    },
+    {
+      "type": "variant_metafields",
+      "name": "t:sections.main-product.blocks.variant_metafields.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "exclude_keys",
+          "label": "t:sections.main-product.blocks.variant_metafields.settings.exclude_keys.label",
+          "info": "t:sections.main-product.blocks.variant_metafields.settings.exclude_keys.info"
         }
       ]
     },

@@ -3615,15 +3615,17 @@ details-disclosure > details {
 }
 
 /* Zeigt das Icon des Modus, in den man wechseln WÜRDE (nicht den aktuellen):
-   hell = Mond sichtbar (Einladung zu dunkel), dunkel = Sonne sichtbar. */
-.theme-toggle__icon--light {
+   hell = Mond sichtbar (Einladung zu dunkel), dunkel = Sonne sichtbar.
+   Höhere Spezifität nötig (.header__icon--theme-toggle vorangestellt),
+   sonst gewinnt die allgemeine Regel ".header__icon span { display: flex }". */
+.header__icon--theme-toggle .theme-toggle__icon--light {
   display: none;
 }
 
-[data-theme="dark"] .theme-toggle__icon--light {
+[data-theme="dark"] .header__icon--theme-toggle .theme-toggle__icon--light {
   display: flex;
 }
 
-[data-theme="dark"] .theme-toggle__icon--dark {
+[data-theme="dark"] .header__icon--theme-toggle .theme-toggle__icon--dark {
   display: none;
 }
