@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'rexpaw:theme';
+const THEME_STORAGE_KEY = 'rexpaw:theme';
 
 document.addEventListener('DOMContentLoaded', () => {
   const toggle = document.querySelector('[data-theme-toggle]');
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.documentElement.setAttribute('data-theme', next);
 
     try {
-      localStorage.setItem(STORAGE_KEY, next);
+      localStorage.setItem(THEME_STORAGE_KEY, next);
     } catch (error) {
       // localStorage unavailable (private browsing quota etc.) - fail silently
     }

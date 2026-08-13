@@ -1,9 +1,9 @@
-const STORAGE_KEY = 'rexpaw:recently-viewed';
+const RECENTLY_VIEWED_STORAGE_KEY = 'rexpaw:recently-viewed';
 const MAX_STORED = 12;
 
 function getStoredHandles() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(RECENTLY_VIEWED_STORAGE_KEY);
     return raw ? JSON.parse(raw) : [];
   } catch (error) {
     return [];
@@ -17,7 +17,7 @@ function recordProductView(handle) {
   handles.unshift(handle);
 
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(handles.slice(0, MAX_STORED)));
+    localStorage.setItem(RECENTLY_VIEWED_STORAGE_KEY, JSON.stringify(handles.slice(0, MAX_STORED)));
   } catch (error) {
     // localStorage unavailable (private browsing quota etc.) - fail silently
   }
