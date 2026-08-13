@@ -72,11 +72,19 @@
           >
             {%- assign placeholder_image_index = forloop.index0 | modulo: 4 | plus: 1 -%}
             {%- assign placeholder_image = 'collection-apparel-' | append: placeholder_image_index -%}
+            {%- comment -%}
+              Hebt die Kachel hervor, wenn wir gerade auf der Seite genau dieser
+              Kollektion sind (z.B. Icon-Leiste über einer Kollektionsseite).
+              `collection` (ohne Präfix) ist Shopifys globales Objekt für die
+              aktuell angezeigte Kollektion - auf anderen Seiten leer/blank.
+            {%- endcomment -%}
             {% render 'card-collection',
               card_collection: block.settings.collection,
               media_aspect_ratio: section.settings.image_ratio,
               columns: columns,
-              placeholder_image: placeholder_image
+              columns_desktop: section.settings.columns_desktop,
+              placeholder_image: placeholder_image,
+              is_current: block.settings.collection == collection
             %}
           </li>
         {%- endfor -%}

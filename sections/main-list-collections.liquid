@@ -39,7 +39,8 @@
           {% render 'card-collection',
             card_collection: collection,
             media_aspect_ratio: section.settings.image_ratio,
-            columns: 3
+            columns: 3,
+            columns_desktop: section.settings.columns_desktop
           %}
         </li>
       {%- endfor -%}
