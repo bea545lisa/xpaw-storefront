@@ -1608,8 +1608,12 @@ a.product__text {
   margin-top: 1.2rem;
 }
 
-/* Weniger Zeilenabstand in der Beschreibung, damit <br>-Umbrüche nicht so
-   viel Platz einnehmen (nur hier, nicht global für den Rest der Seite). */
-.product__description {
-  line-height: 1.5;
+/* Nur der Abstand NACH einem <br>-Umbruch wird verkleinert, nicht die
+   normale Zeilenhöhe von umgebrochenem Fließtext (line-height allein
+   würde beides gleichzeitig betreffen, das war zu viel). <br> wird dafür
+   zu einem Block-Element mit eigener, fester Höhe gemacht. */
+.product__description br {
+  content: '';
+  display: block;
+  margin-top: 0.6rem;
 }
