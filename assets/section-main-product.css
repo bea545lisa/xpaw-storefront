@@ -1607,3 +1607,9 @@ a.product__text {
 .product__info-container > .product__accordion + .product__description {
   margin-top: 1.2rem;
 }
+
+/* Weniger Zeilenabstand in der Beschreibung, damit <br>-Umbrüche nicht so
+   viel Platz einnehmen (nur hier, nicht global für den Rest der Seite). */
+.product__description {
+  line-height: 1.5;
+}
