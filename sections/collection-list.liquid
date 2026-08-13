@@ -77,14 +77,26 @@
               Kollektion sind (z.B. Icon-Leiste über einer Kollektionsseite).
               `collection` (ohne Präfix) ist Shopifys globales Objekt für die
               aktuell angezeigte Kollektion - auf anderen Seiten leer/blank.
+              Vergleich über .handle statt direktem Objektvergleich (==), da
+              Shopify-Objektgleichheit bei Collections nicht zuverlässig war
+              (alle Kacheln wurden fälschlich als "aktuell" markiert).
+              Zusätzliche collection != blank-Prüfung verhindert, dass auf
+              Seiten ohne aktuelle Kollektion (z.B. Startseite) leere Handles
+              (""=="") fälschlich als Treffer zählen.
             {%- endcomment -%}
+            {%- liquid
+              assign is_current_collection = false
+              if collection != blank and block.settings.collection.handle == collection.handle
+                assign is_current_collection = true
+              endif
+            -%}
             {% render 'card-collection',
               card_collection: block.settings.collection,
               media_aspect_ratio: section.settings.image_ratio,
               columns: columns,
               columns_desktop: section.settings.columns_desktop,
               placeholder_image: placeholder_image,
-              is_current: block.settings.collection == collection
+              is_current: is_current_collection
             %}
           </li>
         {%- endfor -%}
