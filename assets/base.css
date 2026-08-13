@@ -1004,6 +1004,41 @@ summary::-webkit-details-marker {
 }
 
 @media screen and (min-width: 990px) {
+  .grid--15-col-desktop .grid__item {
+    width: calc(6.66% - var(--grid-desktop-horizontal-spacing) * 14 / 15);
+    max-width: calc(6.66% - var(--grid-desktop-horizontal-spacing) * 14 / 15);
+  }
+
+  .grid--14-col-desktop .grid__item {
+    width: calc(7.14% - var(--grid-desktop-horizontal-spacing) * 13 / 14);
+    max-width: calc(7.14% - var(--grid-desktop-horizontal-spacing) * 13 / 14);
+  }
+
+  .grid--13-col-desktop .grid__item {
+    width: calc(7.69% - var(--grid-desktop-horizontal-spacing) * 12 / 13);
+    max-width: calc(7.69% - var(--grid-desktop-horizontal-spacing) * 12 / 13);
+  }
+
+  .grid--12-col-desktop .grid__item {
+    width: calc(8.33% - var(--grid-desktop-horizontal-spacing) * 11 / 12);
+    max-width: calc(8.33% - var(--grid-desktop-horizontal-spacing) * 11 / 12);
+  }
+
+  .grid--11-col-desktop .grid__item {
+    width: calc(9.09% - var(--grid-desktop-horizontal-spacing) * 10 / 11);
+    max-width: calc(9.09% - var(--grid-desktop-horizontal-spacing) * 10 / 11);
+  }
+
+  .grid--10-col-desktop .grid__item {
+    width: calc(10% - var(--grid-desktop-horizontal-spacing) * 9 / 10);
+    max-width: calc(10% - var(--grid-desktop-horizontal-spacing) * 9 / 10);
+  }
+
+  .grid--9-col-desktop .grid__item {
+    width: calc(11.11% - var(--grid-desktop-horizontal-spacing) * 8 / 9);
+    max-width: calc(11.11% - var(--grid-desktop-horizontal-spacing) * 8 / 9);
+  }
+
   .grid--8-col-desktop .grid__item {
     width: calc(12.5% - var(--grid-desktop-horizontal-spacing) * 7 / 8);
     max-width: calc(12.5% - var(--grid-desktop-horizontal-spacing) * 7 / 8);
@@ -1088,6 +1123,18 @@ summary::-webkit-details-marker {
 
   .grid--2-col-tablet-down .grid__item {
     width: calc(50% - var(--grid-mobile-horizontal-spacing) / 2);
+  }
+
+  .grid--3-col-tablet-down .grid__item {
+    width: calc(33.33% - var(--grid-mobile-horizontal-spacing) * 2 / 3);
+  }
+
+  .grid--4-col-tablet-down .grid__item {
+    width: calc(25% - var(--grid-mobile-horizontal-spacing) * 3 / 4);
+  }
+
+  .grid--5-col-tablet-down .grid__item {
+    width: calc(20% - var(--grid-mobile-horizontal-spacing) * 4 / 5);
   }
 
   .slider--tablet.grid--peek.grid--2-col-tablet-down .grid__item,
