@@ -19,9 +19,15 @@
   {%- liquid
     assign dark_media = null
     assign dark_images = product.metafields.custom.dark_mode_images.value
-    if dark_images.size > 0 and position
-      assign dark_index = position | minus: 1
-      assign dark_media = dark_images[dark_index]
+    assign dark_light_ids = product.metafields.custom.dark_mode_images_light_ids.value
+    if dark_images.size > 0 and dark_light_ids.size > 0
+      assign media_id_str = media.id | append: ''
+      for light_id in dark_light_ids
+        if light_id == media_id_str
+          assign dark_media = dark_images[forloop.index0]
+          break
+        endif
+      endfor
     endif
   -%}
   <img
