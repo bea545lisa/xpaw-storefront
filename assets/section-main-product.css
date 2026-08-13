@@ -1533,6 +1533,8 @@ a.product__text {
 
 .product__meta-list dt {
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
 }
 
 .product__meta-list dd {
@@ -1612,6 +1614,12 @@ a.product__text {
   margin: 0;
   font-size: 1.2rem;
   opacity: 0.75;
+}
+
+.product__meta-inline-label {
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+  font-weight: 600;
 }
 
 .product__meta-inline-item:not(:last-child)::after {
