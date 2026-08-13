@@ -2103,6 +2103,15 @@
             }
           }
         },
+        "variant_metafields": {
+          "name": "Variant metafields (all)",
+          "settings": {
+            "exclude_keys": {
+              "label": "Excluded keys",
+              "info": "Comma-separated list of metafield keys that should NOT be shown here"
+            }
+          }
+        },
         "specifications": {
           "name": "Specifications"
         },

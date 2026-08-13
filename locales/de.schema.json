@@ -2038,6 +2038,15 @@
             }
           }
         },
+        "variant_metafields": {
+          "name": "Varianten-Metafields (alle)",
+          "settings": {
+            "exclude_keys": {
+              "label": "Auszuschließende Keys",
+              "info": "Kommagetrennte Liste von Metafield-Keys, die hier NICHT angezeigt werden sollen"
+            }
+          }
+        },
         "specifications": {
           "name": "Eigenschaften"
         },
