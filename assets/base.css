@@ -3695,17 +3695,21 @@ details-disclosure > details {
 
 /* Produktbilder mit separater Dark-Mode-Variante (Metafield
    custom.dark_mode_images): standardmäßig wird das helle Bild gezeigt,
-   im Dark Mode blendet CSS auf die dunkle Variante um. */
+   im Dark Mode blendet CSS auf die dunkle Variante um. !important nötig,
+   da ".media > *:not(...)" (base.css weiter oben) mit display:block
+   spezifischer ist und die reine Klassen-Regel sonst überschreibt -
+   dadurch blieb bisher immer das im DOM zuletzt stehende (dunkle) Bild
+   sichtbar, unabhängig vom Theme. */
 .product__media-image--dark {
-  display: none;
+  display: none !important;
 }
 
 [data-theme="dark"] .product__media-image--light {
-  display: none;
+  display: none !important;
 }
 
 [data-theme="dark"] .product__media-image--dark {
-  display: block;
+  display: block !important;
 }
 
 /* Sprach-/Länder-Dropdown im Dark Mode überall dunkel, nicht das ererbte
