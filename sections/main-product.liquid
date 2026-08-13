@@ -250,7 +250,7 @@
                         {%- if vms_field.value != blank -%}
                           {%- assign vms_label = vms_key | replace: '_', ' ' | downcase | capitalize -%}
                           {%- if vms_inline -%}
-                            <span class="product__meta-inline-item">{{ vms_label }}: {{ vms_field.value }}</span>
+                            <span class="product__meta-inline-item"><span class="product__meta-inline-label">{{ vms_label }}</span>: {{ vms_field.value }}</span>
                           {%- else -%}
                             <dt>{{ vms_label }}</dt>
                             <dd>{{ vms_field.value }}</dd>
