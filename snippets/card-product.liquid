@@ -39,6 +39,33 @@
     if ratio == 0 or ratio == null
       assign ratio = 1
     endif
+
+    # Dark-Mode-Bild fürs Karten-Hauptbild, gleiche ID-Zuordnung wie in der
+    # Produktgalerie (siehe product-thumbnail.liquid) - als Hintergrund-Div
+    # statt zweitem <img>, da hier bereits ein Hover-Sekundärbild existiert.
+    assign card_dark_media = null
+    if card_product.featured_media
+      assign card_dark_images = card_product.metafields.custom.dark_mode_images.value
+      assign card_dark_light_ids = card_product.metafields.custom.dark_mode_images_light_ids.value
+      if card_dark_images.size > 0 and card_dark_light_ids.size > 0
+        assign card_media_id_str = card_product.featured_media.id | append: ''
+        assign card_dark_match_index = -1
+        for light_id in card_dark_light_ids
+          if light_id == card_media_id_str
+            assign card_dark_match_index = forloop.index0
+            break
+          endif
+        endfor
+        if card_dark_match_index > -1
+          for candidate in card_dark_images
+            if forloop.index0 == card_dark_match_index
+              assign card_dark_media = candidate
+              break
+            endif
+          endfor
+        endif
+      endif
+    endif
   -%}
 
   <product-component view-event-payload="{{ card_product | standard_event_data: 'view', context: product_view_context | escape }}">
@@ -60,7 +87,7 @@
           style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
         >
           {%- if card_product.featured_media -%}
-            <div class="card__media{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }} gradient{% endif %}">
+            <div class="card__media{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }} gradient{% endif %}{% if card_dark_media %} card__media--has-dark{% endif %}">
               <div class="media media--transparent media--hover-effect">
                 {% comment %}theme-check-disable ImgLazyLoading{% endcomment %}
                 <img
@@ -84,6 +111,15 @@
                   height="{{ card_product.featured_media.height }}"
                 >
                 {% comment %}theme-check-enable ImgLazyLoading{% endcomment %}
+
+                {%- if card_dark_media -%}
+                  <div
+                    class="card__media-image--dark"
+                    style="background-image: url({{ card_dark_media | image_url: width: 533 }});"
+                    role="img"
+                    aria-label="{{ card_product.featured_media.alt | escape }}"
+                  ></div>
+                {%- endif -%}
 
                 {%- if card_product.media[1] != null and show_secondary_image -%}
                   <img
