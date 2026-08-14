@@ -649,8 +649,8 @@
      nicht zum tatsächlichen Gap und die letzte Kachel rutscht/verzerrt sich
      in eine neue, gestreckte Zeile. */
   .grid--round-cards {
-    --grid-mobile-horizontal-spacing: 2rem;
-    --grid-mobile-vertical-spacing: 2.4rem;
+    --grid-mobile-horizontal-spacing: 1.2rem;
+    --grid-mobile-vertical-spacing: 1.6rem;
   }
 
   .card--round .card__media {
