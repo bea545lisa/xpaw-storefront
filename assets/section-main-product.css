@@ -22,8 +22,10 @@ product-info {
 /* Runde Overlay-Pfeile auf der Mobile-Bildergalerie (slider-mobile-gutter):
    war bisher nur live vorhanden, nicht im Repo - hier nachgezogen, damit es
    nicht wieder verloren geht. Farben ans Theme gekoppelt statt fest
-   weiß/schwarz, Padding erhöht, da der linke Pfeil bei aktivem "Peek"
-   (leicht sichtbares Nachbarbild) sonst über den Bildrand hinausragte. */
+   weiß/schwarz. Das "Peek" (Vorschau-Sliver des Nachbarbilds) wurde in
+   product-media-gallery.liquid entfernt (grid--peek-Klasse), da es sonst
+   den rechten Pfeil an den Rand des gesamten Scroll-Bereichs statt an den
+   Rand des aktuell sichtbaren Bilds gedrängt hat. */
 @media screen and (max-width: 749px) {
   slider-component.slider-mobile-gutter {
     position: relative;
@@ -38,7 +40,7 @@ product-info {
     bottom: 0;
     justify-content: space-between;
     align-items: center;
-    padding: 0 1.5rem;
+    padding: 0 1rem;
     pointer-events: none;
     z-index: 2;
   }
