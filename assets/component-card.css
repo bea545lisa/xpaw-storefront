@@ -602,6 +602,13 @@
   overflow: hidden;
 }
 
+/* Eine einzeln übrig bleibende Kachel in der letzten Zeile darf sich nicht
+   per Flexbox-Standardverhalten (flex-grow) auf volle Breite strecken -
+   das verzerrt bei runden Kacheln sonst die Kreisform zur Ellipse/Blatt. */
+.grid--round-cards.grid .grid__item {
+  flex-grow: 0;
+}
+
 .card--round .card__content {
   text-align: center;
 }
@@ -664,6 +671,18 @@
   }
 
   .card--round .card__heading .icon-wrap {
+    display: none;
+  }
+
+  /* Gleiche Schriftverkleinerung + kein Pfeil-Umbruch auch für eckige/
+     quadratische Kollektionskacheln - nicht nur bei "Rund" (Bildformat ist
+     eine reine Editor-Einstellung pro Sektion, die Optik soll trotzdem bei
+     jedem Format konsistent kompakt sein). */
+  .collection-list .card__heading {
+    font-size: 1.2rem;
+  }
+
+  .collection-list:not(.grid--round-cards) .card__heading .icon-wrap {
     display: none;
   }
 }
