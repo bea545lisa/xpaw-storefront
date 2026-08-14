@@ -667,3 +667,13 @@
     display: none;
   }
 }
+
+/* Desktop: etwas mehr Luft zwischen den runden Icon-Kacheln, sonst berühren
+   sie sich fast (gleiches Prinzip wie bei Mobile - über die CSS-Variable,
+   damit die Spaltenbreiten-Formel konsistent bleibt). */
+@media screen and (min-width: 750px) {
+  .grid--round-cards {
+    --grid-desktop-horizontal-spacing: 3rem;
+    --grid-desktop-vertical-spacing: 2.4rem;
+  }
+}
