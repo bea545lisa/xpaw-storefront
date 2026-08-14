@@ -654,7 +654,8 @@
   }
 
   .card--round .card__heading {
-    font-size: 1.4rem;
+    font-size: 1.05rem;
+    white-space: nowrap;
   }
 
   .card--round .card__heading .icon-wrap {
