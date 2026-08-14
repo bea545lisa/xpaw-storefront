@@ -30,6 +30,7 @@
   endif
   assign card_round = false
   assign card_round_compact = false
+  assign card_round_compact_mobile = false
   if media_aspect_ratio == 'round'
     assign card_round = true
     assign ratio = 1
@@ -37,6 +38,11 @@
     # bei wenigen Spalten (großzügiger Platz) bleibt der Pfeil sichtbar.
     if columns_desktop > 4
       assign card_round_compact = true
+    endif
+    # Gleiches Prinzip separat für Mobile, da dort meist deutlich weniger
+    # Spalten gewählt werden als am Desktop (eigener Schwellenwert).
+    if columns_mobile > 2
+      assign card_round_compact_mobile = true
     endif
   endif
   assign card_color_scheme = settings.card_color_scheme
@@ -58,9 +64,10 @@
       {% if card_collection.featured_image == nil and card_style == 'card' %} ratio{% endif %}
       {% if card_round %} card--round{% endif %}
       {% if card_round_compact %} card--round-compact{% endif %}
+      {% if card_round_compact_mobile %} card--round-compact-mobile{% endif %}
       {% if is_current %} card--current{% endif %}
     "
-    style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;{% if card_round %} --round-columns: {{ columns_desktop | default: 4 }};{% endif %}"
+    style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;{% if card_round %} --round-columns: {{ columns_desktop | default: 4 }}; --round-columns-mobile: {{ columns_mobile | default: 3 }};{% endif %}"
   >
     <div
       class="card__inner {% if card_style == 'standard' %}color-{{ card_color_scheme }} gradient{% endif %}{% if card_collection.featured_image or card_style == 'standard' %} ratio{% endif %}"

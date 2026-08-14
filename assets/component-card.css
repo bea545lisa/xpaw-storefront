@@ -660,12 +660,16 @@
     --grid-mobile-vertical-spacing: 1.6rem;
   }
 
+  /* Schriftgröße skaliert wie am Desktop mit der (Mobile-)Spaltenzahl -
+     bei wenigen Spalten (z.B. 2) mehr Platz pro Kachel, also größere Schrift. */
   .card--round .card__heading {
-    font-size: 0.9rem;
+    font-size: clamp(0.85rem, calc(1.7rem - (var(--round-columns-mobile, 3) * 0.2rem)), 1.4rem);
     white-space: nowrap;
   }
 
-  .card--round .card__heading .icon-wrap {
+  /* Pfeil-Icon auf Mobile nur ausblenden, wenn wirklich wenig Platz ist
+     (viele Spalten) - siehe card_round_compact_mobile in card-collection.liquid. */
+  .card--round-compact-mobile .card__heading .icon-wrap {
     display: none;
   }
 
