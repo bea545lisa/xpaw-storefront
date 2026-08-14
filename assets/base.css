@@ -3714,6 +3714,22 @@ details-disclosure > details {
   display: block !important;
 }
 
+/* Gleiches Prinzip für das Karten-Hauptbild (Produktkarten in Kollektionen,
+   "Das könnte dir auch gefallen", "Zuletzt angesehen" etc.). */
+.card__media-image--dark {
+  display: none !important;
+  background-size: cover;
+  background-position: center center;
+}
+
+[data-theme="dark"] .card__media--has-dark > .media > img {
+  display: none !important;
+}
+
+[data-theme="dark"] .card__media-image--dark {
+  display: block !important;
+}
+
 /* Sprach-/Länder-Dropdown im Dark Mode überall dunkel, nicht das ererbte
    helle Schema-Weiß (Header, Menü-Drawer, Footer). */
 [data-theme="dark"] .disclosure__list-wrapper {
