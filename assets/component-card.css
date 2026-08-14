@@ -660,11 +660,6 @@
     --grid-mobile-vertical-spacing: 1.6rem;
   }
 
-  .card--round .card__media {
-    max-width: 9rem;
-    margin: 0 auto;
-  }
-
   .card--round .card__heading {
     font-size: 0.9rem;
     white-space: nowrap;
