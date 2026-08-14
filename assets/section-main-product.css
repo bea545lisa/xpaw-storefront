@@ -32,29 +32,38 @@ product-info {
     display: block;
   }
 
+  /* Buttons einzeln per position:absolute statt per Flexbox
+     justify-content:space-between - bei nur einem sichtbaren Button (der
+     andere ist am ersten/letzten Bild [disabled] und ausgeblendet) rutschte
+     der verbleibende sonst fälschlich nach links, weil space-between mit
+     nur einem Kind einfach am Anfang bleibt. */
   slider-component.slider-mobile-gutter .slider-buttons {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    justify-content: space-between;
     align-items: center;
-    padding: 0 1rem;
     pointer-events: none;
     z-index: 2;
   }
 
   slider-component.slider-mobile-gutter .slider-buttons .slider-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     pointer-events: auto;
     background: rgba(var(--color-background), 0.65);
     border-radius: 50%;
     color: rgb(var(--color-foreground));
   }
 
-  /* Linker Pfeil minimal weiter nach innen, saß sonst zu nah am Bildrand. */
   slider-component.slider-mobile-gutter .slider-buttons .slider-button--prev {
-    margin-left: 0.5rem;
+    left: 1rem;
+  }
+
+  slider-component.slider-mobile-gutter .slider-buttons .slider-button--next {
+    right: 1rem;
   }
 
   /* Am ersten/letzten Bild ist der jeweilige Pfeil-Button schon [disabled]
