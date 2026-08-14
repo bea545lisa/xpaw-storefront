@@ -469,10 +469,18 @@ a.product__text {
     background-color: rgba(var(--color-foreground), 0.2);
   }
 
-  /* Volle Breite statt Dawns eingebautem Peek (calc(100% - 3rem - ...)) -
-     das nächste/vorherige Bild sollte nicht schon am Rand durchblitzen. */
+  /* Volle (sichtbare) Breite statt Dawns eingebautem Peek
+     (calc(100% - 3rem - ...)) - das nächste/vorherige Bild sollte nicht
+     schon am Rand durchblitzen. .product__media-list ist bewusst breiter
+     als der sichtbare Bereich gezogen (margin-left: -2.5rem, width: 100% +
+     4rem, siehe oben) - box-sizing: border-box + passendes Padding gleicht
+     das wieder aus, sonst würde das Bild links/rechts über den sichtbaren
+     Rand hinausragen bzw. abgeschnitten wirken. */
   .product__media-list .product__media-item {
     width: 100%;
+    padding-left: 2.5rem;
+    padding-right: 1.5rem;
+    box-sizing: border-box;
   }
 
   .product--mobile-columns .product__media-item {
