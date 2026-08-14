@@ -460,8 +460,10 @@ a.product__text {
     background-color: rgba(var(--color-foreground), 0.2);
   }
 
+  /* Volle Breite statt Dawns eingebautem Peek (calc(100% - 3rem - ...)) -
+     das nächste/vorherige Bild sollte nicht schon am Rand durchblitzen. */
   .product__media-list .product__media-item {
-    width: calc(100% - 3rem - var(--grid-mobile-horizontal-spacing));
+    width: 100%;
   }
 
   .product--mobile-columns .product__media-item {
