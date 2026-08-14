@@ -643,9 +643,14 @@
    auf dem schmalen Bildschirm ist für den Pfeil ohnehin kein Platz, er
    würde sonst umbrechen (siehe "Halsbänder →" auf eigener Zeile). */
 @media screen and (max-width: 749px) {
+  /* Als CSS-Variable statt direktem column-gap/row-gap überschrieben - die
+     Spaltenbreiten-Formel (grid--N-col-tablet-down) rechnet mit demselben
+     --grid-mobile-horizontal-spacing-Wert, sonst passt die berechnete Breite
+     nicht zum tatsächlichen Gap und die letzte Kachel rutscht/verzerrt sich
+     in eine neue, gestreckte Zeile. */
   .grid--round-cards {
-    column-gap: 2rem;
-    row-gap: 2.4rem;
+    --grid-mobile-horizontal-spacing: 2rem;
+    --grid-mobile-vertical-spacing: 2.4rem;
   }
 
   .card--round .card__media {
@@ -654,7 +659,7 @@
   }
 
   .card--round .card__heading {
-    font-size: 1.05rem;
+    font-size: 0.9rem;
     white-space: nowrap;
   }
 
