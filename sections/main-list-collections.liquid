@@ -25,7 +25,7 @@
   -%}
   {%- paginate collections by paginate_by -%}
     <ul
-      class="collection-list grid grid--{{ section.settings.columns_desktop }}-col-desktop grid--{{ section.settings.columns_mobile }}-col-tablet-down"
+      class="collection-list grid grid--{{ section.settings.columns_desktop }}-col-desktop grid--{{ section.settings.columns_mobile }}-col-tablet-down{% if section.settings.image_ratio == 'round' %} grid--round-cards{% endif %}"
       role="list"
     >
       {%- for collection in collections -%}
