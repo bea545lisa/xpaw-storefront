@@ -1,0 +1,43 @@
+{% layout none %}
+{%- comment -%}
+  Alternatives JSON-Template, abrufbar über /products/{handle}?view=recently-viewed-json.
+  Liefert nur die Felder, die recently-viewed.js braucht - inklusive der
+  Dark-Mode-Bild-Zuordnung, die das normale /products/{handle}.js NICHT
+  enthält (Metafields sind dort nicht verfügbar).
+{%- endcomment -%}
+{%- liquid
+  assign dark_media = null
+  if product.featured_media
+    assign dark_images = product.metafields.custom.dark_mode_images.value
+    assign dark_light_ids = product.metafields.custom.dark_mode_images_light_ids.value
+    if dark_images.size > 0 and dark_light_ids.size > 0
+      assign media_id_str = product.featured_media.id | append: ''
+      assign dark_match_index = -1
+      for light_id in dark_light_ids
+        if light_id == media_id_str
+          assign dark_match_index = forloop.index0
+          break
+        endif
+      endfor
+      if dark_match_index > -1
+        for candidate in dark_images
+          if forloop.index0 == dark_match_index
+            assign dark_media = candidate
+            break
+          endif
+        endfor
+      endif
+    endif
+  endif
+-%}
+{
+  "title": {{ product.title | json }},
+  "url": {{ product.url | json }},
+  "price": {{ product.price | json }},
+  "featured_image": {{ product.featured_image | image_url: width: 400 | prepend: "https:" | json }},
+  {%- if dark_media -%}
+    "dark_image": {{ dark_media | image_url: width: 400 | prepend: "https:" | json }}
+  {%- else -%}
+    "dark_image": null
+  {%- endif -%}
+}

@@ -28,13 +28,19 @@ function formatMoney(cents, currency, locale) {
 }
 
 async function fetchProduct(handle) {
-  const response = await fetch(`/products/${handle}.js`);
+  // Eigenes JSON-Template statt /products/{handle}.js - das Standard-AJAX-JSON
+  // liefert keine Metafields, wir brauchen aber die Dark-Mode-Bild-Zuordnung
+  // (siehe templates/product.recently-viewed-json.liquid).
+  const response = await fetch(`/products/${handle}?view=recently-viewed-json`);
   if (!response.ok) return null;
   return response.json();
 }
 
 function renderCard(product, currency, locale) {
-  const image = product.featured_image || product.images[0];
+  const image = product.dark_image
+    ? `<img class="recently-viewed__image--light" src="${product.featured_image}" alt="${product.title}" loading="lazy" width="200" height="200">
+       <img class="recently-viewed__image--dark" src="${product.dark_image}" alt="${product.title}" loading="lazy" width="200" height="200">`
+    : `<img src="${product.featured_image}" alt="${product.title}" loading="lazy" width="200" height="200">`;
   const price = formatMoney(product.price, currency, locale);
 
   const card = document.createElement('a');
@@ -42,7 +48,7 @@ function renderCard(product, currency, locale) {
   card.href = product.url;
 
   card.innerHTML = `
-    ${image ? `<img src="${image}" alt="${product.title}" loading="lazy" width="200" height="200">` : ''}
+    ${product.featured_image ? image : ''}
     <span class="recently-viewed__title">${product.title}</span>
     <span class="recently-viewed__price">${price}</span>
   `;
