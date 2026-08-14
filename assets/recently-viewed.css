@@ -23,6 +23,21 @@
   border-radius: var(--product-card-corner-radius, 0);
 }
 
+/* Dark-Mode-Bildvariante: light/dark <img> werden beide von recently-viewed.js
+   gerendert, hier per Theme umgeschaltet - war vergessen worden, weshalb
+   bisher beide Bilder gleichzeitig sichtbar waren. */
+.recently-viewed__image--dark {
+  display: none;
+}
+
+[data-theme="dark"] .recently-viewed__image--light {
+  display: none;
+}
+
+[data-theme="dark"] .recently-viewed__image--dark {
+  display: block;
+}
+
 .recently-viewed__title {
   font-size: 1.4rem;
 }
