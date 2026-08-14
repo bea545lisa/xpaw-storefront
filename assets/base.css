@@ -3715,7 +3715,7 @@ details-disclosure > details {
 /* Sprach-/Länder-Dropdown im Dark Mode überall dunkel, nicht das ererbte
    helle Schema-Weiß (Header, Menü-Drawer, Footer). */
 [data-theme="dark"] .disclosure__list-wrapper {
-  background-color: rgba(18, 18, 18, 0.9) !important;
+  background-color: rgba(33, 33, 33, 0.9) !important;
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   border-color: rgba(237, 237, 237, 0.15) !important;
