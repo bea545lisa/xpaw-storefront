@@ -618,7 +618,7 @@
    wenigen Spalten (viel Platz pro Kachel) große Schrift, bei vielen Spalten
    automatisch kleiner. clamp() verhindert zu große/zu kleine Extreme. */
 .card--round .card__heading {
-  font-size: clamp(1.2rem, calc(2.6rem - (var(--round-columns, 4) * 0.14rem)), 2.6rem);
+  font-size: clamp(1.4rem, calc(2.8rem - (var(--round-columns, 4) * 0.12rem)), 2.6rem);
   line-height: 1.3;
 }
 
