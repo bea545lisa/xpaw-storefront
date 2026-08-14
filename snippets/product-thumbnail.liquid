@@ -73,12 +73,6 @@
     endif
   endif
 
-  assign light_image_class = image_class
-  assign dark_image_class = image_class
-  if dark_media
-    assign light_image_class = image_class | append: ' product__media-image--light'
-    assign dark_image_class = image_class | append: ' product__media-image--dark'
-  endif
 -%}
 
 {%- capture sizes -%}
@@ -118,22 +112,25 @@
         media.preview_image
         | image_url: width: 1946
         | image_tag:
-          class: light_image_class,
+          class: image_class,
           loading: lazy,
           sizes: sizes,
           widths: '246, 493, 600, 713, 823, 990, 1100, 1206, 1346, 1426, 1646, 1946'
       }}
       {%- if dark_media -%}
-        {{
-          dark_media
-          | image_url: width: 1946
-          | image_tag:
-            class: dark_image_class,
-            loading: lazy,
-            sizes: sizes,
-            widths: '246, 493, 600, 713, 823, 990, 1100, 1206, 1346, 1426, 1646, 1946',
-            alt: media.alt
-        }}
+        {%- comment -%}
+          Als reines <div> mit Hintergrundbild statt als zweites <img> - ein
+          zweites <img> mit derselben image-magnify-Klasse hat das Zoom-/
+          Varianten-Slider-JS verwirrt (es zählt/verarbeitet alle <img> im
+          Media-Container), wodurch der Bildwechsel beim Variantenklick nicht
+          mehr funktionierte.
+        {%- endcomment -%}
+        <div
+          class="product__media-image--dark"
+          style="background-image: url({{ dark_media | image_url: width: 1946 }});"
+          role="img"
+          aria-label="{{ media.alt | escape }}"
+        ></div>
       {%- endif -%}
     </div>
     <button

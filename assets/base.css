@@ -3694,17 +3694,19 @@ details-disclosure > details {
 }
 
 /* Produktbilder mit separater Dark-Mode-Variante (Metafield
-   custom.dark_mode_images): standardmäßig wird das helle Bild gezeigt,
-   im Dark Mode blendet CSS auf die dunkle Variante um. !important nötig,
-   da ".media > *:not(...)" (base.css weiter oben) mit display:block
-   spezifischer ist und die reine Klassen-Regel sonst überschreibt -
-   dadurch blieb bisher immer das im DOM zuletzt stehende (dunkle) Bild
-   sichtbar, unabhängig vom Theme. */
+   custom.dark_mode_images): das dunkle Bild ist ein <div> mit
+   Hintergrundbild statt ein zweites <img> - ein zweites <img> mit der
+   image-magnify-Klasse hat das Zoom-/Varianten-Slider-JS verwirrt (zählt/
+   verarbeitet alle <img> im Container), wodurch der Bildwechsel beim
+   Variantenklick nicht mehr funktionierte. !important nötig, da
+   ".media > *:not(...)" (weiter oben) mit display:block spezifischer ist. */
 .product__media-image--dark {
   display: none !important;
+  background-size: cover;
+  background-position: center center;
 }
 
-[data-theme="dark"] .product__media-image--light {
+[data-theme="dark"] .product__media--has-dark > img {
   display: none !important;
 }
 
