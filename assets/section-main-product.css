@@ -55,6 +55,13 @@ product-info {
     margin-left: 0.5rem;
   }
 
+  /* Am ersten/letzten Bild ist der jeweilige Pfeil-Button schon [disabled]
+     (slider-component setzt das automatisch) - hier komplett ausblenden
+     statt nur ausgegraut anzuzeigen. */
+  slider-component.slider-mobile-gutter .slider-buttons .slider-button[disabled] {
+    display: none;
+  }
+
   slider-component.slider-mobile-gutter .slider-buttons .slider-counter {
     display: none;
   }
