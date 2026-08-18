@@ -1,4 +1,4 @@
-.geschirr-promo {
+.banner-promo {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -6,17 +6,19 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 3rem 1.5rem;
+  background: var(--banner-promo-background, transparent);
 }
 
-.geschirr-promo__stage {
+.banner-promo__stage {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
   max-width: 480px;
   justify-self: end;
+  margin-right: 1.5rem;
 }
 
-.geschirr-promo__slide {
+.banner-promo__slide {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -25,67 +27,69 @@
   opacity: 0;
 }
 
-.geschirr-promo__slide--active {
+.banner-promo__slide--active {
   opacity: 1;
 }
 
-.geschirr-promo__arrow {
-  color: rgba(var(--color-foreground), 0.6);
+.banner-promo__arrow {
+  color: var(--banner-promo-arrow-color, rgba(var(--color-foreground), 0.55));
   width: 90px;
 }
 
-.geschirr-promo__arrow-svg {
+.banner-promo__arrow-svg {
   width: 100%;
   height: auto;
   display: block;
 }
 
-.geschirr-promo__content {
+.banner-promo__content {
   justify-self: start;
+  margin-left: 1.5rem;
   max-width: 420px;
 }
 
-.geschirr-promo__heading {
-  font-size: 2rem;
+.banner-promo__heading {
+  font-size: var(--banner-promo-heading-size, 26px);
   margin: 0 0 0.75rem;
-  color: rgb(var(--color-foreground));
+  color: var(--banner-promo-heading-color, rgb(var(--color-foreground)));
 }
 
-.geschirr-promo__text {
+.banner-promo__text {
   font-size: 1rem;
-  color: rgba(var(--color-foreground), 0.75);
+  color: var(--banner-promo-text-color, rgba(var(--color-foreground), 0.75));
   margin-bottom: 1.25rem;
 }
 
-.geschirr-promo__button {
+.banner-promo__button {
   display: inline-block;
   padding: 0.75rem 1.75rem;
   border: 0.1rem solid rgb(var(--color-foreground));
   border-radius: 0.4rem;
   text-decoration: none;
-  color: rgb(var(--color-foreground));
+  background: var(--banner-promo-button-bg, transparent);
+  color: var(--banner-promo-button-text, rgb(var(--color-foreground)));
   font-size: 0.95rem;
 }
 
 @media screen and (max-width: 749px) {
-  .geschirr-promo {
+  .banner-promo {
     grid-template-columns: 1fr;
     justify-items: center;
     text-align: center;
     padding: 2rem 1.25rem;
   }
 
-  .geschirr-promo__stage {
+  .banner-promo__stage {
     justify-self: center;
     max-width: 320px;
   }
 
-  .geschirr-promo__arrow {
+  .banner-promo__arrow {
     width: 60px;
     transform: rotate(90deg);
   }
 
-  .geschirr-promo__content {
+  .banner-promo__content {
     justify-self: center;
   }
 }
