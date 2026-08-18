@@ -10,12 +10,12 @@
   margin: 0 auto;
   border-radius: 0.6rem;
   box-shadow: 0 0.4rem 1.2rem rgba(var(--color-shadow), 0.25);
-  background: radial-gradient(ellipse at center, #ffffff 0%, #f0f0ee 100%);
+  background: #ffffff;
   overflow: hidden;
 }
 
 [data-theme="dark"] .geschirr-configurator__preview {
-  background: radial-gradient(ellipse at center, #4f4f4f 0%, #333333 70%, #262626 100%);
+  background: radial-gradient(ellipse at center, #3a3a3a 0%, #202020 70%, #121212 100%);
 }
 
 .geschirr-configurator__preview::after {

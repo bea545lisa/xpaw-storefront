@@ -25,32 +25,12 @@
       });
     });
 
-    function shadeHex(hex, amount) {
-      const num = parseInt(hex.replace('#', ''), 16);
-      let r = (num >> 16) + amount;
-      let g = ((num >> 8) & 0xff) + amount;
-      let b = (num & 0xff) + amount;
-      r = Math.max(0, Math.min(255, r));
-      g = Math.max(0, Math.min(255, g));
-      b = Math.max(0, Math.min(255, b));
-      return `rgb(${r}, ${g}, ${b})`;
-    }
-
-    function metallicPattern(ctx, hex) {
-      const size = 48;
-      const tile = document.createElement('canvas');
-      tile.width = size;
-      tile.height = size;
-      const tctx = tile.getContext('2d');
-      const grad = tctx.createLinearGradient(0, 0, size, size);
-      grad.addColorStop(0, shadeHex(hex, 130));
-      grad.addColorStop(0.22, shadeHex(hex, -25));
-      grad.addColorStop(0.45, shadeHex(hex, 95));
-      grad.addColorStop(0.7, shadeHex(hex, -65));
-      grad.addColorStop(1, shadeHex(hex, 130));
-      tctx.fillStyle = grad;
-      tctx.fillRect(0, 0, size, size);
-      return ctx.createPattern(tile, 'repeat');
+    const shadingSourceEl = document.querySelector('.geschirr-configurator__shading-source');
+    const shadingCanvas = document.querySelector('.geschirr-configurator__shading');
+    if (shadingSourceEl && shadingCanvas) {
+      loadPromises.push(loadImage(shadingSourceEl.src).then((loaded) => {
+        maskImages.__shadingSource = loaded;
+      }));
     }
 
     function paintLayer(layer, fill, isPattern) {
@@ -64,12 +44,11 @@
       ctx.globalCompositeOperation = 'source-over';
       if (isPattern) {
         ctx.fillStyle = ctx.createPattern(fill, 'repeat');
-      } else if (layer === 'metal') {
-        ctx.fillStyle = metallicPattern(ctx, fill);
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
       } else {
         ctx.fillStyle = fill;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.globalCompositeOperation = 'destination-in';
       ctx.drawImage(mask, 0, 0, canvas.width, canvas.height);
@@ -87,7 +66,24 @@
       }
     }
 
+    function paintShading() {
+      if (!shadingCanvas || !maskImages.__shadingSource) return;
+      const ctx = shadingCanvas.getContext('2d');
+      ctx.clearRect(0, 0, shadingCanvas.width, shadingCanvas.height);
+
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.drawImage(maskImages.__shadingSource, 0, 0, shadingCanvas.width, shadingCanvas.height);
+
+      if (maskImages.metal) {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.drawImage(maskImages.metal, 0, 0, shadingCanvas.width, shadingCanvas.height);
+      }
+
+      ctx.globalCompositeOperation = 'source-over';
+    }
+
     Promise.all(loadPromises).then(() => {
+      paintShading();
       document.querySelectorAll('fieldset[data-layer]').forEach((fieldset) => {
         const layer = fieldset.dataset.layer;
         const checked = fieldset.querySelector('input:checked');
