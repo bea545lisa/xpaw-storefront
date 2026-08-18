@@ -14,6 +14,11 @@
   box-sizing: border-box;
 }
 
+[data-theme="dark"] .banner-promo {
+  background-color: var(--banner-promo-background-dark, var(--banner-promo-background, transparent));
+  background-image: var(--banner-promo-background-image-dark, var(--banner-promo-background-image, none));
+}
+
 .banner-promo__stage {
   position: relative;
   width: 100%;
@@ -39,10 +44,11 @@
   color: var(--banner-promo-arrow-color, rgba(var(--color-foreground), 0.7));
   width: 170px;
   align-self: start;
-  margin-top: -1rem;
+  margin-top: 2rem;
 }
 
-.banner-promo__arrow-svg {
+.banner-promo__arrow-svg,
+.banner-promo__arrow-image {
   width: 100%;
   height: auto;
   display: block;
@@ -50,7 +56,7 @@
 
 .banner-promo__content {
   justify-self: start;
-  margin-left: 1.5rem;
+  margin-left: 0;
   max-width: 560px;
 }
 
@@ -76,7 +82,7 @@
   text-decoration: none;
   background: var(--banner-promo-button-bg, transparent);
   color: var(--banner-promo-button-text, rgb(var(--color-foreground)));
-  font-size: 1.2rem;
+  font-size: 1.5rem;
 }
 
 .banner-promo__button--transparent {
