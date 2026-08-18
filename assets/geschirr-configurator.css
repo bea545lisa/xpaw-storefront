@@ -1,0 +1,97 @@
+.geschirr-configurator {
+  display: block;
+  margin-bottom: 2rem;
+}
+
+.geschirr-configurator__preview {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto 1.5rem;
+  border-radius: 0.6rem;
+  box-shadow: 0 0.4rem 1.2rem rgba(var(--color-shadow), 0.25);
+}
+
+.geschirr-configurator__layer,
+.geschirr-configurator__shading {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.geschirr-configurator__shading {
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  object-fit: contain;
+}
+
+.geschirr-configurator__options {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.geschirr-configurator__options fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.geschirr-configurator__options legend {
+  font-size: 1.4rem;
+  color: rgb(var(--color-foreground));
+  margin-bottom: 0.6rem;
+  padding: 0;
+}
+
+.geschirr-configurator__value {
+  color: rgba(var(--color-foreground), 0.75);
+  font-weight: normal;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.swatch {
+  --swatch-color: transparent;
+  --swatch-image: none;
+  position: relative;
+  display: inline-flex;
+  width: 3.2rem;
+  height: 3.2rem;
+  margin: 0 0.5rem 0.5rem 0;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: var(--swatch-color);
+  background-image: var(--swatch-image);
+  background-size: cover;
+  box-shadow: 0 0 0 0.1rem rgba(var(--color-foreground), 0.2);
+  transition: box-shadow 0.1s ease;
+}
+
+.swatch input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.swatch:has(input:checked) {
+  box-shadow:
+    0 0 0 0.2rem rgb(var(--color-background)),
+    0 0 0 0.35rem rgba(var(--color-foreground), 0.85);
+}
+
+.swatch:has(input:focus-visible) {
+  outline: 0.2rem solid rgba(var(--color-foreground), 0.5);
+  outline-offset: 0.2rem;
+}
