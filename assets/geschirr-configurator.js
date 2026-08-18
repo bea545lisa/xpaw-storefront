@@ -17,7 +17,7 @@ class GeschirrConfigurator extends HTMLElement {
       this.querySelectorAll('fieldset[data-layer]').forEach((fieldset) => {
         const layer = fieldset.dataset.layer;
         const checked = fieldset.querySelector('input:checked');
-        if (checked) this.paintLayer(layer, checked.dataset.color);
+        if (checked) this.applyInput(layer, checked);
       });
     });
 
@@ -27,13 +27,22 @@ class GeschirrConfigurator extends HTMLElement {
 
       const fieldset = input.closest('fieldset');
       const layer = fieldset.dataset.layer;
-      const property = fieldset.dataset.property;
 
-      this.paintLayer(layer, input.dataset.color);
+      this.applyInput(layer, input);
 
       const hidden = this.querySelector(`input[data-hidden-for="${layer}"]`);
       if (hidden) hidden.value = input.value;
     });
+  }
+
+  applyInput(layer, input) {
+    if (input.dataset.pattern) {
+      this.loadImage(input.dataset.pattern).then((tile) => {
+        this.paintLayer(layer, tile, true);
+      });
+    } else {
+      this.paintLayer(layer, input.dataset.color, false);
+    }
   }
 
   loadImage(src) {
@@ -46,7 +55,7 @@ class GeschirrConfigurator extends HTMLElement {
     });
   }
 
-  paintLayer(layer, color) {
+  paintLayer(layer, fill, isPattern) {
     const canvas = this.canvases[layer];
     const mask = this.maskImages[layer];
     if (!canvas || !mask) return;
@@ -55,7 +64,7 @@ class GeschirrConfigurator extends HTMLElement {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.globalCompositeOperation = 'source-over';
-    ctx.fillStyle = color;
+    ctx.fillStyle = isPattern ? ctx.createPattern(fill, 'repeat') : fill;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.globalCompositeOperation = 'destination-in';
