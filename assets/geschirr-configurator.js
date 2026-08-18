@@ -25,6 +25,27 @@
       });
     });
 
+    function shadeHex(hex, amount) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      let r = (num >> 16) + amount;
+      let g = ((num >> 8) & 0xff) + amount;
+      let b = (num & 0xff) + amount;
+      r = Math.max(0, Math.min(255, r));
+      g = Math.max(0, Math.min(255, g));
+      b = Math.max(0, Math.min(255, b));
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function metallicGradient(ctx, canvas, hex) {
+      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      grad.addColorStop(0, shadeHex(hex, 110));
+      grad.addColorStop(0.2, shadeHex(hex, 40));
+      grad.addColorStop(0.45, hex);
+      grad.addColorStop(0.7, shadeHex(hex, -30));
+      grad.addColorStop(1, shadeHex(hex, -70));
+      return grad;
+    }
+
     function paintLayer(layer, fill, isPattern) {
       const canvas = canvases[layer];
       const mask = maskImages[layer];
@@ -34,7 +55,13 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       ctx.globalCompositeOperation = 'source-over';
-      ctx.fillStyle = isPattern ? ctx.createPattern(fill, 'repeat') : fill;
+      if (isPattern) {
+        ctx.fillStyle = ctx.createPattern(fill, 'repeat');
+      } else if (layer === 'metal') {
+        ctx.fillStyle = metallicGradient(ctx, canvas, fill);
+      } else {
+        ctx.fillStyle = fill;
+      }
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.globalCompositeOperation = 'destination-in';
