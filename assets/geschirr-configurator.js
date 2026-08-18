@@ -209,31 +209,33 @@
       });
     });
 
-    const exportButton = document.querySelector('.geschirr-configurator__export-button');
-    if (exportButton) {
+    document.querySelectorAll('.geschirr-configurator__export-button').forEach((exportButton) => {
       exportButton.addEventListener('click', () => {
+        const transparent = exportButton.dataset.mode === 'transparent';
         const size = 1000;
         const out = document.createElement('canvas');
         out.width = size;
         out.height = size;
         const octx = out.getContext('2d');
 
-        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        if (isDark) {
-          const bgGrad = octx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-          bgGrad.addColorStop(0, '#3a3a3a');
-          bgGrad.addColorStop(0.7, '#202020');
-          bgGrad.addColorStop(1, '#121212');
-          octx.fillStyle = bgGrad;
-        } else {
-          octx.fillStyle = '#ffffff';
-        }
-        octx.fillRect(0, 0, size, size);
+        if (!transparent) {
+          const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+          if (isDark) {
+            const bgGrad = octx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+            bgGrad.addColorStop(0, '#3a3a3a');
+            bgGrad.addColorStop(0.7, '#202020');
+            bgGrad.addColorStop(1, '#121212');
+            octx.fillStyle = bgGrad;
+          } else {
+            octx.fillStyle = '#ffffff';
+          }
+          octx.fillRect(0, 0, size, size);
 
-        if (outlineCanvas) {
-          octx.filter = 'blur(9px)';
-          octx.drawImage(outlineCanvas, 0, 0, size, size);
-          octx.filter = 'none';
+          if (outlineCanvas) {
+            octx.filter = 'blur(9px)';
+            octx.drawImage(outlineCanvas, 0, 0, size, size);
+            octx.filter = 'none';
+          }
         }
 
         ['polsterung', 'gurt', 'schnallen', 'metal', 'label'].forEach((layer) => {
@@ -252,12 +254,12 @@
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = 'geschirr-vorschau.png';
+          link.download = transparent ? 'geschirr-vorschau-transparent.png' : 'geschirr-vorschau.png';
           link.click();
           URL.revokeObjectURL(url);
         }, 'image/png');
       });
-    }
+    });
 
     document.addEventListener('change', (event) => {
       const input = event.target;
