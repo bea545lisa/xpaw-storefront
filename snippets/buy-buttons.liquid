@@ -60,10 +60,6 @@
           {%- render 'gift-card-recipient-form', product: product, form: form, section: section -%}
         {%- endif -%}
 
-        {%- if product.tags contains 'konfigurator-geschirr' -%}
-          {%- render 'geschirr-configurator', product: product -%}
-        {%- endif -%}
-
         <div class="product-form__buttons">
           {%- liquid
             assign check_against_inventory = true
