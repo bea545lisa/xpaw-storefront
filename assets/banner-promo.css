@@ -36,10 +36,10 @@
 }
 
 .banner-promo__arrow {
-  color: var(--banner-promo-arrow-color, rgba(var(--color-foreground), 0.55));
-  width: 140px;
+  color: var(--banner-promo-arrow-color, rgba(var(--color-foreground), 0.7));
+  width: 170px;
   align-self: start;
-  margin-top: -1.5rem;
+  margin-top: -1rem;
 }
 
 .banner-promo__arrow-svg {
@@ -50,7 +50,7 @@
 
 .banner-promo__content {
   justify-self: start;
-  margin-left: 3rem;
+  margin-left: 1.5rem;
   max-width: 560px;
 }
 
@@ -58,11 +58,11 @@
   font-size: var(--banner-promo-heading-size, 26px);
   margin: 0 0 0.75rem;
   color: var(--banner-promo-heading-color, rgb(var(--color-foreground)));
-  white-space: nowrap;
+  line-height: 1.2;
 }
 
 .banner-promo__text {
-  font-size: var(--banner-promo-text-size, 18px);
+  font-size: var(--banner-promo-text-size, 20px);
   line-height: 1.5;
   color: var(--banner-promo-text-color, rgba(var(--color-foreground), 0.75));
   margin-bottom: 1.25rem;
@@ -72,11 +72,15 @@
   display: inline-block;
   padding: 1.1rem 2.75rem;
   border: 0.15rem solid var(--banner-promo-button-border, rgb(var(--color-foreground)));
-  border-radius: 0.5rem;
+  border-radius: 0;
   text-decoration: none;
   background: var(--banner-promo-button-bg, transparent);
   color: var(--banner-promo-button-text, rgb(var(--color-foreground)));
   font-size: 1.2rem;
+}
+
+.banner-promo__button--transparent {
+  background: transparent !important;
 }
 
 @media screen and (max-width: 749px) {
