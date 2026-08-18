@@ -6,9 +6,8 @@
 .geschirr-configurator__preview {
   position: relative;
   width: 100%;
-  max-width: 420px;
   aspect-ratio: 1 / 1;
-  margin: 0 auto 1.5rem;
+  margin: 0 auto;
   border-radius: 0.6rem;
   box-shadow: 0 0.4rem 1.2rem rgba(var(--color-shadow), 0.25);
 }
@@ -25,6 +24,7 @@
   mix-blend-mode: multiply;
   pointer-events: none;
   object-fit: contain;
+  filter: brightness(1.25) contrast(1.15);
 }
 
 .geschirr-configurator__options {
@@ -75,6 +75,17 @@
   background-size: cover;
   box-shadow: 0 0 0 0.1rem rgba(var(--color-foreground), 0.2);
   transition: box-shadow 0.1s ease;
+}
+
+.geschirr-configurator__swatch--metallic {
+  background-image:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.75) 0%,
+      rgba(255, 255, 255, 0.15) 30%,
+      rgba(255, 255, 255, 0) 55%,
+      rgba(0, 0, 0, 0.25) 100%
+    );
 }
 
 .geschirr-configurator__swatch input {

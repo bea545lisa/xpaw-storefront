@@ -37,23 +37,23 @@
   </fieldset>
 
   <fieldset data-property="Schnallen Farbe" data-layer="schnallen">
-    <legend>Schnallen Farbe: <span class="geschirr-configurator__value" data-value-for="schnallen">Schwarz</span></legend>
-    <label class="geschirr-configurator__swatch" style="--swatch-color:#1F1F1F" title="Schwarz"><input type="radio" name="schnallen" value="Schwarz" data-color="#1F1F1F" checked><span class="visually-hidden">Schwarz</span></label>
-    <label class="geschirr-configurator__swatch" style="--swatch-color:#8A8A8A" title="Grau"><input type="radio" name="schnallen" value="Grau" data-color="#8A8A8A"><span class="visually-hidden">Grau</span></label>
+    <legend>Schnallen Farbe: <span class="geschirr-configurator__value" data-value-for="schnallen">Weiß</span></legend>
+    <label class="geschirr-configurator__swatch" style="--swatch-color:#FFFFFF" title="Weiß"><input type="radio" name="schnallen" value="Weiss" data-color="#FFFFFF" checked><span class="visually-hidden">Weiß</span></label>
+    <label class="geschirr-configurator__swatch" style="--swatch-color:#1F1F1F" title="Schwarz"><input type="radio" name="schnallen" value="Schwarz" data-color="#1F1F1F"><span class="visually-hidden">Schwarz</span></label>
   </fieldset>
 
   <fieldset data-property="Metallteile Farbe" data-layer="metal">
     <legend>Metallteile Farbe: <span class="geschirr-configurator__value" data-value-for="metal">Schwarz</span></legend>
-    <label class="geschirr-configurator__swatch" style="--swatch-color:#1F1F1F" title="Schwarz"><input type="radio" name="metal" value="Schwarz" data-color="#1F1F1F" checked><span class="visually-hidden">Schwarz</span></label>
-    <label class="geschirr-configurator__swatch" style="--swatch-color:#D4AF37" title="Gold"><input type="radio" name="metal" value="Gold" data-color="#D4AF37"><span class="visually-hidden">Gold</span></label>
-    <label class="geschirr-configurator__swatch" style="--swatch-color:#C0C0C0" title="Silber"><input type="radio" name="metal" value="Silber" data-color="#C0C0C0"><span class="visually-hidden">Silber</span></label>
-    <label class="geschirr-configurator__swatch" style="--swatch-color:#5C6E76" title="Gunmetal"><input type="radio" name="metal" value="Gunmetal" data-color="#5C6E76"><span class="visually-hidden">Gunmetal</span></label>
-    <label class="geschirr-configurator__swatch" style="--swatch-color:#E8C2C2" title="Rosegold"><input type="radio" name="metal" value="Rosegold" data-color="#E8C2C2"><span class="visually-hidden">Rosegold</span></label>
+    <label class="geschirr-configurator__swatch geschirr-configurator__swatch--metallic" style="--swatch-color:#1F1F1F" title="Schwarz"><input type="radio" name="metal" value="Schwarz" data-color="#1F1F1F" checked><span class="visually-hidden">Schwarz</span></label>
+    <label class="geschirr-configurator__swatch geschirr-configurator__swatch--metallic" style="--swatch-color:#C6A66A" title="Gold"><input type="radio" name="metal" value="Gold" data-color="#C6A66A"><span class="visually-hidden">Gold</span></label>
+    <label class="geschirr-configurator__swatch geschirr-configurator__swatch--metallic" style="--swatch-color:#C0C0C0" title="Silber"><input type="radio" name="metal" value="Silber" data-color="#C0C0C0"><span class="visually-hidden">Silber</span></label>
+    <label class="geschirr-configurator__swatch geschirr-configurator__swatch--metallic" style="--swatch-color:#8A99A0" title="Gunmetal"><input type="radio" name="metal" value="Gunmetal" data-color="#8A99A0"><span class="visually-hidden">Gunmetal</span></label>
+    <label class="geschirr-configurator__swatch geschirr-configurator__swatch--metallic" style="--swatch-color:#DCC7BE" title="Rosegold"><input type="radio" name="metal" value="Rosegold" data-color="#DCC7BE"><span class="visually-hidden">Rosegold</span></label>
   </fieldset>
 </div>
 
 {%- comment -%} Hidden inputs -> go into {% form 'product' %} as properties[...] {%- endcomment -%}
 <input type="hidden" name="properties[Gurtband Farbe]" value="Weiß" data-hidden-for="gurt">
 <input type="hidden" name="properties[Polsterung Muster]" value="Hellgrau" data-hidden-for="polsterung">
-<input type="hidden" name="properties[Schnallen Farbe]" value="Schwarz" data-hidden-for="schnallen">
+<input type="hidden" name="properties[Schnallen Farbe]" value="Weiß" data-hidden-for="schnallen">
 <input type="hidden" name="properties[Metallteile Farbe]" value="Schwarz" data-hidden-for="metal">
