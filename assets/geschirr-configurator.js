@@ -32,6 +32,9 @@ class GeschirrConfigurator extends HTMLElement {
 
       const hidden = this.querySelector(`input[data-hidden-for="${layer}"]`);
       if (hidden) hidden.value = input.value;
+
+      const valueLabel = this.querySelector(`[data-value-for="${layer}"]`);
+      if (valueLabel) valueLabel.textContent = input.value;
     });
   }
 
