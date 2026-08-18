@@ -64,7 +64,7 @@
   mix-blend-mode: multiply;
   pointer-events: none;
   object-fit: contain;
-  filter: brightness(1.05);
+  filter: brightness(1.18);
 }
 
 .geschirr-configurator__options {

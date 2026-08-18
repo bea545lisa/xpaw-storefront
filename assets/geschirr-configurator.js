@@ -53,19 +53,19 @@
 
     // Approximate ring centers/radii within the 1000x1000 canvas (neck ring, belly ring).
     const RING_SPOTS = [
-      { x: 500, y: 480, r: 75 },
-      { x: 500, y: 900, r: 80 },
+      { x: 500, y: 480, r: 95 },
+      { x: 500, y: 900, r: 100 },
     ];
 
     function paintRingShine(ctx, cx, cy, r, hex) {
       const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-      grad.addColorStop(0, shadeHex(hex, 150));
-      grad.addColorStop(0.18, shadeHex(hex, 70));
-      grad.addColorStop(0.32, shadeHex(hex, 20));
-      grad.addColorStop(0.5, shadeHex(hex, 90));
-      grad.addColorStop(0.68, shadeHex(hex, -20));
-      grad.addColorStop(0.86, shadeHex(hex, -65));
-      grad.addColorStop(1, shadeHex(hex, -95));
+      grad.addColorStop(0, shadeHex(hex, 210));
+      grad.addColorStop(0.16, shadeHex(hex, 100));
+      grad.addColorStop(0.3, shadeHex(hex, 30));
+      grad.addColorStop(0.48, shadeHex(hex, 130));
+      grad.addColorStop(0.66, shadeHex(hex, -40));
+      grad.addColorStop(0.84, shadeHex(hex, -95));
+      grad.addColorStop(1, shadeHex(hex, -140));
 
       ctx.save();
       ctx.beginPath();
@@ -218,7 +218,16 @@
         out.height = size;
         const octx = out.getContext('2d');
 
-        octx.fillStyle = '#ffffff';
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+          const bgGrad = octx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+          bgGrad.addColorStop(0, '#3a3a3a');
+          bgGrad.addColorStop(0.7, '#202020');
+          bgGrad.addColorStop(1, '#121212');
+          octx.fillStyle = bgGrad;
+        } else {
+          octx.fillStyle = '#ffffff';
+        }
         octx.fillRect(0, 0, size, size);
 
         if (outlineCanvas) {
@@ -232,7 +241,7 @@
         });
 
         if (shadingCanvas) {
-          octx.filter = 'brightness(1.05)';
+          octx.filter = 'brightness(1.18)';
           octx.globalCompositeOperation = 'multiply';
           octx.drawImage(shadingCanvas, 0, 0, size, size);
           octx.globalCompositeOperation = 'source-over';
