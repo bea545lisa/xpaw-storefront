@@ -1,0 +1,180 @@
+{% comment %}
+  Universal promo banner: cycling images on one side, a hand-drawn arrow
+  pointing to a heading/text/button on the other side. Stacks vertically
+  on mobile (images, then arrow rotated, then text). Not tied to any
+  specific product - reusable for any promo.
+{% endcomment %}
+
+<div
+  class="banner-promo"
+  data-interval="{{ section.settings.interval }}"
+  style="
+    --banner-promo-heading-size: {{ section.settings.heading_size }}px;
+    --banner-promo-heading-color: {{ section.settings.heading_color }};
+    --banner-promo-text-color: {{ section.settings.text_color }};
+    --banner-promo-background: {{ section.settings.background }};
+    --banner-promo-button-bg: {{ section.settings.button_background }};
+    --banner-promo-button-text: {{ section.settings.button_text_color }};
+    --banner-promo-arrow-color: {{ section.settings.arrow_color }};
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="banner-promo__stage">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'image' -%}
+        <img
+          class="banner-promo__slide{% if forloop.first %} banner-promo__slide--active{% endif %}"
+          src="{{ block.settings.image | image_url: width: 1200 }}"
+          alt="{{ block.settings.image.alt | default: section.settings.heading | escape }}"
+          loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+          data-block-id="{{ block.id }}"
+          {{ block.shopify_attributes }}
+        >
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  {%- if section.settings.show_arrow -%}
+    <div class="banner-promo__arrow" aria-hidden="true">
+      <svg viewBox="0 0 160 90" class="banner-promo__arrow-svg">
+        <path d="M6 22 C 40 12, 90 14, 122 40" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+        <path d="M108 34 C 118 40, 126 48, 130 60 C 124 54, 114 50, 100 50" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  {%- endif -%}
+
+  <div class="banner-promo__content">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="banner-promo__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+    {%- if section.settings.text != blank -%}
+      <div class="banner-promo__text">{{ section.settings.text }}</div>
+    {%- endif -%}
+    {%- if section.settings.button_label != blank and section.settings.button_link != blank -%}
+      <a href="{{ section.settings.button_link }}" class="banner-promo__button">{{ section.settings.button_label }}</a>
+    {%- endif -%}
+  </div>
+</div>
+
+{{ 'banner-promo.css' | asset_url | stylesheet_tag }}
+{{ 'banner-promo.js' | asset_url | script_tag }}
+
+{% schema %}
+{
+  "name": "Banner Promo",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Überschrift",
+      "default": "Dein Text hier"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Überschrift-Größe",
+      "min": 16,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 26
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Überschrift-Farbe"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text-Farbe"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button-Text",
+      "default": "Mehr erfahren"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button-Link"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button-Hintergrund"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button-Textfarbe"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "Sektions-Hintergrund"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrow",
+      "label": "Pfeil anzeigen",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "arrow_color",
+      "label": "Pfeil-Farbe"
+    },
+    {
+      "type": "range",
+      "id": "interval",
+      "label": "Bild-Wechsel-Intervall (Sekunden)",
+      "min": 1,
+      "max": 10,
+      "step": 0.5,
+      "default": 2.5
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Bild",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Bild"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Banner Promo",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" }
+      ]
+    }
+  ]
+}
+{% endschema %}
