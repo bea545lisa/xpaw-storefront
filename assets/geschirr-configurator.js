@@ -33,6 +33,13 @@
       }));
     }
 
+    const labelSourceEl = document.querySelector('.geschirr-configurator__label-source');
+    if (labelSourceEl) {
+      loadPromises.push(loadImage(labelSourceEl.src).then((loaded) => {
+        maskImages.__labelSource = loaded;
+      }));
+    }
+
     function shadeHex(hex, amount) {
       const num = parseInt(hex.replace('#', ''), 16);
       let r = (num >> 16) + amount;
@@ -52,13 +59,13 @@
 
     function paintRingShine(ctx, cx, cy, r, hex) {
       const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-      grad.addColorStop(0, shadeHex(hex, 255));
-      grad.addColorStop(0.18, shadeHex(hex, 120));
-      grad.addColorStop(0.32, shadeHex(hex, 10));
-      grad.addColorStop(0.5, shadeHex(hex, 160));
-      grad.addColorStop(0.68, shadeHex(hex, -60));
-      grad.addColorStop(0.86, shadeHex(hex, -140));
-      grad.addColorStop(1, shadeHex(hex, -200));
+      grad.addColorStop(0, shadeHex(hex, 150));
+      grad.addColorStop(0.18, shadeHex(hex, 70));
+      grad.addColorStop(0.32, shadeHex(hex, 20));
+      grad.addColorStop(0.5, shadeHex(hex, 90));
+      grad.addColorStop(0.68, shadeHex(hex, -20));
+      grad.addColorStop(0.86, shadeHex(hex, -65));
+      grad.addColorStop(1, shadeHex(hex, -95));
 
       ctx.save();
       ctx.beginPath();
@@ -161,7 +168,7 @@
       ctx.drawImage(maskImages.__shadingSource, 0, 0, shadingCanvas.width, shadingCanvas.height);
 
       ctx.globalCompositeOperation = 'destination-out';
-      ['metal', 'schnallen', 'label'].forEach((layer) => {
+      ['metal', 'label'].forEach((layer) => {
         if (maskImages[layer]) {
           ctx.drawImage(maskImages[layer], 0, 0, shadingCanvas.width, shadingCanvas.height);
         }
@@ -170,10 +177,31 @@
       ctx.globalCompositeOperation = 'source-over';
     }
 
+    function paintLabel() {
+      const canvas = canvases.label;
+      const mask = maskImages.label;
+      if (!canvas || !mask) return;
+
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = 'source-over';
+
+      if (maskImages.__labelSource) {
+        ctx.drawImage(maskImages.__labelSource, 0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.fillStyle = '#D9BFA0';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      ctx.globalCompositeOperation = 'destination-in';
+      ctx.drawImage(mask, 0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = 'source-over';
+    }
+
     Promise.all(loadPromises).then(() => {
       paintShading();
       paintOutline();
-      paintLayer('label', '#D9BFA0', false);
+      paintLabel();
       document.querySelectorAll('fieldset[data-layer]').forEach((fieldset) => {
         const layer = fieldset.dataset.layer;
         const checked = fieldset.querySelector('input:checked');
