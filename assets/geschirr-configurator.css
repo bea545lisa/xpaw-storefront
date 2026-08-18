@@ -14,6 +14,10 @@
   overflow: hidden;
 }
 
+[data-theme="dark"] .geschirr-configurator__preview {
+  background: radial-gradient(ellipse at center, #4f4f4f 0%, #333333 70%, #262626 100%);
+}
+
 .geschirr-configurator__preview::after {
   content: '';
   position: absolute;
