@@ -10,7 +10,7 @@
   margin: 0 auto;
   border-radius: 0.6rem;
   box-shadow: 0 0.4rem 1.2rem rgba(var(--color-shadow), 0.25);
-  background: radial-gradient(ellipse at center, #d9d9d6 0%, #b9b9b5 100%);
+  background: radial-gradient(ellipse at center, #ffffff 0%, #f0f0ee 100%);
   overflow: hidden;
 }
 
@@ -43,7 +43,7 @@
   mix-blend-mode: multiply;
   pointer-events: none;
   object-fit: contain;
-  filter: brightness(1.25) contrast(1.15);
+  filter: brightness(1.05);
 }
 
 .geschirr-configurator__options {
