@@ -55,9 +55,10 @@
 }
 
 .banner-promo__content {
-  justify-self: start;
+  justify-self: stretch;
   margin-left: 0;
-  max-width: 560px;
+  margin-right: 1.5rem;
+  max-width: none;
 }
 
 .banner-promo__heading {
