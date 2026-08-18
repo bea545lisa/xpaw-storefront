@@ -38,11 +38,12 @@
 
     function metallicGradient(ctx, canvas, hex) {
       const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      grad.addColorStop(0, shadeHex(hex, 110));
-      grad.addColorStop(0.2, shadeHex(hex, 40));
-      grad.addColorStop(0.45, hex);
-      grad.addColorStop(0.7, shadeHex(hex, -30));
-      grad.addColorStop(1, shadeHex(hex, -70));
+      grad.addColorStop(0, shadeHex(hex, 150));
+      grad.addColorStop(0.18, shadeHex(hex, 45));
+      grad.addColorStop(0.38, shadeHex(hex, -20));
+      grad.addColorStop(0.55, shadeHex(hex, 90));
+      grad.addColorStop(0.72, shadeHex(hex, -55));
+      grad.addColorStop(1, shadeHex(hex, -110));
       return grad;
     }
 
