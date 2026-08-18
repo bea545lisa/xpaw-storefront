@@ -10,6 +10,8 @@
   background-image: var(--banner-promo-background-image, none);
   background-size: cover;
   background-position: center;
+  border: var(--banner-promo-border, none);
+  box-sizing: border-box;
 }
 
 .banner-promo__stage {
@@ -35,7 +37,9 @@
 
 .banner-promo__arrow {
   color: var(--banner-promo-arrow-color, rgba(var(--color-foreground), 0.55));
-  width: 90px;
+  width: 140px;
+  align-self: start;
+  margin-top: -1.5rem;
 }
 
 .banner-promo__arrow-svg {
@@ -58,7 +62,7 @@
 }
 
 .banner-promo__text {
-  font-size: 1.15rem;
+  font-size: var(--banner-promo-text-size, 18px);
   line-height: 1.5;
   color: var(--banner-promo-text-color, rgba(var(--color-foreground), 0.75));
   margin-bottom: 1.25rem;
@@ -66,13 +70,13 @@
 
 .banner-promo__button {
   display: inline-block;
-  padding: 0.75rem 1.75rem;
-  border: 0.1rem solid var(--banner-promo-button-bg, rgb(var(--color-foreground)));
-  border-radius: 0.4rem;
+  padding: 1.1rem 2.75rem;
+  border: 0.15rem solid var(--banner-promo-button-border, rgb(var(--color-foreground)));
+  border-radius: 0.5rem;
   text-decoration: none;
   background: var(--banner-promo-button-bg, transparent);
   color: var(--banner-promo-button-text, rgb(var(--color-foreground)));
-  font-size: 1rem;
+  font-size: 1.2rem;
 }
 
 @media screen and (max-width: 749px) {
