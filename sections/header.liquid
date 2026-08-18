@@ -276,6 +276,24 @@
     background: {{ scrolled_bg }} !important;
   }
 
+  [data-theme="dark"] .section-header.scrolled-past-header:not(.hero-overlay-active) .header-wrapper,
+  [data-theme="dark"] .section-header.hero-overlay-active.header-past-banner .header-wrapper {
+    background: rgba(10, 10, 10, 0.75) !important;
+    box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.4);
+  }
+
+  [data-theme="dark"] .section-header.scrolled-past-header:not(.hero-overlay-active),
+  [data-theme="dark"] .section-header.scrolled-past-header:not(.hero-overlay-active) .header-wrapper,
+  [data-theme="dark"] .section-header.hero-overlay-active.header-past-banner,
+  [data-theme="dark"] .section-header.hero-overlay-active.header-past-banner .header-wrapper {
+    --color-foreground: 237, 237, 237;
+  }
+
+  [data-theme="dark"] .header-localization .disclosure__list-wrapper {
+    background-color: rgb(33, 33, 33) !important;
+    border-color: rgba(237, 237, 237, 0.15) !important;
+  }
+
   .section-header.header-compact .header {
     padding-top: calc({{ section.settings.padding_top }}px * {{ section.settings.scrolled_shrink }} / 100 * 0.3);
     padding-bottom: calc({{ section.settings.padding_bottom }}px * {{ section.settings.scrolled_shrink }} / 100 * 0.3);
