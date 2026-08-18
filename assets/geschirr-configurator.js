@@ -1,54 +1,5 @@
-class GeschirrConfigurator extends HTMLElement {
-  connectedCallback() {
-    this.canvases = {};
-    this.querySelectorAll('.geschirr-configurator__layer').forEach((canvas) => {
-      this.canvases[canvas.dataset.layer] = canvas;
-    });
-
-    this.maskImages = {};
-    const maskEls = this.querySelectorAll('.geschirr-configurator__mask-source');
-    const loadPromises = Array.from(maskEls).map((img) => {
-      return this.loadImage(img.src).then((loaded) => {
-        this.maskImages[img.dataset.mask] = loaded;
-      });
-    });
-
-    Promise.all(loadPromises).then(() => {
-      this.querySelectorAll('fieldset[data-layer]').forEach((fieldset) => {
-        const layer = fieldset.dataset.layer;
-        const checked = fieldset.querySelector('input:checked');
-        if (checked) this.applyInput(layer, checked);
-      });
-    });
-
-    this.addEventListener('change', (event) => {
-      const input = event.target;
-      if (input.tagName !== 'INPUT') return;
-
-      const fieldset = input.closest('fieldset');
-      const layer = fieldset.dataset.layer;
-
-      this.applyInput(layer, input);
-
-      const hidden = this.querySelector(`input[data-hidden-for="${layer}"]`);
-      if (hidden) hidden.value = input.value;
-
-      const valueLabel = this.querySelector(`[data-value-for="${layer}"]`);
-      if (valueLabel) valueLabel.textContent = input.value;
-    });
-  }
-
-  applyInput(layer, input) {
-    if (input.dataset.pattern) {
-      this.loadImage(input.dataset.pattern).then((tile) => {
-        this.paintLayer(layer, tile, true);
-      });
-    } else {
-      this.paintLayer(layer, input.dataset.color, false);
-    }
-  }
-
-  loadImage(src) {
+(function () {
+  function loadImage(src) {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.crossOrigin = 'anonymous';
@@ -58,23 +9,79 @@ class GeschirrConfigurator extends HTMLElement {
     });
   }
 
-  paintLayer(layer, fill, isPattern) {
-    const canvas = this.canvases[layer];
-    const mask = this.maskImages[layer];
-    if (!canvas || !mask) return;
+  function init() {
+    const canvases = {};
+    document.querySelectorAll('.geschirr-configurator__layer').forEach((canvas) => {
+      canvases[canvas.dataset.layer] = canvas;
+    });
 
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (Object.keys(canvases).length === 0) return;
 
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.fillStyle = isPattern ? ctx.createPattern(fill, 'repeat') : fill;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const maskImages = {};
+    const maskEls = document.querySelectorAll('.geschirr-configurator__mask-source');
+    const loadPromises = Array.from(maskEls).map((img) => {
+      return loadImage(img.src).then((loaded) => {
+        maskImages[img.dataset.mask] = loaded;
+      });
+    });
 
-    ctx.globalCompositeOperation = 'destination-in';
-    ctx.drawImage(mask, 0, 0, canvas.width, canvas.height);
+    function paintLayer(layer, fill, isPattern) {
+      const canvas = canvases[layer];
+      const mask = maskImages[layer];
+      if (!canvas || !mask) return;
 
-    ctx.globalCompositeOperation = 'source-over';
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = isPattern ? ctx.createPattern(fill, 'repeat') : fill;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.globalCompositeOperation = 'destination-in';
+      ctx.drawImage(mask, 0, 0, canvas.width, canvas.height);
+
+      ctx.globalCompositeOperation = 'source-over';
+    }
+
+    function applyInput(layer, input) {
+      if (input.dataset.pattern) {
+        loadImage(input.dataset.pattern).then((tile) => {
+          paintLayer(layer, tile, true);
+        });
+      } else {
+        paintLayer(layer, input.dataset.color, false);
+      }
+    }
+
+    Promise.all(loadPromises).then(() => {
+      document.querySelectorAll('fieldset[data-layer]').forEach((fieldset) => {
+        const layer = fieldset.dataset.layer;
+        const checked = fieldset.querySelector('input:checked');
+        if (checked) applyInput(layer, checked);
+      });
+    });
+
+    document.addEventListener('change', (event) => {
+      const input = event.target;
+      if (input.tagName !== 'INPUT') return;
+
+      const fieldset = input.closest('fieldset[data-layer]');
+      if (!fieldset) return;
+      const layer = fieldset.dataset.layer;
+
+      applyInput(layer, input);
+
+      const hidden = document.querySelector(`input[data-hidden-for="${layer}"]`);
+      if (hidden) hidden.value = input.value;
+
+      const valueLabel = document.querySelector(`[data-value-for="${layer}"]`);
+      if (valueLabel) valueLabel.textContent = input.value;
+    });
   }
-}
 
-customElements.define('geschirr-configurator', GeschirrConfigurator);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();

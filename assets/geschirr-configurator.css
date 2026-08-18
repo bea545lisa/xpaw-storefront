@@ -60,13 +60,13 @@
   white-space: nowrap;
 }
 
-.swatch {
+.geschirr-configurator__swatch {
   --swatch-color: transparent;
   --swatch-image: none;
   position: relative;
   display: inline-flex;
-  width: 3.2rem;
-  height: 3.2rem;
+  width: 4.25rem;
+  height: 4.25rem;
   margin: 0 0.5rem 0.5rem 0;
   border-radius: 50%;
   cursor: pointer;
@@ -77,7 +77,7 @@
   transition: box-shadow 0.1s ease;
 }
 
-.swatch input {
+.geschirr-configurator__swatch input {
   position: absolute;
   inset: 0;
   margin: 0;
@@ -85,13 +85,13 @@
   cursor: pointer;
 }
 
-.swatch:has(input:checked) {
+.geschirr-configurator__swatch:has(input:checked) {
   box-shadow:
     0 0 0 0.2rem rgb(var(--color-background)),
     0 0 0 0.35rem rgba(var(--color-foreground), 0.85);
 }
 
-.swatch:has(input:focus-visible) {
+.geschirr-configurator__swatch:has(input:focus-visible) {
   outline: 0.2rem solid rgba(var(--color-foreground), 0.5);
   outline-offset: 0.2rem;
 }
