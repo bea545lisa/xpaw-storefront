@@ -42,9 +42,10 @@
 
 .banner-promo__arrow {
   color: var(--banner-promo-arrow-color, rgba(var(--color-foreground), 0.7));
-  width: 170px;
+  width: 210px;
   align-self: start;
-  margin-top: 2rem;
+  margin-top: 4rem;
+  margin-left: -2rem;
 }
 
 .banner-promo__arrow-svg,
