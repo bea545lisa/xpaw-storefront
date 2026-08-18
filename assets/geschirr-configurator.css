@@ -3,6 +3,17 @@
   margin-bottom: 2rem;
 }
 
+.geschirr-configurator__export-button {
+  display: block;
+  margin: 0.75rem auto 0;
+  font-size: 0.8rem;
+  color: rgba(var(--color-foreground), 0.6);
+  background: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .geschirr-configurator__preview {
   position: relative;
   width: 100%;

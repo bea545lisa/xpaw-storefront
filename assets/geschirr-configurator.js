@@ -51,12 +51,14 @@
     ];
 
     function paintRingShine(ctx, cx, cy, r, hex) {
-      const grad = ctx.createRadialGradient(cx, cy, r * 0.1, cx, cy, r);
-      grad.addColorStop(0, shadeHex(hex, 170));
-      grad.addColorStop(0.35, shadeHex(hex, 40));
-      grad.addColorStop(0.6, hex);
-      grad.addColorStop(0.85, shadeHex(hex, -70));
-      grad.addColorStop(1, shadeHex(hex, -120));
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+      grad.addColorStop(0, shadeHex(hex, 255));
+      grad.addColorStop(0.18, shadeHex(hex, 120));
+      grad.addColorStop(0.32, shadeHex(hex, 10));
+      grad.addColorStop(0.5, shadeHex(hex, 160));
+      grad.addColorStop(0.68, shadeHex(hex, -60));
+      grad.addColorStop(0.86, shadeHex(hex, -140));
+      grad.addColorStop(1, shadeHex(hex, -200));
 
       ctx.save();
       ctx.beginPath();
@@ -159,7 +161,7 @@
       ctx.drawImage(maskImages.__shadingSource, 0, 0, shadingCanvas.width, shadingCanvas.height);
 
       ctx.globalCompositeOperation = 'destination-out';
-      ['metal', 'schnallen'].forEach((layer) => {
+      ['metal', 'schnallen', 'label'].forEach((layer) => {
         if (maskImages[layer]) {
           ctx.drawImage(maskImages[layer], 0, 0, shadingCanvas.width, shadingCanvas.height);
         }
@@ -171,12 +173,54 @@
     Promise.all(loadPromises).then(() => {
       paintShading();
       paintOutline();
+      paintLayer('label', '#D9BFA0', false);
       document.querySelectorAll('fieldset[data-layer]').forEach((fieldset) => {
         const layer = fieldset.dataset.layer;
         const checked = fieldset.querySelector('input:checked');
         if (checked) applyInput(layer, checked);
       });
     });
+
+    const exportButton = document.querySelector('.geschirr-configurator__export-button');
+    if (exportButton) {
+      exportButton.addEventListener('click', () => {
+        const size = 1000;
+        const out = document.createElement('canvas');
+        out.width = size;
+        out.height = size;
+        const octx = out.getContext('2d');
+
+        octx.fillStyle = '#ffffff';
+        octx.fillRect(0, 0, size, size);
+
+        if (outlineCanvas) {
+          octx.filter = 'blur(9px)';
+          octx.drawImage(outlineCanvas, 0, 0, size, size);
+          octx.filter = 'none';
+        }
+
+        ['polsterung', 'gurt', 'schnallen', 'metal', 'label'].forEach((layer) => {
+          if (canvases[layer]) octx.drawImage(canvases[layer], 0, 0, size, size);
+        });
+
+        if (shadingCanvas) {
+          octx.filter = 'brightness(1.05)';
+          octx.globalCompositeOperation = 'multiply';
+          octx.drawImage(shadingCanvas, 0, 0, size, size);
+          octx.globalCompositeOperation = 'source-over';
+          octx.filter = 'none';
+        }
+
+        out.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'geschirr-vorschau.png';
+          link.click();
+          URL.revokeObjectURL(url);
+        }, 'image/png');
+      });
+    }
 
     document.addEventListener('change', (event) => {
       const input = event.target;
