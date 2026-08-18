@@ -56,7 +56,7 @@
 
 .banner-promo__content {
   justify-self: start;
-  margin-left: 5rem;
+  margin-left: 0;
   max-width: 560px;
 }
 
