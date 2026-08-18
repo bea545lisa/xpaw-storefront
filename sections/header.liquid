@@ -16,6 +16,14 @@
   <link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 {%- endif -%}
 
+{%- comment -%}
+  Transparenter Header läuft auf jeder Seite gleich — findet das Skript unten
+  aber keine Banner-Sektion auf der Seite (z.B. Kollektions-/Produktseiten ohne
+  Bild-Banner), wird sofort der solide Zustand gesetzt statt dauerhaft
+  transparent zu bleiben und den Inhalt zu überlappen.
+{%- endcomment -%}
+{%- assign is_transparent_active = section.settings.transparent_header -%}
+
 <style>
   header-drawer {
     justify-self: start;
@@ -26,6 +34,68 @@
     .scrolled-past-header .header__heading-logo-wrapper {
       width: 75%;
     }
+  {%- endif -%}
+
+  {%- if is_transparent_active -%}
+    .section-header .header__heading-logo-wrapper {
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .section-header.header-compact .header__heading-logo-wrapper {
+      width: {{ section.settings.scrolled_shrink }}%;
+    }
+
+    .section-header .header__heading-link {
+      transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .section-header.header-compact .header__heading-link {
+      padding: calc(0.75rem * {{ section.settings.scrolled_shrink }} / 100);
+    }
+
+    .section-header .header__heading {
+      transition: font-size 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .section-header.header-compact .header__heading {
+      font-size: calc(1em * {{ section.settings.scrolled_shrink }} / 100);
+    }
+
+    {%- if section.settings.text_instead_of_logo_on_banner -%}
+      {#- Solange transparent über dem Banner (noch nicht gescrollt): Shopname als
+         Text statt Logo-Bild zeigen, damit nicht 2x das Logo zu sehen ist
+         (einmal im Banner-Block, einmal im Header). Nach dem Scrollen: echtes Logo. -#}
+      .header__heading-text-fallback {
+        display: none;
+      }
+
+      .header__heading-text-fallback.h2 {
+        font-weight: 700 !important;
+        font-size: 1.5em !important;
+        color: rgb(var(--color-foreground)) !important;
+        line-height: 1;
+        align-self: flex-end;
+        margin-bottom: 0.3em;
+      }
+
+      .header__heading-link:hover .header__heading-text-fallback.h2 {
+        color: rgb(var(--color-foreground)) !important;
+      }
+
+      .section-header.hero-overlay-active:not(.header-compact) .header__heading-logo-wrapper {
+        display: none;
+      }
+
+      .section-header.hero-overlay-active:not(.header-compact) .header__heading-text-fallback {
+        display: inline-flex;
+        align-items: flex-end;
+      }
+
+      .section-header.hero-overlay-active:not(.header-compact) .header__heading-link {
+        display: inline-flex;
+        align-items: flex-end;
+      }
+    {%- endif -%}
   {%- endif -%}
 
   {%- if section.settings.menu_type_desktop != "drawer" -%}
@@ -92,15 +162,284 @@
     }
   }
 
+  {%- if section.settings.menu_font_size != blank -%}
+    .header__inline-menu .header__menu-item,
+    .menu-drawer__menu-item {
+      font-size: {{ section.settings.menu_font_size }}px;
+      transition: font-size 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .header-compact .header__inline-menu .header__menu-item {
+      font-size: calc({{ section.settings.menu_font_size }}px * {{ section.settings.scrolled_shrink }} / 100);
+    }
+  {%- endif -%}
+
   @media screen and (min-width: 990px) {
     .header {
       padding-top: {{ section.settings.padding_top }}px;
       padding-bottom: {{ section.settings.padding_bottom }}px;
     }
   }
+
+  {%- liquid
+    if section.settings.scrolled_style == 'dark'
+      assign scrolled_bg = 'rgba(20, 20, 20, 0.55)'
+      assign scrolled_fg = '255,255,255'
+    else
+      assign scrolled_bg = 'rgba(255, 255, 255, 0.65)'
+      assign scrolled_fg = '18,18,18'
+    endif
+  -%}
+
+  {%- comment -%}
+    .hero-overlay-active wird per JS nur gesetzt, wenn auf der Seite wirklich
+    eine Banner-Sektion existiert. Ohne diese Klasse bleibt der Header immer im
+    normalen, soliden Standard-Zustand (wie für hellen Hintergrund gedacht) —
+    unabhängig davon, ob die Einstellung "Transparent anzeigen" aktiv ist.
+  {%- endcomment -%}
+  {%- if is_transparent_active -%}
+    .section-header.hero-overlay-active {
+      position: absolute;
+      top: var(--announcement-bar-height, 0px);
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 10;
+      background: transparent;
+      border-bottom: none;
+      transition: top 0.25s ease;
+    }
+
+    .section-header.hero-overlay-active .header-wrapper {
+      background: transparent !important;
+    }
+
+    .section-header.hero-overlay-active:not(.header-past-banner),
+    .section-header.hero-overlay-active:not(.header-past-banner) .header-wrapper {
+      --color-foreground: var(--adaptive-color-foreground, 255,255,255);
+    }
+
+    .section-header.hero-overlay-active.scrolled-past-header {
+      position: fixed;
+      top: 0;
+    }
+
+    .section-header.hero-overlay-active.header-past-banner,
+    .section-header.hero-overlay-active.header-past-banner .header-wrapper {
+      --color-foreground: {{ scrolled_fg }};
+    }
+  {%- endif -%}
+
+  .section-header,
+  .section-header .header-wrapper,
+  .section-header .header,
+  .section-header a,
+  .section-header svg {
+    transition: top 0.35s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.35s ease, padding 0.35s cubic-bezier(0.4, 0, 0.2, 1), -webkit-backdrop-filter 0.35s ease, backdrop-filter 0.35s ease, color 0.35s ease, fill 0.35s ease;
+  }
+
+  {%- if is_transparent_active -%}
+    {#- Phase 1: über dem Banner, sticky, aber noch nicht komplett durchgescrollt -> dunkel-verschwommen -#}
+    .section-header.hero-overlay-active.scrolled-past-header:not(.header-past-banner) {
+      -webkit-backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
+      backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
+    }
+
+    .section-header.hero-overlay-active.scrolled-past-header:not(.header-past-banner) .header-wrapper {
+      background: rgba(20, 20, 20, 0.55) !important;
+    }
+
+    .section-header.hero-overlay-active.scrolled-past-header:not(.header-past-banner),
+    .section-header.hero-overlay-active.scrolled-past-header:not(.header-past-banner) .header-wrapper {
+      --color-foreground: 255,255,255;
+    }
+
+    {#- Phase 2: Banner komplett durchgescrollt -> eingestellte Hell/Dunkel-Farbe -#}
+    .section-header.hero-overlay-active.header-past-banner {
+      -webkit-backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
+      backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
+    }
+
+    .section-header.hero-overlay-active.header-past-banner .header-wrapper {
+      background: {{ scrolled_bg }} !important;
+    }
+  {%- endif -%}
+
+  {#- Standard-Zustand ohne Banner auf der Seite (oder Feature aus): normaler
+     sticky Header, wird beim Scrollen einfach solide/verschwommen wie gewohnt. -#}
+  .section-header.scrolled-past-header:not(.hero-overlay-active) {
+    -webkit-backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
+    backdrop-filter: blur({{ section.settings.scrolled_blur }}px);
+  }
+
+  .section-header.scrolled-past-header:not(.hero-overlay-active) .header-wrapper {
+    background: {{ scrolled_bg }} !important;
+  }
+
+  [data-theme="dark"] .section-header.scrolled-past-header:not(.hero-overlay-active) .header-wrapper,
+  [data-theme="dark"] .section-header.hero-overlay-active.header-past-banner .header-wrapper {
+    background: rgba(10, 10, 10, 0.75) !important;
+    box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.4);
+  }
+
+  [data-theme="dark"] .section-header.scrolled-past-header:not(.hero-overlay-active),
+  [data-theme="dark"] .section-header.scrolled-past-header:not(.hero-overlay-active) .header-wrapper,
+  [data-theme="dark"] .section-header.hero-overlay-active.header-past-banner,
+  [data-theme="dark"] .section-header.hero-overlay-active.header-past-banner .header-wrapper {
+    --color-foreground: 237, 237, 237;
+  }
+
+  [data-theme="dark"] .header-localization .disclosure__list-wrapper {
+    background-color: rgb(33, 33, 33) !important;
+    border-color: rgba(237, 237, 237, 0.15) !important;
+  }
+
+  .section-header.header-compact .header {
+    padding-top: calc({{ section.settings.padding_top }}px * {{ section.settings.scrolled_shrink }} / 100 * 0.3);
+    padding-bottom: calc({{ section.settings.padding_bottom }}px * {{ section.settings.scrolled_shrink }} / 100 * 0.3);
+  }
+
+  @media screen and (min-width: 990px) {
+    .section-header.header-compact .header--middle-left,
+    .section-header.header-compact .header--middle-center {
+      column-gap: calc(1rem * {{ section.settings.scrolled_shrink }} / 100);
+      transition: column-gap 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  }
+
+  .section-header .header__menu {
+    transition: padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .section-header.header-compact .header__menu {
+    padding: 0 calc(1rem * {{ section.settings.scrolled_shrink }} / 100);
+  }
+
+  .section-header.header-compact .header-wrapper {
+    border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.12);
+  }
 {%- endstyle -%}
 
 <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
+
+<script>
+  (function () {
+    // Eigener, schneller Trigger fürs Verkleinern (Logo/Schrift/Padding) — reagiert
+    // schon nach wenigen Pixeln, statt wie Shopifys eingebaute 'scrolled-past-header'-
+    // Klasse erst nach ca. der ganzen Header-Höhe.
+    var header = document.querySelector('.section-header');
+    if (!header) return;
+    var threshold = 0;
+    function update() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      header.classList.toggle('header-compact', scrollTop > threshold);
+    }
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+  })();
+</script>
+
+{%- if is_transparent_active -%}
+  <script>
+    (function () {
+      // Header/Ankündigungsleiste sollen erst "solide" werden, wenn das ganze
+      // Banner durchgescrollt ist — nicht schon nach ein paar Pixeln (das würde
+      // die eingebaute 'scrolled-past-header'-Klasse zu früh auslösen, da die
+      // nur an der Höhe des Headers selbst hängt, nicht am Banner).
+      function markPastBanner() {
+        var hero = document.querySelector('.banner');
+        var targets = document.querySelectorAll('.section-header, .announcement-bar-section');
+        if (!targets.length) return;
+
+        if (!hero) {
+          // Keine Banner-Sektion auf dieser Seite (z.B. Kollektions-/Produktseite) ->
+          // .hero-overlay-active bleibt weg, Header läuft komplett normal (siehe CSS).
+          return;
+        }
+
+        targets.forEach(function (el) {
+          el.classList.add('hero-overlay-active');
+        });
+
+        function update() {
+          var rect = hero.getBoundingClientRect();
+          var headerHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 80;
+          var pastBanner = rect.bottom <= headerHeight;
+          targets.forEach(function (el) {
+            el.classList.toggle('header-past-banner', pastBanner);
+          });
+        }
+
+        update();
+        window.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
+        window.addEventListener('load', update);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', markPastBanner);
+      } else {
+        markPastBanner();
+      }
+    })();
+  </script>
+{%- endif -%}
+
+{%- if is_transparent_active and section.settings.adaptive_text_color -%}
+  <script>
+    (function () {
+      // Ermittelt die Helligkeit im oberen Bereich des ersten Banner-Bilds
+      // (dort, wo Header/Ankündigungsleiste transparent drüberliegen) und setzt
+      // die Textfarbe entsprechend hell/dunkel, bevor gescrollt wird.
+      function analyze() {
+        var img = document.querySelector('.banner__media img');
+        if (!img) return;
+
+        function sample() {
+          try {
+            var canvas = document.createElement('canvas');
+            var sampleWidth = 200;
+            var headerHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 100;
+            var scale = sampleWidth / img.naturalWidth;
+            var sampleHeight = Math.max(1, Math.round(headerHeight * scale));
+
+            canvas.width = sampleWidth;
+            canvas.height = sampleHeight;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, sampleWidth, sampleHeight);
+
+            var data = ctx.getImageData(0, 0, sampleWidth, sampleHeight).data;
+            var total = 0;
+            var count = 0;
+            for (var i = 0; i < data.length; i += 4) {
+              // Wahrgenommene Helligkeit (relative Luminanz)
+              total += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+              count++;
+            }
+            var brightness = total / count;
+            var fg = brightness < 130 ? '255,255,255' : '18,18,18';
+            document.documentElement.style.setProperty('--adaptive-color-foreground', fg);
+          } catch (e) {
+            // Bild von fremder Domain ohne CORS-Freigabe -> Canvas gesperrt.
+            // In dem Fall bleibt die weiße Standardfarbe erhalten.
+          }
+        }
+
+        if (img.complete && img.naturalWidth > 0) {
+          sample();
+        } else {
+          img.addEventListener('load', sample, { once: true });
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', analyze);
+      } else {
+        analyze();
+      }
+    })();
+  </script>
+{%- endif -%}
 
 {%- liquid
   for block in section.blocks
@@ -171,6 +510,9 @@
                 preload: true
             }}
           </div>
+          {%- if section.settings.text_instead_of_logo_on_banner -%}
+            <span class="h2 header__heading-text-fallback">{{ shop.name }}</span>
+          {%- endif -%}
         {%- else -%}
           <span class="h2">{{ shop.name }}</span>
         {%- endif -%}
@@ -214,6 +556,9 @@
                 preload: true
             }}
           </div>
+          {%- if section.settings.text_instead_of_logo_on_banner -%}
+            <span class="h2 header__heading-text-fallback">{{ shop.name }}</span>
+          {%- endif -%}
         {%- else -%}
           <span class="h2">{{ shop.name }}</span>
         {%- endif -%}
@@ -515,12 +860,12 @@
       "id": "mobile_logo_position",
       "options": [
         {
-          "value": "center",
-          "label": "t:sections.header.settings.mobile_logo_position.options__1.label"
-        },
-        {
           "value": "left",
           "label": "t:sections.header.settings.mobile_logo_position.options__2.label"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.header.settings.mobile_logo_position.options__1.label"
         }
       ],
       "default": "center",
@@ -531,6 +876,16 @@
       "id": "menu",
       "default": "main-menu",
       "label": "t:sections.header.settings.menu.label"
+    },
+    {
+      "type": "range",
+      "id": "menu_font_size",
+      "label": "Schriftgröße Hauptmenü",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
     },
     {
       "type": "select",
@@ -575,6 +930,58 @@
       ],
       "default": "on-scroll-up",
       "label": "t:sections.header.settings.sticky_header_type.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_header",
+      "default": false,
+      "label": "Transparent über erstem Abschnitt anzeigen",
+      "info": "Kopfzeile liegt ohne Hintergrund über dem Bild-Banner. Wird beim Scrollen niedriger, kleiner und mit Weichzeichner hinterlegt. Funktioniert nur, wenn 'Sticky-Header-Typ' nicht auf 'Kein' steht."
+    },
+    {
+      "type": "checkbox",
+      "id": "text_instead_of_logo_on_banner",
+      "default": true,
+      "label": "Shopname statt Logo, solange über dem Banner",
+      "info": "Praktisch, wenn im Bild-Banner selbst schon ein Logo-Block liegt — vermeidet doppeltes Logo. Sobald man scrollt, erscheint das echte Logo im Header."
+    },
+    {
+      "type": "select",
+      "id": "scrolled_style",
+      "label": "Hintergrund beim Scrollen",
+      "options": [
+        { "value": "light", "label": "Hell" },
+        { "value": "dark", "label": "Dunkel" }
+      ],
+      "default": "light"
+    },
+    {
+      "type": "range",
+      "id": "scrolled_blur",
+      "label": "Weichzeichner-Stärke beim Scrollen",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "scrolled_shrink",
+      "label": "Verkleinerung beim Scrollen (Leiste, Schrift, Logo)",
+      "info": "Prozentualer Zielwert, auf den Logo und Menü-Schrift beim Scrollen schrumpfen (z.B. 60 = 60% der Ausgangsgröße). Steuert auch, wie flach die Leiste wird.",
+      "min": 20,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "default": 55
+    },
+    {
+      "type": "checkbox",
+      "id": "adaptive_text_color",
+      "default": false,
+      "label": "Textfarbe automatisch aus Banner-Bild ermitteln",
+      "info": "Prüft beim Laden die Helligkeit im oberen Bereich des ersten Banner-Bilds und wählt automatisch Weiß oder Dunkel für Text/Logo, solange Header transparent über dem Bild liegt."
     },
     {
       "type": "checkbox",
