@@ -13,8 +13,14 @@
     --banner-promo-heading-color: {{ section.settings.heading_color }};
     --banner-promo-text-color: {{ section.settings.text_color }};
     --banner-promo-background: {{ section.settings.background }};
+    {%- if section.settings.background_dark != blank -%}
+    --banner-promo-background-dark: {{ section.settings.background_dark }};
+    {%- endif -%}
     {%- if section.settings.background_image != blank -%}
     --banner-promo-background-image: url('{{ section.settings.background_image | image_url: width: 2000 }}');
+    {%- endif -%}
+    {%- if section.settings.background_image_dark != blank -%}
+    --banner-promo-background-image-dark: url('{{ section.settings.background_image_dark | image_url: width: 2000 }}');
     {%- endif -%}
     --banner-promo-button-bg: {{ section.settings.button_background }};
     --banner-promo-button-border: {{ section.settings.button_border_color }};
@@ -48,10 +54,14 @@
 
   {%- if section.settings.show_arrow -%}
     <div class="banner-promo__arrow" aria-hidden="true">
-      <svg viewBox="0 0 160 100" class="banner-promo__arrow-svg">
-        <path d="M6 18 C 50 6, 95 12, 122 40" fill="none" stroke="currentColor" stroke-width="16" stroke-linecap="round"/>
-        <path d="M92 34 L 138 46 L 112 90 Z" fill="currentColor"/>
-      </svg>
+      {%- if section.settings.arrow_image != blank -%}
+        <img class="banner-promo__arrow-image" src="{{ section.settings.arrow_image | image_url: width: 400 }}" alt="">
+      {%- else -%}
+        <svg viewBox="0 0 160 100" class="banner-promo__arrow-svg">
+          <path d="M6 18 C 50 6, 95 12, 122 40" fill="none" stroke="currentColor" stroke-width="16" stroke-linecap="round"/>
+          <path d="M92 34 L 138 46 L 112 90 Z" fill="currentColor"/>
+        </svg>
+      {%- endif -%}
     </div>
   {%- endif -%}
 
@@ -163,12 +173,24 @@
     {
       "type": "color",
       "id": "background",
-      "label": "Sektions-Hintergrundfarbe"
+      "label": "Hintergrundfarbe (Lightmode)"
+    },
+    {
+      "type": "color",
+      "id": "background_dark",
+      "label": "Hintergrundfarbe (Darkmode)",
+      "info": "Leer lassen, um dieselbe Farbe wie im Lightmode zu nutzen"
     },
     {
       "type": "image_picker",
       "id": "background_image",
-      "label": "Sektions-Hintergrundbild"
+      "label": "Hintergrundbild (Lightmode)"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image_dark",
+      "label": "Hintergrundbild (Darkmode)",
+      "info": "Leer lassen, um dasselbe Bild wie im Lightmode zu nutzen"
     },
     {
       "type": "checkbox",
@@ -204,9 +226,16 @@
       "default": true
     },
     {
+      "type": "image_picker",
+      "id": "arrow_image",
+      "label": "Eigenes Pfeil-Bild",
+      "info": "Wenn gesetzt, wird das eingebaute SVG ersetzt. Transparentes PNG empfohlen."
+    },
+    {
       "type": "color",
       "id": "arrow_color",
-      "label": "Pfeil-Farbe"
+      "label": "Pfeil-Farbe",
+      "info": "Wirkt nur beim eingebauten SVG, nicht bei eigenem Bild"
     },
     {
       "type": "range",
