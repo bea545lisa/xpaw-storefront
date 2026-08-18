@@ -36,15 +36,21 @@
       return `rgb(${r}, ${g}, ${b})`;
     }
 
-    function metallicGradient(ctx, canvas, hex) {
-      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      grad.addColorStop(0, shadeHex(hex, 150));
-      grad.addColorStop(0.18, shadeHex(hex, 45));
-      grad.addColorStop(0.38, shadeHex(hex, -20));
-      grad.addColorStop(0.55, shadeHex(hex, 90));
-      grad.addColorStop(0.72, shadeHex(hex, -55));
-      grad.addColorStop(1, shadeHex(hex, -110));
-      return grad;
+    function metallicPattern(ctx, hex) {
+      const size = 48;
+      const tile = document.createElement('canvas');
+      tile.width = size;
+      tile.height = size;
+      const tctx = tile.getContext('2d');
+      const grad = tctx.createLinearGradient(0, 0, size, size);
+      grad.addColorStop(0, shadeHex(hex, 130));
+      grad.addColorStop(0.22, shadeHex(hex, -25));
+      grad.addColorStop(0.45, shadeHex(hex, 95));
+      grad.addColorStop(0.7, shadeHex(hex, -65));
+      grad.addColorStop(1, shadeHex(hex, 130));
+      tctx.fillStyle = grad;
+      tctx.fillRect(0, 0, size, size);
+      return ctx.createPattern(tile, 'repeat');
     }
 
     function paintLayer(layer, fill, isPattern) {
@@ -59,7 +65,7 @@
       if (isPattern) {
         ctx.fillStyle = ctx.createPattern(fill, 'repeat');
       } else if (layer === 'metal') {
-        ctx.fillStyle = metallicGradient(ctx, canvas, fill);
+        ctx.fillStyle = metallicPattern(ctx, fill);
       } else {
         ctx.fillStyle = fill;
       }
