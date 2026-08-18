@@ -10,6 +10,20 @@
   margin: 0 auto;
   border-radius: 0.6rem;
   box-shadow: 0 0.4rem 1.2rem rgba(var(--color-shadow), 0.25);
+  background: radial-gradient(ellipse at center, #d9d9d6 0%, #b9b9b5 100%);
+  overflow: hidden;
+}
+
+.geschirr-configurator__preview::after {
+  content: '';
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 5%;
+  height: 8%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 72%);
+  filter: blur(6px);
+  z-index: 0;
 }
 
 .geschirr-configurator__layer,
@@ -18,6 +32,7 @@
   inset: 0;
   width: 100%;
   height: 100%;
+  z-index: 1;
 }
 
 .geschirr-configurator__shading {
