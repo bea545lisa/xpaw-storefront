@@ -13,6 +13,9 @@
     --banner-promo-heading-color: {{ section.settings.heading_color }};
     --banner-promo-text-color: {{ section.settings.text_color }};
     --banner-promo-background: {{ section.settings.background }};
+    {%- if section.settings.background_image != blank -%}
+    --banner-promo-background-image: url('{{ section.settings.background_image | image_url: width: 2000 }}');
+    {%- endif -%}
     --banner-promo-button-bg: {{ section.settings.button_background }};
     --banner-promo-button-text: {{ section.settings.button_text_color }};
     --banner-promo-arrow-color: {{ section.settings.arrow_color }};
@@ -37,8 +40,9 @@
   {%- if section.settings.show_arrow -%}
     <div class="banner-promo__arrow" aria-hidden="true">
       <svg viewBox="0 0 160 90" class="banner-promo__arrow-svg">
-        <path d="M6 22 C 40 12, 90 14, 122 40" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
-        <path d="M108 34 C 118 40, 126 48, 130 60 C 124 54, 114 50, 100 50" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M8 16 C 50 10, 100 22, 128 46" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round"/>
+        <path d="M100 42 C 112 44, 124 50, 132 62" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round"/>
+        <path d="M104 66 C 116 62, 126 56, 132 62" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round"/>
       </svg>
     </div>
   {%- endif -%}
@@ -130,7 +134,12 @@
     {
       "type": "color",
       "id": "background",
-      "label": "Sektions-Hintergrund"
+      "label": "Sektions-Hintergrundfarbe"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Sektions-Hintergrundbild"
     },
     {
       "type": "checkbox",
