@@ -51,10 +51,12 @@
     ];
 
     function paintRingShine(ctx, cx, cy, r, hex) {
-      const grad = ctx.createRadialGradient(cx, cy, r * 0.15, cx, cy, r);
-      grad.addColorStop(0, shadeHex(hex, 95));
-      grad.addColorStop(0.55, hex);
-      grad.addColorStop(1, shadeHex(hex, -55));
+      const grad = ctx.createRadialGradient(cx, cy, r * 0.1, cx, cy, r);
+      grad.addColorStop(0, shadeHex(hex, 170));
+      grad.addColorStop(0.35, shadeHex(hex, 40));
+      grad.addColorStop(0.6, hex);
+      grad.addColorStop(0.85, shadeHex(hex, -70));
+      grad.addColorStop(1, shadeHex(hex, -120));
 
       ctx.save();
       ctx.beginPath();
@@ -119,6 +121,35 @@
       }
     }
 
+    const outlineCanvas = document.querySelector('.geschirr-configurator__outline');
+
+    function paintOutline() {
+      if (!outlineCanvas) return;
+      const ctx = outlineCanvas.getContext('2d');
+      ctx.clearRect(0, 0, outlineCanvas.width, outlineCanvas.height);
+
+      const scale = 1.035;
+      const w = outlineCanvas.width * scale;
+      const h = outlineCanvas.height * scale;
+      const x = (outlineCanvas.width - w) / 2;
+      const y = (outlineCanvas.height - h) / 2;
+
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      ['polsterung', 'gurt', 'schnallen', 'metal'].forEach((layer) => {
+        if (!maskImages[layer]) return;
+        const tmp = document.createElement('canvas');
+        tmp.width = outlineCanvas.width;
+        tmp.height = outlineCanvas.height;
+        const tctx = tmp.getContext('2d');
+        tctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+        tctx.fillRect(0, 0, tmp.width, tmp.height);
+        tctx.globalCompositeOperation = 'destination-in';
+        tctx.drawImage(maskImages[layer], 0, 0, tmp.width, tmp.height);
+        ctx.drawImage(tmp, x, y, w, h);
+      });
+    }
+
     function paintShading() {
       if (!shadingCanvas || !maskImages.__shadingSource) return;
       const ctx = shadingCanvas.getContext('2d');
@@ -139,6 +170,7 @@
 
     Promise.all(loadPromises).then(() => {
       paintShading();
+      paintOutline();
       document.querySelectorAll('fieldset[data-layer]').forEach((fieldset) => {
         const layer = fieldset.dataset.layer;
         const checked = fieldset.querySelector('input:checked');
