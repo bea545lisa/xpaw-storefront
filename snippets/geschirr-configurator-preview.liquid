@@ -11,13 +11,17 @@
   <canvas class="geschirr-configurator__layer" data-layer="gurt" width="1000" height="1000"></canvas>
   <canvas class="geschirr-configurator__layer" data-layer="schnallen" width="1000" height="1000"></canvas>
   <canvas class="geschirr-configurator__layer" data-layer="metal" width="1000" height="1000"></canvas>
+  <canvas class="geschirr-configurator__layer" data-layer="label" width="1000" height="1000"></canvas>
   <canvas class="geschirr-configurator__shading" width="1000" height="1000"></canvas>
 </div>
+
+<button type="button" class="geschirr-configurator__export-button">Vorschaubild herunterladen</button>
 
 <img class="geschirr-configurator__mask-source" data-mask="polsterung" src="{{ 'geschirr-mask-polsterung.png' | asset_url }}" hidden alt="">
 <img class="geschirr-configurator__mask-source" data-mask="gurt" src="{{ 'geschirr-mask-gurt.png' | asset_url }}" hidden alt="">
 <img class="geschirr-configurator__mask-source" data-mask="schnallen" src="{{ 'geschirr-mask-schnallen.png' | asset_url }}" hidden alt="">
 <img class="geschirr-configurator__mask-source" data-mask="metal" src="{{ 'geschirr-mask-metall.png' | asset_url }}" hidden alt="">
+<img class="geschirr-configurator__mask-source" data-mask="label" src="{{ 'geschirr-mask-label.png' | asset_url }}" hidden alt="">
 <img class="geschirr-configurator__shading-source" src="{{ 'geschirr-shading.png' | asset_url }}" hidden alt="">
 
 {{ 'geschirr-configurator.css' | asset_url | stylesheet_tag }}

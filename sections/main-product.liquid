@@ -89,6 +89,11 @@
             class="product__info-container{% if section.settings.enable_sticky_info %} product__column-sticky{% endif %}"
           >
             {%- assign product_form_id = 'product-form-' | append: section.id -%}
+            {%- assign is_geschirr_configurator = false -%}
+            {%- if product.tags contains 'konfigurator-geschirr' -%}
+              {%- assign is_geschirr_configurator = true -%}
+              {%- assign variant_picker_block = section.blocks | where: 'type', 'variant_picker' | first -%}
+            {%- endif -%}
 
             {%- for block in section.blocks -%}
               {%- case block.type -%}
@@ -364,8 +369,15 @@
                     </details>
                   </div>
                 {%- when 'quantity_selector' -%}
-                  {%- if product.tags contains 'konfigurator-geschirr' -%}
+                  {%- if is_geschirr_configurator -%}
                     {%- render 'geschirr-configurator-options' -%}
+                    {%- if variant_picker_block -%}
+                      {% render 'product-variant-picker',
+                        product: product,
+                        block: variant_picker_block,
+                        product_form_id: product_form_id
+                      %}
+                    {%- endif -%}
                   {%- endif -%}
                   <div
                     id="Quantity-Form-{{ section.id }}"
@@ -624,11 +636,13 @@
                     surface: 'product_page'
                   -%}
                 {%- when 'variant_picker' -%}
-                  {% render 'product-variant-picker',
-                    product: product,
-                    block: block,
-                    product_form_id: product_form_id
-                  %}
+                  {%- unless is_geschirr_configurator -%}
+                    {% render 'product-variant-picker',
+                      product: product,
+                      block: block,
+                      product_form_id: product_form_id
+                    %}
+                  {%- endunless -%}
                 {%- when 'buy_buttons' -%}
                   {%- render 'buy-buttons',
                     block: block,
