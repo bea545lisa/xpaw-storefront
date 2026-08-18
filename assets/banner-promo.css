@@ -45,7 +45,7 @@
   color: var(--banner-promo-arrow-color, rgba(var(--color-foreground), 0.7));
   width: 210px;
   align-self: start;
-  transform: translate(-8rem, 5.5rem);
+  transform: translate(-8rem, 9.5rem);
 }
 
 .banner-promo__arrow-svg,
