@@ -4,10 +4,6 @@ collection-component {
 }
 
 :root {
-  --color-link: 219, 39, 119 !important;
-}
-
-:root {
   --alpha-button-background: 1;
   --alpha-button-border: 1;
   --alpha-link: 0.85;
@@ -619,7 +615,7 @@ details > * {
 
 .underlined-link,
 .customer a {
-  color: rgba(var(--color-link), var(--alpha-link));
+  color: rgba(var(--color-foreground), var(--alpha-link));
 }
 
 .inline-richtext a,
@@ -630,7 +626,7 @@ details > * {
 .underlined-link:hover,
 .customer a:hover,
 .inline-richtext a:hover {
-  color: rgb(var(--color-link));
+  color: rgb(var(--color-foreground));
   text-decoration-thickness: 0.2rem;
 }
 
