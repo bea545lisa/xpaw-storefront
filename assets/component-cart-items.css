@@ -44,9 +44,18 @@ cart-items .title-wrapper-with-link {
   content: none;
 }
 
-.cart-item__image-container--light-bg {
-  background-color: #f4f4f2;
+.cart-item__image-container--has-dark {
+  position: relative;
+}
+
+.cart-item__image-container--has-dark .card__media-image--dark {
+  position: absolute;
+  inset: 0;
   border-radius: 0.4rem;
+}
+
+[data-theme="dark"] .cart-item__image-container--has-dark .cart-item__image {
+  display: none !important;
 }
 
 .cart-item__image {
