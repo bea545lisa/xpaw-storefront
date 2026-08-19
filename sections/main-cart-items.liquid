@@ -93,9 +93,9 @@
                       {% if item.image %}
                         <p style="color:red; font-size:10px; word-break:break-all;">
                           DEBUG item.image.id={{ item.image.id }} |
-                          matched_media.id={% for media in item.product.media %}{% if media.image.id == item.image.id %}{{ media.id }}{% endif %}{% endfor %} |
                           light_ids={{ item.product.metafields.custom.dark_mode_images_light_ids.value | join: ', ' }} |
-                          dark_images_count={{ item.product.metafields.custom.dark_mode_images.value.size }}
+                          dark_images_count={{ item.product.metafields.custom.dark_mode_images.value.size }} |
+                          all_media=[{% for media in item.product.media %}({{ media.id }}:{{ media.image.id }}){% endfor %}]
                         </p>
                         {%- liquid
                           assign cart_item_dark_media = null
