@@ -91,59 +91,45 @@
                   >
                     <td class="cart-item__media">
                       {% if item.image %}
-                        <p style="color:red; font-size:10px; word-break:break-all;">
-                          DEBUG item.image.id={{ item.image.id }} |
-                          light_ids={{ item.product.metafields.custom.dark_mode_images_light_ids.value | join: ', ' }} |
-                          dark_images_count={{ item.product.metafields.custom.dark_mode_images.value.size }} |
-                          all_media=[{% for media in item.product.media %}({{ media.id }}:{{ media.image.id }}){% endfor %}]
-                        </p>
                         {%- liquid
-                          assign cart_item_dark_media = null
-                          assign cart_item_dark_images = item.product.metafields.custom.dark_mode_images.value
-                          assign cart_item_dark_light_ids = item.product.metafields.custom.dark_mode_images_light_ids.value
-                          if cart_item_dark_images.size > 0 and cart_item_dark_light_ids.size > 0
-                            assign cart_item_matched_media = null
+                          assign cart_dark_media = null
+                          assign dark_images = item.product.metafields.custom.dark_mode_images.value
+                          assign dark_light_ids = item.product.metafields.custom.dark_mode_images_light_ids.value
+                          if dark_images.size > 0 and dark_light_ids.size > 0
+                            assign item_image_src = item.image.src | split: '?' | first
+                            assign matched_media_id = null
                             for media in item.product.media
-                              if media.image.id == item.image.id
-                                assign cart_item_matched_media = media
-                                break
+                              if media.media_type == 'image'
+                                assign media_src = media.preview_image.src | split: '?' | first
+                                if media_src == item_image_src
+                                  assign matched_media_id = media.id
+                                  break
+                                endif
                               endif
                             endfor
-
-                            assign cart_item_dark_match_index = -1
-
-                            if cart_item_matched_media
-                              assign cart_item_media_id_str = cart_item_matched_media.id | append: ''
-                              for light_id in cart_item_dark_light_ids
-                                if light_id == cart_item_media_id_str
-                                  assign cart_item_dark_match_index = forloop.index0
+                            if matched_media_id
+                              assign media_id_str = matched_media_id | append: ''
+                              assign dark_match_index = -1
+                              for light_id in dark_light_ids
+                                if light_id == media_id_str
+                                  assign dark_match_index = forloop.index0
                                   break
                                 endif
                               endfor
-                            endif
-
-                            if cart_item_dark_match_index == -1
-                              assign cart_item_image_id_str = item.image.id | append: ''
-                              for light_id in cart_item_dark_light_ids
-                                if light_id == cart_item_image_id_str
-                                  assign cart_item_dark_match_index = forloop.index0
-                                  break
-                                endif
-                              endfor
-                            endif
-                            if cart_item_dark_match_index > -1
-                              for candidate in cart_item_dark_images
-                                if forloop.index0 == cart_item_dark_match_index
-                                  assign cart_item_dark_media = candidate
-                                  break
-                                endif
-                              endfor
+                              if dark_match_index > -1
+                                for candidate in dark_images
+                                  if forloop.index0 == dark_match_index
+                                    assign cart_dark_media = candidate
+                                    break
+                                  endif
+                                endfor
+                              endif
                             endif
                           endif
                         -%}
                         {% comment %} Leave empty space due to a:empty CSS display: none rule {% endcomment %}
                         <a href="{{ item.url }}" class="cart-item__link" aria-hidden="true" tabindex="-1"> </a>
-                        <div class="cart-item__image-container gradient {% if item.parent_relationship.parent == null %}global-media-settings{% endif %}{% if cart_item_dark_media %} cart-item__image-container--has-dark{% endif %}">
+                        <div class="cart-item__image-container gradient {% if item.parent_relationship.parent == null %}global-media-settings{% endif %}{% if cart_dark_media %} cart-item__image-container--has-dark{% endif %}">
                           <img
                             src="{{ item.image | image_url: width: 300 }}"
                             class="cart-item__image {% if item.parent_relationship.parent != null %}global-media-settings{% endif %}"
@@ -152,14 +138,16 @@
                             width="150"
                             height="{{ 150 | divided_by: item.image.aspect_ratio | ceil }}"
                           >
-                          {%- if cart_item_dark_media -%}
-                            <div
-                              class="card__media-image--dark"
-                              style="background-image: url({{ cart_item_dark_media | image_url: width: 300 }});"
-                              role="img"
-                              aria-label="{{ item.image.alt | escape }}"
-                            ></div>
-                          {%- endif -%}
+                          {% if cart_dark_media %}
+                            <img
+                              src="{{ cart_dark_media | image_url: width: 300 }}"
+                              class="cart-item__image cart-item__image--dark {% if item.parent_relationship.parent != null %}global-media-settings{% endif %}"
+                              alt="{{ item.image.alt | escape }}"
+                              loading="lazy"
+                              width="150"
+                              height="{{ 150 | divided_by: cart_dark_media.aspect_ratio | ceil }}"
+                            >
+                          {% endif %}
                         </div>
                       {% endif %}
                     </td>
