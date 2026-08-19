@@ -48,14 +48,18 @@ cart-items .title-wrapper-with-link {
   position: relative;
 }
 
-.cart-item__image-container--has-dark .card__media-image--dark {
+.cart-item__image-container--has-dark .cart-item__image--dark {
   position: absolute;
   inset: 0;
-  border-radius: 0.4rem;
+  display: none;
 }
 
-[data-theme="dark"] .cart-item__image-container--has-dark .cart-item__image {
-  display: none !important;
+[data-theme="dark"] .cart-item__image-container--has-dark .cart-item__image--dark {
+  display: block;
+}
+
+[data-theme="dark"] .cart-item__image-container--has-dark > img.cart-item__image:not(.cart-item__image--dark) {
+  visibility: hidden;
 }
 
 .cart-item__image {
