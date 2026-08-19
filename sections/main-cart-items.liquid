@@ -96,7 +96,14 @@
                           assign cart_item_dark_images = item.product.metafields.custom.dark_mode_images.value
                           assign cart_item_dark_light_ids = item.product.metafields.custom.dark_mode_images_light_ids.value
                           if cart_item_dark_images.size > 0 and cart_item_dark_light_ids.size > 0
-                            assign cart_item_media_id_str = item.image.id | append: ''
+                            assign cart_item_matched_media = null
+                            for media in item.product.media
+                              if media.image.id == item.image.id
+                                assign cart_item_matched_media = media
+                                break
+                              endif
+                            endfor
+                            assign cart_item_media_id_str = cart_item_matched_media.id | append: ''
                             assign cart_item_dark_match_index = -1
                             for light_id in cart_item_dark_light_ids
                               if light_id == cart_item_media_id_str
