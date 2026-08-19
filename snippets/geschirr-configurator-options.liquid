@@ -61,7 +61,7 @@
 </div>
 
 {%- comment -%} Hidden inputs -> go into {% form 'product' %} as properties[...] {%- endcomment -%}
-<input type="hidden" name="properties[Gurtband Farbe]" value="Pink" data-hidden-for="gurt">
-<input type="hidden" name="properties[Polsterung Muster]" value="Camo Grau" data-hidden-for="polsterung">
-<input type="hidden" name="properties[Schnallen Farbe]" value="Schwarz" data-hidden-for="schnallen">
-<input type="hidden" name="properties[Metallteile Farbe]" value="Schwarz" data-hidden-for="metal">
+<input type="hidden" name="properties[Gurtband Farbe]" value="Pink" data-hidden-for="gurt" form="{{ product_form_id }}">
+<input type="hidden" name="properties[Polsterung Muster]" value="Camo Grau" data-hidden-for="polsterung" form="{{ product_form_id }}">
+<input type="hidden" name="properties[Schnallen Farbe]" value="Schwarz" data-hidden-for="schnallen" form="{{ product_form_id }}">
+<input type="hidden" name="properties[Metallteile Farbe]" value="Schwarz" data-hidden-for="metal" form="{{ product_form_id }}">
