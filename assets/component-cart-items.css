@@ -44,6 +44,11 @@ cart-items .title-wrapper-with-link {
   content: none;
 }
 
+.cart-item__image-container--light-bg {
+  background-color: #f4f4f2;
+  border-radius: 0.4rem;
+}
+
 .cart-item__image {
   height: auto;
   max-width: calc(10rem / var(--font-body-scale));

@@ -203,6 +203,8 @@ cart-items {
 
 .cart__ctas {
   text-align: center;
+  max-width: 36rem;
+  margin: 0 auto;
 }
 
 @media screen and (min-width: 750px) {

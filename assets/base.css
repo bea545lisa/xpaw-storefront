@@ -4,6 +4,10 @@ collection-component {
 }
 
 :root {
+  --color-link: 219, 39, 119 !important;
+}
+
+:root {
   --alpha-button-background: 1;
   --alpha-button-border: 1;
   --alpha-link: 0.85;
