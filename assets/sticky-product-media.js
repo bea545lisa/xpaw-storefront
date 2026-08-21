@@ -19,11 +19,13 @@
       if (node.parentElement === infoContainer) scopeThroughEl = node;
     }
 
-    // Extra room at the end of the sticky scope so it lets go well past the
-    // last visible swatch row, instead of releasing mid-row (same fix as
-    // the Geschirr configurator).
+    // Small bit of room at the end of the sticky scope so it doesn't
+    // release mid-row on the last swatch - but small enough to still let go
+    // right after the options, before the quantity field starts (the two sit
+    // only ~15px apart, so anything close to 4rem was dragging the release
+    // point down into the quantity field itself).
     if (scopeThroughEl) {
-      scopeThroughEl.style.paddingBottom = '4rem';
+      scopeThroughEl.style.paddingBottom = '0.5rem';
     }
 
     const submitButton = document.querySelector('[id^="ProductSubmitButton-"]');
