@@ -1174,6 +1174,13 @@ a.product__text {
 
   .product__media-wrapper.sticky-preview--stuck media-gallery {
     width: 54%;
+    /* Hard cap, in case the aspect-ratio-driven height inside doesn't
+       actually shrink along with the width for some media types - without
+       this, the sticky scope's real height (and therefore how much has to
+       be scrolled before it releases) stays close to the full, unstuck
+       image height regardless of the narrower width. */
+    max-height: 24rem;
+    overflow: hidden;
   }
 
   /* Kill the slider's own focus/shadow padding while stuck - it was pushing
@@ -1226,8 +1233,8 @@ a.product__text {
 
 .image-magnify-full-size__close {
   position: absolute;
-  top: calc(1rem + env(safe-area-inset-top, 0px));
-  right: calc(1.5rem + env(safe-area-inset-right, 0px));
+  top: calc(1.5rem + env(safe-area-inset-top, 0px));
+  right: calc(2.5rem + env(safe-area-inset-right, 0px));
   z-index: 1;
   width: 4rem;
   height: 4rem;
