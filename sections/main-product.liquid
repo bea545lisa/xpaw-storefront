@@ -49,6 +49,9 @@
   {% if section.settings.image_zoom == 'hover' %}
     <script id="EnableZoomOnHover-main" src="{{ 'magnify.js' | asset_url }}" defer="defer"></script>
   {% endif %}
+  {%- unless product.tags contains 'konfigurator-geschirr' -%}
+    <script src="{{ 'sticky-product-media.js' | asset_url }}" defer="defer"></script>
+  {%- endunless -%}
   {%- if request.design_mode -%}
     <script src="{{ 'theme-editor.js' | asset_url }}" defer="defer"></script>
   {%- endif -%}
@@ -76,6 +79,9 @@
   <product-component view-event-payload="{{ product | standard_event_data: 'view', context: 'page' | escape }}">
     <div class="page-width">
       <div class="product product--{{ section.settings.media_size }} product--{{ section.settings.media_position }} product--{{ section.settings.gallery_layout }} product--mobile-{{ section.settings.mobile_thumbnails }} grid grid--1-col {% if product.media.size > 0 %}grid--2-col-tablet{% else %}product--no-media{% endif %}">
+        {%- unless product.tags contains 'konfigurator-geschirr' -%}
+          <div class="sticky-product-media__sentinel"></div>
+        {%- endunless -%}
         <div class="grid__item product__media-wrapper">
           {%- if product.tags contains 'konfigurator-geschirr' -%}
             {%- render 'geschirr-configurator-preview' -%}
