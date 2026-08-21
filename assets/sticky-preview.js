@@ -97,21 +97,48 @@ window.initStickyPreview = function (config) {
   );
   stuckObserver.observe(sentinel);
 
-  // Optional: force the wrapper to let go entirely (position: static) the
-  // moment a given element - e.g. the Add to Cart button - enters the
-  // viewport, instead of waiting for it to scroll out of the sticky scope.
+  // Optional: force the wrapper to let go entirely (position: static) once a
+  // given element - e.g. the Add to Cart button - is getting close to the
+  // viewport, instead of waiting for it to scroll fully into view. Backed by
+  // both an IntersectionObserver (rootMargin gives it a head start) and a
+  // plain scroll check, since observers have occasionally proven unreliable.
   const detachAt =
     config.detachAt instanceof Element ? config.detachAt : config.detachAt ? document.querySelector(config.detachAt) : null;
   if (detachAt) {
+    let detached = false;
+    function setDetached(next) {
+      if (next === detached) return;
+      detached = next;
+      wrapper.classList.toggle('sticky-preview--detached', detached);
+    }
+
+    function checkScroll() {
+      const rect = detachAt.getBoundingClientRect();
+      setDetached(rect.top < window.innerHeight + 150);
+    }
+
     const detachObserver = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          wrapper.classList.toggle('sticky-preview--detached', entry.isIntersecting);
-        });
+        entries.forEach((entry) => setDetached(entry.isIntersecting));
       },
-      { threshold: 0 }
+      { threshold: 0, rootMargin: '0px 0px 150px 0px' }
     );
     detachObserver.observe(detachAt);
+
+    let ticking = false;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          checkScroll();
+          ticking = false;
+        });
+      },
+      { passive: true }
+    );
+    checkScroll();
   }
 
   if (config.priceMirror) {
