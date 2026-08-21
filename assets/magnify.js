@@ -78,15 +78,21 @@ function magnify(image, zoomRatio) {
 }
 
 function enableZoomOnHover(zoomRatio) {
+  let ignoreNextClick = false;
+
   document.addEventListener('click', (event) => {
+    if (ignoreNextClick) {
+      ignoreNextClick = false;
+      return;
+    }
     const image = event.target.closest('.image-magnify-hover');
     if (!image) return;
     magnify(image, zoomRatio);
     moveWithHover(image, event, zoomRatio);
   });
 
-  // Only treat it as a zoom-tap once the finger has stayed still (not scrolled);
-  // touchstart itself must stay passive so page scrolling still works normally.
+  // Only treat it as a zoom-tap once the finger has stayed still (not scrolled).
+  // Every listener here is passive - nothing ever blocks native scrolling.
   let touchStartImage = null;
   let touchStartPoint = null;
 
@@ -115,14 +121,19 @@ function enableZoomOnHover(zoomRatio) {
     { passive: true }
   );
 
-  document.addEventListener('touchend', (event) => {
-    if (!touchStartImage) return;
-    event.preventDefault();
-    magnify(touchStartImage, zoomRatio);
-    moveWithHover(touchStartImage, event.changedTouches[0] ? { touches: event.changedTouches } : event, zoomRatio);
-    touchStartImage = null;
-    touchStartPoint = null;
-  });
+  document.addEventListener(
+    'touchend',
+    (event) => {
+      if (!touchStartImage) return;
+      const image = touchStartImage;
+      touchStartImage = null;
+      touchStartPoint = null;
+      ignoreNextClick = true;
+      magnify(image, zoomRatio);
+      moveWithHover(image, { touches: event.changedTouches }, zoomRatio);
+    },
+    { passive: true }
+  );
 }
 
 enableZoomOnHover(3);
