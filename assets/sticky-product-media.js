@@ -21,17 +21,10 @@
       if (node.parentElement === infoContainer) scopeThroughEl = node;
     }
 
-    // Everything up to and including the title block stays untouched in its
-    // normal spot, so it can never end up visually overlapped by the sticky
-    // image once scrolling starts - only what comes after it joins the scope.
-    const titleBlock = document.querySelector('.product__title');
-    const scopeFrom = titleBlock && titleBlock.nextElementSibling;
-
     window.initStickyPreview({
       wrapper: '.product__media-wrapper',
       sentinel: '.sticky-product-media__sentinel',
       scope: scopeThroughEl ? null : '.product__info-container',
-      scopeFrom: scopeThroughEl ? scopeFrom : null,
       scopeThrough: scopeThroughEl,
       priceMirror: {
         priceContainerSelector: '[id^="price-"]',
