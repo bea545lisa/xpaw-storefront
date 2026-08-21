@@ -6,13 +6,15 @@
     const infoContainer = document.querySelector('.product__info-container');
     if (!mediaWrapper || !sentinel || !infoContainer || typeof window.initStickyPreview !== 'function') return;
 
-    // Release right after the Add to Cart button instead of dragging along
-    // through the description etc. further down - find the button and use
-    // whichever of its ancestors is a direct child of .product__info-container.
-    const submitButton = document.querySelector('[id^="ProductSubmitButton-"]');
+    // Release right after the variant/quantity selectors instead of dragging
+    // along through the Add to Cart button and description further down -
+    // find the quantity selector and use whichever of its ancestors is a
+    // direct child of .product__info-container.
+    const releaseAnchor =
+      document.querySelector('.product-form__quantity') || document.querySelector('[id^="ProductSubmitButton-"]');
     let scopeThroughEl = null;
-    if (submitButton) {
-      let node = submitButton;
+    if (releaseAnchor) {
+      let node = releaseAnchor;
       while (node.parentElement && node.parentElement !== infoContainer) {
         node = node.parentElement;
       }

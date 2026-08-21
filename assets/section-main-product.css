@@ -1114,6 +1114,20 @@ a.product__text {
     width: 54% !important;
     margin: 0 auto !important;
   }
+
+  /* Kill the slider's own focus/shadow padding while stuck - it was pushing
+     the shrunk image down inside the bar, and remove any opaque background
+     the gallery components paint over our semi-transparent stuck background. */
+  .product__media-wrapper.sticky-preview--stuck .slider.slider--mobile .slider__slide {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .product__media-wrapper.sticky-preview--stuck .product__media-list,
+  .product__media-wrapper.sticky-preview--stuck .product-media-container,
+  .product__media-wrapper.sticky-preview--stuck .media {
+    background: transparent !important;
+  }
 }
 
 .image-magnify-full-size {
