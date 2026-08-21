@@ -111,8 +111,12 @@ function resolveMagnifyImage(target) {
   return candidates[0] || null;
 }
 
-function enableZoomOnHover(zoomRatio) {
+function enableZoomOnHover(ratios) {
   let ignoreNextClick = false;
+
+  function currentZoomRatio() {
+    return window.matchMedia('(max-width: 749px)').matches ? ratios.mobile : ratios.desktop;
+  }
 
   // Capture phase (fires before bubbling reaches the native Dawn
   // modal-opener wrapping the thumbnail) so we can stop the click from also
@@ -133,7 +137,7 @@ function enableZoomOnHover(zoomRatio) {
         ignoreNextClick = false;
         return;
       }
-      openZoomOverlay(image, zoomRatio);
+      openZoomOverlay(image, currentZoomRatio());
     },
     true
   );
@@ -176,7 +180,7 @@ function enableZoomOnHover(zoomRatio) {
       touchStartImage = null;
       touchStartPoint = null;
       ignoreNextClick = true;
-      openZoomOverlay(image, zoomRatio);
+      openZoomOverlay(image, currentZoomRatio());
     },
     { passive: true }
   );
@@ -184,4 +188,4 @@ function enableZoomOnHover(zoomRatio) {
 
 window.openZoomOverlaySrc = openZoomOverlaySrc;
 
-enableZoomOnHover(1.6);
+enableZoomOnHover({ mobile: 1.9, desktop: 1.3 });
