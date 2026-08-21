@@ -8,7 +8,7 @@
 }
 
 .geschirr-configurator__sticky-scope [id^="price-"] {
-  margin-bottom: 1.6rem;
+  margin-bottom: 0.8rem;
 }
 
 .geschirr-configurator__export-row {
@@ -133,6 +133,7 @@
   }
 
   .geschirr-configurator__price-mirror-price {
+    font-size: 2rem;
     color: rgba(var(--color-foreground), 0.75);
   }
 
