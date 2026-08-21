@@ -19,30 +19,6 @@
   cursor: pointer;
 }
 
-.geschirr-configurator__zoom-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  background: rgba(0, 0, 0, 0.85);
-  cursor: zoom-out;
-}
-
-.geschirr-configurator__zoom-overlay img {
-  max-width: 100%;
-  max-height: 100%;
-  border-radius: 0.6rem;
-}
-
-.geschirr-configurator__preview-sentinel {
-  display: block !important;
-  position: relative;
-  height: 1px;
-}
-
 .geschirr-configurator__preview-wrapper {
   position: relative;
 }
@@ -56,68 +32,20 @@
   box-shadow: 0 0.4rem 1.2rem rgba(var(--color-shadow), 0.25);
   background: #ffffff;
   overflow: hidden;
-  transition: width 0.2s ease, height 0.2s ease, margin 0.2s ease;
+  cursor: zoom-in;
+}
+
+.geschirr-configurator__preview .product__media-icon {
+  z-index: 2;
 }
 
 @media screen and (max-width: 749px) {
-  /* Compact = scrolled past the preview's normal spot: the wrapper keeps a
-     fixed-height slot in the flow so nothing jumps. A full-width translucent
-     bar (::before) sits behind the small preview image, both pinned under
-     the header and both sliding/fading away together once detached. */
-  .geschirr-configurator__preview-wrapper--compact {
-    height: 28vh;
-  }
-
-  .geschirr-configurator__preview-wrapper--compact::before {
-    content: '';
-    position: fixed;
-    top: var(--geschirr-preview-top, 0px);
-    left: 0;
-    right: 0;
-    height: var(--geschirr-preview-size, 28vh);
-    background: rgb(var(--color-background));
+  .geschirr-configurator__preview-wrapper {
+    position: sticky;
+    top: calc(var(--header-height, 6rem) + 1rem);
     z-index: 2;
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .geschirr-configurator__preview-wrapper--compact.geschirr-configurator__preview-wrapper--animate::before {
-    transition: opacity 0.9s ease, transform 0.9s ease;
-  }
-
-  .geschirr-configurator__preview-wrapper--compact .geschirr-configurator__preview {
-    position: fixed;
-    top: var(--geschirr-preview-top, 0px);
-    left: 50%;
-    width: var(--geschirr-preview-size, 28vh);
-    height: var(--geschirr-preview-size, 28vh);
-    aspect-ratio: auto;
-    margin: 0;
-    box-shadow: none;
-    border-radius: 0;
-    background: transparent;
-    z-index: 3;
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-    transition: width 0.15s ease, height 0.15s ease;
-  }
-
-  .geschirr-configurator__preview-wrapper--compact.geschirr-configurator__preview-wrapper--animate .geschirr-configurator__preview {
-    transition: width 0.15s ease, height 0.15s ease, opacity 0.9s ease, transform 0.9s ease;
-  }
-
-  /* Detached = also scrolled past the color options: slide the bar and
-     preview up and out instead of just vanishing. */
-  .geschirr-configurator__preview-wrapper--compact.geschirr-configurator__preview-wrapper--detached::before {
-    opacity: 0;
-    transform: translateY(-100%);
-    pointer-events: none;
-  }
-
-  .geschirr-configurator__preview-wrapper--compact.geschirr-configurator__preview-wrapper--detached .geschirr-configurator__preview {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-100%);
-    pointer-events: none;
+    width: 60%;
+    margin: 0 auto 1rem;
   }
 }
 

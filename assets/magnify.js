@@ -21,6 +21,11 @@ function eventPoint(event) {
 function openZoomOverlay(image, zoomRatio) {
   const src = getImageSrc(image);
   if (!src) return;
+  openZoomOverlaySrc(src, zoomRatio);
+}
+
+function openZoomOverlaySrc(src, zoomRatio) {
+  if (!src) return;
 
   const overlay = document.createElement('div');
   overlay.className = 'image-magnify-full-size';
@@ -129,5 +134,7 @@ function enableZoomOnHover(zoomRatio) {
     { passive: true }
   );
 }
+
+window.openZoomOverlaySrc = openZoomOverlaySrc;
 
 enableZoomOnHover(2.5);
