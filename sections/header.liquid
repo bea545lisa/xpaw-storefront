@@ -200,6 +200,16 @@
   }
 
   {%- comment -%}
+    Dark mode overrides the header's scrolled background to a more opaque
+    rgba(10, 10, 10, 0.75) further down (see "[data-theme=dark] ... .header-wrapper")
+    - mirror that override here too, or our exposed variable would report the
+    lighter/more-transparent pre-override value.
+  {%- endcomment -%}
+  [data-theme="dark"] {
+    --header-scrolled-bg: rgba(10, 10, 10, 0.75);
+  }
+
+  {%- comment -%}
     .hero-overlay-active wird per JS nur gesetzt, wenn auf der Seite wirklich
     eine Banner-Sektion existiert. Ohne diese Klasse bleibt der Header immer im
     normalen, soliden Standard-Zustand (wie für hellen Hintergrund gedacht) —
