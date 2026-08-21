@@ -37,14 +37,22 @@ function toggleLoadingSpinner(image) {
   loadingSpinner.classList.toggle('hidden');
 }
 
+function eventPoint(event) {
+  if (event.touches && event.touches.length) {
+    return { x: event.touches[0].clientX, y: event.touches[0].clientY };
+  }
+  return { x: event.clientX, y: event.clientY };
+}
+
 function moveWithHover(image, event, zoomRatio) {
-  // calculate mouse position
+  // calculate pointer position
   const width = image.tagName === 'IMG' ? image.width : image.offsetWidth;
   const height = image.tagName === 'IMG' ? image.height : image.offsetHeight;
   const ratio = height / width;
-  const container = event.target.getBoundingClientRect();
-  const xPosition = event.clientX - container.left;
-  const yPosition = event.clientY - container.top;
+  const container = image.getBoundingClientRect();
+  const point = eventPoint(event);
+  const xPosition = point.x - container.left;
+  const yPosition = point.y - container.top;
   const xPercent = `${xPosition / (image.clientWidth / 100)}%`;
   const yPercent = `${yPosition / ((image.clientWidth * ratio) / 100)}%`;
 
@@ -58,6 +66,15 @@ function magnify(image, zoomRatio) {
   overlay.onclick = () => overlay.remove();
   overlay.onmousemove = (event) => moveWithHover(image, event, zoomRatio);
   overlay.onmouseleave = () => overlay.remove();
+  overlay.addEventListener(
+    'touchmove',
+    (event) => {
+      event.preventDefault();
+      moveWithHover(image, event, zoomRatio);
+    },
+    { passive: false }
+  );
+  overlay.addEventListener('touchend', () => overlay.remove());
 }
 
 function enableZoomOnHover(zoomRatio) {
@@ -67,6 +84,15 @@ function enableZoomOnHover(zoomRatio) {
       magnify(image, zoomRatio);
       moveWithHover(image, event, zoomRatio);
     };
+    image.addEventListener(
+      'touchstart',
+      (event) => {
+        event.preventDefault();
+        magnify(image, zoomRatio);
+        moveWithHover(image, event, zoomRatio);
+      },
+      { passive: false }
+    );
   });
 }
 
