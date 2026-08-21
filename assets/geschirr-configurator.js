@@ -271,14 +271,20 @@
     }
 
     // Move the export-row icon to sit right next to the "Share" button
-    // instead of floating at the top of the page, above the title.
+    // instead of floating at the top of the page, above the title. Only
+    // reparent the node - never touch the parent's own styles, it's a
+    // shared container (also holds the title etc.) and mutating its
+    // display/layout broke the whole info column last time.
     const exportRow = document.querySelector('.geschirr-configurator__export-row');
     const shareButton = document.querySelector('.share-button');
     if (exportRow && shareButton && shareButton.parentElement) {
       shareButton.parentElement.insertBefore(exportRow, shareButton.nextSibling);
-      shareButton.parentElement.style.display = 'flex';
-      shareButton.parentElement.style.alignItems = 'center';
-      shareButton.parentElement.style.gap = '0.6rem';
+      shareButton.style.display = 'inline-flex';
+      shareButton.style.alignItems = 'center';
+      shareButton.style.verticalAlign = 'middle';
+      exportRow.style.display = 'inline-flex';
+      exportRow.style.verticalAlign = 'middle';
+      exportRow.style.marginLeft = '0.6rem';
     }
 
     document.querySelectorAll('.geschirr-configurator__export-button').forEach((exportButton) => {
