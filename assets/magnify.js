@@ -125,4 +125,4 @@ function enableZoomOnHover(zoomRatio) {
   });
 }
 
-enableZoomOnHover(2);
+enableZoomOnHover(3);

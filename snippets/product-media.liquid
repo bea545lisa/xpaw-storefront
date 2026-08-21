@@ -41,7 +41,7 @@
   -%}
   <div class="{% if dark_media %}product__media--has-dark{% endif %}" data-media-id="{{ media.id }}">
     <img
-      class="global-media-settings global-media-settings--no-shadow{% if variant_image %} product__media-item--variant{% endif %}"
+      class="global-media-settings global-media-settings--no-shadow{% if section.settings.image_zoom == 'hover' %} image-magnify-hover{% endif %}{% if variant_image %} product__media-item--variant{% endif %}"
       srcset="
         {%- if media.preview_image.width >= 550 -%}{{ media.preview_image | image_url: width: 550 }} 550w,{%- endif -%}
         {%- if media.preview_image.width >= 1100 -%}{{ media.preview_image | image_url: width: 1100 }} 1100w,{%- endif -%}
@@ -63,7 +63,7 @@
     >
     {%- if dark_media -%}
       <div
-        class="product__media-image--dark{% if variant_image %} product__media-item--variant{% endif %}"
+        class="product__media-image--dark{% if section.settings.image_zoom == 'hover' %} image-magnify-hover{% endif %}{% if variant_image %} product__media-item--variant{% endif %}"
         style="background-image: url({{ dark_media | image_url: width: 1445 }}); aspect-ratio: {{ dark_media.aspect_ratio | default: 1 }};"
         role="img"
         aria-label="{{ media.alt | escape }}"
