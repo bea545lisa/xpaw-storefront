@@ -306,12 +306,12 @@
     const preview = document.querySelector('.geschirr-configurator__preview');
     const sentinel = document.querySelector('.geschirr-configurator__preview-sentinel');
     const options = document.querySelector('.geschirr-configurator__options');
-    const headerGroup = document.querySelector('#shopify-section-group-header-group');
+    const headerGroup = document.querySelector('.shopify-section-group-header-group');
     if (!wrapper || !preview || !sentinel || !options) return;
 
-    const maxSize = 28; // vh, size right when it first becomes compact
-    const minSize = 18; // vh, size at the end of the shrink range
-    const shrinkRangePx = 220; // px scrolled over which it shrinks from maxSize to minSize
+    const maxSize = 34; // vh, size right when it first becomes compact
+    const minSize = 24; // vh, size at the end of the shrink range
+    const shrinkRangePx = 500; // px scrolled over which it shrinks from maxSize to minSize
 
     let compact = false;
     let optionsVisible = true;
