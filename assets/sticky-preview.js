@@ -99,21 +99,6 @@ window.initStickyPreview = function (config) {
     if (next === stuck) return;
     stuck = next;
     wrapper.classList.toggle('sticky-preview--stuck', stuck);
-    // If the stuck state shrinks wrapper via `transform: scale()` rather
-    // than `width`, its layout height doesn't shrink along with it (a
-    // transform is purely visual) - that leaves a gap below it equal to the
-    // difference before the next content starts. offsetHeight is the
-    // untransformed layout size, getBoundingClientRect() is the visual
-    // (scaled) one - the difference is exactly that gap, closed here with a
-    // negative margin. A no-op wherever the stuck rule uses width instead
-    // (e.g. the Geschirr configurator), since scaled/natural height match.
-    if (stuck) {
-      const naturalHeight = wrapper.offsetHeight;
-      const scaledHeight = wrapper.getBoundingClientRect().height;
-      wrapper.style.marginBottom = scaledHeight - naturalHeight + 'px';
-    } else {
-      wrapper.style.marginBottom = '';
-    }
   }
   function checkStuck() {
     const rect = sentinel.getBoundingClientRect();
