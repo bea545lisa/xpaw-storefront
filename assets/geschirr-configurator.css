@@ -3,6 +3,14 @@
   margin-bottom: 2rem;
 }
 
+.geschirr-configurator__sticky-scope .product__title {
+  margin-bottom: 0.2rem;
+}
+
+.geschirr-configurator__sticky-scope [id^="price-"] {
+  margin-bottom: 1.6rem;
+}
+
 .geschirr-configurator__export-row {
   position: relative;
   display: inline-flex;
