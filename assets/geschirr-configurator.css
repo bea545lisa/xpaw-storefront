@@ -19,6 +19,10 @@
   cursor: pointer;
 }
 
+.geschirr-configurator__preview-wrapper {
+  position: relative;
+}
+
 .geschirr-configurator__preview {
   position: relative;
   width: 100%;
@@ -31,12 +35,19 @@
 }
 
 @media screen and (max-width: 749px) {
-  .geschirr-configurator__preview {
-    position: sticky;
+  .geschirr-configurator__preview-wrapper.geschirr-configurator__preview-wrapper--pinned {
+    height: var(--geschirr-preview-spacer-height, auto);
+  }
+
+  .geschirr-configurator__preview-wrapper--pinned .geschirr-configurator__preview {
+    position: fixed;
     top: calc(var(--header-height, 0px) + 1rem);
-    z-index: 2;
-    width: 45vw;
-    max-width: 22rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 42vw;
+    max-width: 20rem;
+    z-index: 5;
+    transition: width 0.15s ease, max-width 0.15s ease;
   }
 }
 
