@@ -41,30 +41,39 @@
 }
 
 @media screen and (max-width: 749px) {
-  .geschirr-configurator__preview-wrapper {
-    position: sticky;
-    top: var(--header-height, 0px);
-    z-index: 5;
-    display: flex;
-    justify-content: center;
-  }
-
-  .geschirr-configurator__preview-wrapper--detached {
-    position: static;
+  /* Compact = scrolled past the preview's normal spot: the wrapper keeps a
+     fixed-height slot in the flow so nothing jumps, while the preview image
+     itself becomes a small fixed bar pinned under the header. */
+  .geschirr-configurator__preview-wrapper--compact {
+    height: 28vh;
   }
 
   .geschirr-configurator__preview-wrapper--compact .geschirr-configurator__preview {
+    position: fixed;
+    top: var(--header-height, 0px);
+    left: 50%;
+    transform: translateX(-50%);
     width: 28vh;
     height: 28vh;
     aspect-ratio: auto;
     margin: 0;
     box-shadow: none;
     border-radius: 0 0 0.6rem 0.6rem;
-    background: transparent;
+    background: rgb(var(--color-background));
+    z-index: 5;
+    transition: none;
   }
 
   [data-theme="dark"] .geschirr-configurator__preview-wrapper--compact .geschirr-configurator__preview {
-    background: transparent;
+    background: rgb(var(--color-background));
+  }
+
+  /* Detached = also scrolled past the color options: stop pinning, the
+     small preview just scrolls away with the rest of the page. */
+  .geschirr-configurator__preview-wrapper--compact.geschirr-configurator__preview-wrapper--detached .geschirr-configurator__preview {
+    position: static;
+    transform: none;
+    margin: 0 auto;
   }
 }
 
