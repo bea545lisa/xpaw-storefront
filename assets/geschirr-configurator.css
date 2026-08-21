@@ -19,6 +19,24 @@
   cursor: pointer;
 }
 
+.geschirr-configurator__zoom-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.85);
+  cursor: zoom-out;
+}
+
+.geschirr-configurator__zoom-overlay img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 0.6rem;
+}
+
 .geschirr-configurator__preview-sentinel {
   display: block !important;
   position: relative;
@@ -43,42 +61,58 @@
 
 @media screen and (max-width: 749px) {
   /* Compact = scrolled past the preview's normal spot: the wrapper keeps a
-     fixed-height slot in the flow so nothing jumps, while the preview image
-     itself becomes a small fixed bar pinned under the header. */
+     fixed-height slot in the flow so nothing jumps. A full-width translucent
+     bar (::before) sits behind the small preview image, both pinned under
+     the header and both sliding/fading away together once detached. */
   .geschirr-configurator__preview-wrapper--compact {
     height: 28vh;
+  }
+
+  .geschirr-configurator__preview-wrapper--compact::before {
+    content: '';
+    position: fixed;
+    top: var(--geschirr-preview-top, 0px);
+    left: 0;
+    right: 0;
+    height: var(--geschirr-preview-size, 28vh);
+    background: rgba(var(--color-background), 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 4;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
   }
 
   .geschirr-configurator__preview-wrapper--compact .geschirr-configurator__preview {
     position: fixed;
     top: var(--geschirr-preview-top, 0px);
     left: 50%;
-    transform: translateX(-50%);
     width: var(--geschirr-preview-size, 28vh);
     height: var(--geschirr-preview-size, 28vh);
     aspect-ratio: auto;
     margin: 0;
     box-shadow: none;
-    border-radius: 0 0 0.6rem 0.6rem;
-    background: rgba(var(--color-background), 0.75);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    border-radius: 0;
+    background: transparent;
     z-index: 5;
-    transition: none;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    transition: width 0.15s ease, height 0.15s ease, opacity 0.3s ease, transform 0.3s ease;
   }
 
-  [data-theme="dark"] .geschirr-configurator__preview-wrapper--compact .geschirr-configurator__preview {
-    background: rgba(var(--color-background), 0.75);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+  /* Detached = also scrolled past the color options: slide the bar and
+     preview up and out instead of just vanishing. */
+  .geschirr-configurator__preview-wrapper--compact.geschirr-configurator__preview-wrapper--detached::before {
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none;
   }
 
-  /* Detached = also scrolled past the color options: stop pinning, the
-     small preview just scrolls away with the rest of the page. */
   .geschirr-configurator__preview-wrapper--compact.geschirr-configurator__preview-wrapper--detached .geschirr-configurator__preview {
-    position: static;
-    transform: none;
-    margin: 0 auto;
+    opacity: 0;
+    transform: translateX(-50%) translateY(-100%);
+    pointer-events: none;
   }
 }
 
