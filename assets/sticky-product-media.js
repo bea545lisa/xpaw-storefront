@@ -10,9 +10,22 @@
     // options list that genuinely needs to stay attached to the image while
     // scrolling through it), a normal product's options are short - no
     // reason to keep the image pinned through them at all. Release right
-    // after the price instead.
+    // after the price instead - but releaseAt itself must be something that
+    // stays visible and normally positioned the whole time (unlike title/
+    // price, hidden once stuck), so variant-selects is used as the moving
+    // reference, offset backwards (releaseBuffer) by the height of
+    // eyebrow+title+price. That span is measured as a distance between two
+    // elements rather than either one's own absolute position, so it stays
+    // correct regardless of the image's own (shrinking) height - an earlier
+    // version cached price's own position once up front instead, which was
+    // stale the moment the image later shrank underneath it.
     const releaseAnchor = document.querySelector('variant-selects, .product-form__input:not(.product-form__quantity)');
     const priceEl = document.querySelector('[id^="price-"]');
+    const eyebrowEl = document.querySelector('.product__info-container .product__text');
+    let releaseBuffer = 0;
+    if (eyebrowEl && priceEl) {
+      releaseBuffer = priceEl.getBoundingClientRect().bottom - eyebrowEl.getBoundingClientRect().top;
+    }
     let scopeThroughEl = null;
     if (releaseAnchor) {
       let node = releaseAnchor;
@@ -36,7 +49,8 @@
       sentinel: '.sticky-product-media__sentinel',
       scope: scopeThroughEl ? null : '.product__info-container',
       scopeThrough: scopeThroughEl,
-      releaseAt: priceEl,
+      releaseAt: releaseAnchor,
+      releaseBuffer,
       priceMirror: {
         priceContainerSelector: '[id^="price-"]',
         title: titleH1 ? titleH1.textContent.trim() : '',

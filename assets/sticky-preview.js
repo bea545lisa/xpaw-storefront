@@ -133,24 +133,28 @@ window.initStickyPreview = function (config) {
   // about precisely once title/price/eyebrow are also inside it for the
   // image-first layout, and proved to release much later than the geometry
   // suggested it should), push the wrapper up by hand once a specific
-  // element (releaseAt, e.g. the color/size options) has scrolled past the
-  // sticky offset. Computed continuously from real, live positions every
-  // scroll frame via a transform - so it's smooth (no jump, unlike toggling
-  // position: static) and its timing is exactly tied to releaseAt, not to
-  // an estimate of the scope's total height.
+  // element (releaseAt) has scrolled past the sticky offset (minus
+  // releaseBuffer, for content like title/price that sits before releaseAt
+  // but gets hidden once stuck - see sticky-product-media.js). Computed
+  // continuously from live positions every scroll frame via a transform, so
+  // it's smooth (no jump, unlike toggling position: static).
+  //
+  // releaseAt itself must stay visible/normally laid out the whole time
+  // (unlike title/price, which get hidden once stuck) - an earlier version
+  // measured releaseAt's position just once, up front, to sidestep that,
+  // but that position was captured while the image was still full-size
+  // (before any shrinking), so it was stale as soon as the image shrank -
+  // releasing much later than intended. Reading it live each frame instead
+  // avoids that entirely.
   const releaseAt =
     config.releaseAt instanceof Element ? config.releaseAt : config.releaseAt ? document.querySelector(config.releaseAt) : null;
   if (releaseAt) {
-    // Captured once, up front, as a document-relative position rather than
-    // read live on every scroll - releaseAt (e.g. the price) may itself get
-    // hidden once stuck (replaced by a mirror in the bar), at which point
-    // its own getBoundingClientRect() would collapse to 0 and break this.
-    const releaseAtDocumentBottom = releaseAt.getBoundingClientRect().bottom + window.scrollY;
+    const releaseBuffer = config.releaseBuffer || 0;
 
     function checkRelease() {
       const stickyTop = parseFloat(getComputedStyle(wrapper).top) || 0;
-      const currentBottom = releaseAtDocumentBottom - window.scrollY;
-      const pushback = Math.max(0, stickyTop - currentBottom);
+      const rect = releaseAt.getBoundingClientRect();
+      const pushback = Math.max(0, stickyTop + releaseBuffer - rect.top);
       wrapper.style.transform = pushback > 0 ? `translateY(-${pushback}px)` : '';
     }
 
