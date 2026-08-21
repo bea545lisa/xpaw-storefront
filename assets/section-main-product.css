@@ -1154,6 +1154,8 @@ a.product__text {
 .image-magnify-full-size {
   position: fixed;
   inset: 0;
+  height: 100vh;
+  height: 100dvh;
   z-index: 1000;
   background: rgba(0, 0, 0, 0.9);
   cursor: zoom-out;
