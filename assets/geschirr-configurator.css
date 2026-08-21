@@ -123,6 +123,14 @@
   filter: brightness(1.18);
 }
 
+.geschirr-configurator__price-mirror {
+  margin-bottom: 0.6rem;
+}
+
+.geschirr-configurator__price-mirror:empty {
+  display: none;
+}
+
 .geschirr-configurator__options {
   display: flex;
   flex-direction: column;
