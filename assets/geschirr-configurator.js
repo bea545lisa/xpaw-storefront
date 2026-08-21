@@ -318,9 +318,11 @@
     let ticking = false;
 
     function headerOffset() {
-      if (headerGroup) return headerGroup.getBoundingClientRect().bottom;
+      // -1px overlap so no subpixel rounding gap can ever show between the
+      // header and the pinned bar.
+      if (headerGroup) return Math.ceil(headerGroup.getBoundingClientRect().bottom) - 1;
       const headerHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 0;
-      return headerHeight;
+      return Math.ceil(headerHeight) - 1;
     }
 
     function updateDetached() {
