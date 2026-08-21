@@ -5,6 +5,10 @@ on:
     branches: [main]
   workflow_dispatch: {}
 
+concurrency:
+  group: deploy-theme-main
+  cancel-in-progress: true
+
 jobs:
   deploy:
     name: Push to Shopify
