@@ -1221,8 +1221,8 @@ a.product__text {
 
 .image-magnify-full-size__close {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: calc(1rem + env(safe-area-inset-top, 0px));
+  right: calc(1.5rem + env(safe-area-inset-right, 0px));
   z-index: 1;
   width: 4rem;
   height: 4rem;
