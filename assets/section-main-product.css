@@ -493,7 +493,7 @@ a.product__text {
   .product__media-list .product__media-item {
     width: 100%;
     padding-left: 2.5rem;
-    padding-right: 1.5rem;
+    padding-right: 0;
     box-sizing: border-box;
   }
 
