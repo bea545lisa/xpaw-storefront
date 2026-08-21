@@ -1124,13 +1124,15 @@ a.product__text {
    extra specificity here to beat Dawn's own .grid__item.product__media-wrapper
    rules. */
 @media screen and (max-width: 749px) {
+  /* Same two-layer approach as the Geschirr configurator: the outer bar
+     (background/blur/border) always stays full width, only the inner media
+     box shrinks - that's what the configurator's
+     .geschirr-configurator__preview-wrapper vs. .geschirr-configurator__preview
+     split does. Doing the shrink on the outer .product__media-wrapper itself
+     (this element is both bar and media box here, unlike the configurator)
+     left Dawn's own slider markup inside at full size, overflowing past a
+     narrower box and hiding the background behind it. */
   .grid__item.product__media-wrapper.sticky-preview--stuck {
-    /* transform instead of width: Dawn's slider markup inside has its own
-       fixed sizing that doesn't shrink along with a narrower box - the image
-       just overflowed past a width:54% box, hiding the background behind it.
-       Scaling the whole element (image and all) avoids that entirely. */
-    transform: scale(0.54) !important;
-    transform-origin: top center !important;
     background: rgba(10, 10, 10, 0.92) !important;
     backdrop-filter: blur(var(--header-scrolled-blur, 6px)) !important;
     -webkit-backdrop-filter: blur(var(--header-scrolled-blur, 6px)) !important;
@@ -1139,6 +1141,16 @@ a.product__text {
     box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.4) !important;
   }
 
+  .product__media-wrapper media-gallery {
+    display: block;
+    width: 100%;
+    margin: 0 auto;
+    transition: width 0.75s ease;
+  }
+
+  .product__media-wrapper.sticky-preview--stuck media-gallery {
+    width: 54%;
+  }
 
   /* Kill the slider's own focus/shadow padding while stuck - it was pushing
      the shrunk image down inside the bar, and remove any opaque background
