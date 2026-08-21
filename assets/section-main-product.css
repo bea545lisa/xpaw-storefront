@@ -1173,13 +1173,13 @@ a.product__text {
   }
 
   .product__media-wrapper.sticky-preview--stuck media-gallery {
-    width: 54%;
+    width: 64%;
     /* Hard cap, in case the aspect-ratio-driven height inside doesn't
        actually shrink along with the width for some media types - without
        this, the sticky scope's real height (and therefore how much has to
        be scrolled before it releases) stays close to the full, unstuck
        image height regardless of the narrower width. */
-    max-height: 24rem;
+    max-height: 28rem;
     overflow: hidden;
   }
 
