@@ -114,7 +114,11 @@ window.initStickyPreview = function (config) {
 
     function checkScroll() {
       const rect = detachAt.getBoundingClientRect();
-      setDetached(rect.top < window.innerHeight + 150);
+      // Bug: this used to compare against window.innerHeight + 150, which is
+      // true for virtually any on-screen position - detaching immediately on
+      // short pages before any scrolling happened at all. Only detach once
+      // the button is actually nearing the *top* of the viewport.
+      setDetached(rect.top < 150);
     }
 
     const detachObserver = new IntersectionObserver(
