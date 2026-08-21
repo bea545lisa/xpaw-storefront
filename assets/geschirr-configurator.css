@@ -47,7 +47,7 @@
 @media screen and (max-width: 749px) {
   .geschirr-configurator__preview-wrapper {
     position: sticky;
-    top: calc(var(--header-height, 6rem) - 5px);
+    top: calc(var(--header-height, 6rem) - 9px);
     z-index: 2;
     width: 100vw;
     margin-left: calc(50% - 50vw);
@@ -62,7 +62,7 @@
 
   .geschirr-configurator__preview-wrapper--stuck {
     padding: 0.6rem 0;
-    background: rgba(var(--color-background), 0.75);
+    background: rgba(10, 10, 10, 0.9) !important;
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
   }
