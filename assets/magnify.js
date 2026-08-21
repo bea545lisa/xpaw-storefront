@@ -37,6 +37,10 @@ function openZoomOverlaySrc(src, zoomRatio) {
   frame.style.backgroundImage = `url('${src}')`;
   frame.style.backgroundSize = `${zoomRatio * 100}%`;
   frame.style.backgroundPosition = '50% 50%';
+  // A zero-width space keeps this div from matching the theme's global
+  // `div:empty { display: none }` rule (an empty background-image div still
+  // counts as "empty" for that selector, which was collapsing it to 0x0).
+  frame.appendChild(document.createTextNode('​'));
   overlay.appendChild(frame);
 
   const closeButton = document.createElement('button');

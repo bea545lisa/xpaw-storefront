@@ -47,28 +47,29 @@
 @media screen and (max-width: 749px) {
   .geschirr-configurator__preview-wrapper {
     position: sticky;
-    top: calc(var(--header-height, 6rem) - 1px);
+    top: calc(var(--header-height, 6rem) - 3px);
     z-index: 2;
-    width: 100%;
-    margin: 0 auto 1rem;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
   }
 
-  /* Scale only (never width/height) so the sticky element's own layout box
-     never changes size - resizing via width would shift the sentinel above
-     it through aspect-ratio and retrigger the IntersectionObserver, causing
-     visible flicker. */
+  /* Fixed width + scale (never a width/height *change*) so the sticky
+     element's own layout box never changes size while shrinking - resizing
+     via width would shift the sentinel above it and retrigger the
+     IntersectionObserver, causing visible flicker. */
   .geschirr-configurator__preview-wrapper .geschirr-configurator__preview {
+    width: 90%;
+    flex: none;
     transform-origin: top center;
     transform: scale(1);
-    transition: transform 0.5s ease;
+    transition: transform 0.75s ease;
   }
 
   .geschirr-configurator__preview-wrapper--stuck .geschirr-configurator__preview {
     transform: scale(0.6);
-  }
-
-  .geschirr-configurator__preview-wrapper--stuck {
-    width: 60%;
   }
 }
 
