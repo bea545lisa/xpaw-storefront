@@ -299,6 +299,28 @@
     padding-bottom: calc({{ section.settings.padding_bottom }}px * {{ section.settings.scrolled_shrink }} / 100 * 0.3);
   }
 
+  /* Auf Mobile wirkt derselbe Prozentwert stärker verkleinernd, weil Logo/Leiste
+     dort ohnehin schon kleiner sind - deshalb eine Untergrenze, unabhängig vom
+     scrolled_shrink-Setting. */
+  @media screen and (max-width: 749px) {
+    .section-header.header-compact .header__heading-logo-wrapper {
+      width: max({{ section.settings.scrolled_shrink }}%, 78%);
+    }
+
+    .section-header.header-compact .header__heading-link {
+      padding: max(calc(0.75rem * {{ section.settings.scrolled_shrink }} / 100), 0.55rem);
+    }
+
+    .section-header.header-compact .header__heading {
+      font-size: max(calc(1em * {{ section.settings.scrolled_shrink }} / 100), 0.85em);
+    }
+
+    .section-header.header-compact .header {
+      padding-top: max(calc({{ section.settings.padding_top }}px * {{ section.settings.scrolled_shrink }} / 100 * 0.3), 6px);
+      padding-bottom: max(calc({{ section.settings.padding_bottom }}px * {{ section.settings.scrolled_shrink }} / 100 * 0.3), 6px);
+    }
+  }
+
   @media screen and (min-width: 990px) {
     .section-header.header-compact .header--middle-left,
     .section-header.header-compact .header--middle-center {
