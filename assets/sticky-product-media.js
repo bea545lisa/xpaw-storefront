@@ -6,12 +6,10 @@
     const infoContainer = document.querySelector('.product__info-container');
     if (!mediaWrapper || !sentinel || !infoContainer || typeof window.initStickyPreview !== 'function') return;
 
-    // Release right after the variant/quantity selectors instead of dragging
-    // along through the Add to Cart button and description further down -
-    // find the quantity selector and use whichever of its ancestors is a
-    // direct child of .product__info-container.
-    const releaseAnchor =
-      document.querySelector('.product-form__quantity') || document.querySelector('[id^="ProductSubmitButton-"]');
+    // Release right after the variant selectors - quantity and the Add to
+    // Cart button never join the sticky scope at all, and stickiness is
+    // force-detached the moment the cart button enters the viewport.
+    const releaseAnchor = document.querySelector('variant-selects, .product-form__input:not(.product-form__quantity)');
     let scopeThroughEl = null;
     if (releaseAnchor) {
       let node = releaseAnchor;
@@ -21,11 +19,14 @@
       if (node.parentElement === infoContainer) scopeThroughEl = node;
     }
 
+    const submitButton = document.querySelector('[id^="ProductSubmitButton-"]');
+
     window.initStickyPreview({
       wrapper: '.product__media-wrapper',
       sentinel: '.sticky-product-media__sentinel',
       scope: scopeThroughEl ? null : '.product__info-container',
       scopeThrough: scopeThroughEl,
+      detachAt: submitButton,
       priceMirror: {
         priceContainerSelector: '[id^="price-"]',
         title: titleH1 ? titleH1.textContent.trim() : '',
