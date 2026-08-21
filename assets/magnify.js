@@ -68,7 +68,6 @@ function openZoomOverlaySrc(src, zoomRatio) {
   closeButton.addEventListener('click', close);
 
   frame.addEventListener('mousemove', (event) => setPosition(event.clientX, event.clientY));
-  frame.addEventListener('click', close);
 
   frame.addEventListener(
     'touchmove',
@@ -79,7 +78,6 @@ function openZoomOverlaySrc(src, zoomRatio) {
     },
     { passive: false }
   );
-  frame.addEventListener('touchend', close);
 }
 
 function enableZoomOnHover(zoomRatio) {
