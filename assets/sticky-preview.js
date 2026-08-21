@@ -87,21 +87,49 @@ window.initStickyPreview = function (config) {
   apply();
   mobileQuery.addEventListener('change', apply);
 
+  // Both the stuck and detach state are backed by an IntersectionObserver
+  // *and* a plain scroll check - Safari has a known bug where
+  // IntersectionObserver targets tied to a position:sticky element (the
+  // sentinel is inside the same sticky-scrolled scope as wrapper) can just
+  // never fire, silently leaving the class toggle stuck at its initial
+  // value forever. The scroll check is what actually keeps this working
+  // there.
+  let stuck = false;
+  function setStuck(next) {
+    if (next === stuck) return;
+    stuck = next;
+    wrapper.classList.toggle('sticky-preview--stuck', stuck);
+  }
+  function checkStuck() {
+    const rect = sentinel.getBoundingClientRect();
+    setStuck(rect.top < 40);
+  }
   const stuckObserver = new IntersectionObserver(
     (entries) => {
-      entries.forEach((entry) => {
-        wrapper.classList.toggle('sticky-preview--stuck', !entry.isIntersecting);
-      });
+      entries.forEach((entry) => setStuck(!entry.isIntersecting));
     },
     { threshold: 0, rootMargin: '40px 0px 0px 0px' }
   );
   stuckObserver.observe(sentinel);
+  checkStuck();
+
+  let stuckTicking = false;
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (stuckTicking) return;
+      stuckTicking = true;
+      requestAnimationFrame(() => {
+        checkStuck();
+        stuckTicking = false;
+      });
+    },
+    { passive: true }
+  );
 
   // Optional: force the wrapper to let go entirely (position: static) once a
   // given element - e.g. the Add to Cart button - is getting close to the
-  // viewport, instead of waiting for it to scroll fully into view. Backed by
-  // both an IntersectionObserver (rootMargin gives it a head start) and a
-  // plain scroll check, since observers have occasionally proven unreliable.
+  // viewport, instead of waiting for it to scroll fully into view.
   const detachAt =
     config.detachAt instanceof Element ? config.detachAt : config.detachAt ? document.querySelector(config.detachAt) : null;
   if (detachAt) {
