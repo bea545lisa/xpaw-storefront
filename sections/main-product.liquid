@@ -644,9 +644,6 @@
                     %}
                   {%- endunless -%}
                 {%- when 'buy_buttons' -%}
-                  {%- if is_geschirr_configurator -%}
-                    <div class="geschirr-configurator__cta-sentinel"></div>
-                  {%- endif -%}
                   {%- render 'buy-buttons',
                     block: block,
                     product: product,
