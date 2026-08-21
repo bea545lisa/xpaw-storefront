@@ -39,47 +39,38 @@
       endif
     endif
   -%}
-  <img
-    class="global-media-settings global-media-settings--no-shadow{% if dark_media %} product__media-image--light{% endif %}{% if variant_image %} product__media-item--variant{% endif %}"
-    srcset="
-      {%- if media.preview_image.width >= 550 -%}{{ media.preview_image | image_url: width: 550 }} 550w,{%- endif -%}
-      {%- if media.preview_image.width >= 1100 -%}{{ media.preview_image | image_url: width: 1100 }} 1100w,{%- endif -%}
-      {%- if media.preview_image.width >= 1445 -%}{{ media.preview_image | image_url: width: 1445 }} 1445w,{%- endif -%}
-      {%- if media.preview_image.width >= 1680 -%}{{ media.preview_image | image_url: width: 1680 }} 1680w,{%- endif -%}
-      {%- if media.preview_image.width >= 2048 -%}{{ media.preview_image | image_url: width: 2048 }} 2048w,{%- endif -%}
-      {%- if media.preview_image.width >= 2200 -%}{{ media.preview_image | image_url: width: 2200 }} 2200w,{%- endif -%}
-      {%- if media.preview_image.width >= 2890 -%}{{ media.preview_image | image_url: width: 2890 }} 2890w,{%- endif -%}
-      {%- if media.preview_image.width >= 4096 -%}{{ media.preview_image | image_url: width: 4096 }} 4096w,{%- endif -%}
-      {{ media.preview_image | image_url }} {{ media.preview_image.width }}w
-    "
-    sizes="(min-width: 750px) calc(100vw - 22rem), 1100px"
-    src="{{ media.preview_image | image_url: width: 1445 }}"
-    alt="{{ media.alt | escape }}"
-    loading="lazy"
-    width="1100"
-    height="{{ 1100 | divided_by: media.preview_image.aspect_ratio | ceil }}"
-    data-media-id="{{ media.id }}"
-  >
-  {%- if dark_media -%}
+  <div class="{% if dark_media %}product__media--has-dark{% endif %}">
     <img
-      class="global-media-settings global-media-settings--no-shadow product__media-image--dark{% if variant_image %} product__media-item--variant{% endif %}"
+      class="global-media-settings global-media-settings--no-shadow{% if variant_image %} product__media-item--variant{% endif %}"
       srcset="
-        {%- if dark_media.width >= 550 -%}{{ dark_media | image_url: width: 550 }} 550w,{%- endif -%}
-        {%- if dark_media.width >= 1100 -%}{{ dark_media | image_url: width: 1100 }} 1100w,{%- endif -%}
-        {%- if dark_media.width >= 1445 -%}{{ dark_media | image_url: width: 1445 }} 1445w,{%- endif -%}
-        {%- if dark_media.width >= 1680 -%}{{ dark_media | image_url: width: 1680 }} 1680w,{%- endif -%}
-        {%- if dark_media.width >= 2048 -%}{{ dark_media | image_url: width: 2048 }} 2048w,{%- endif -%}
-        {{ dark_media | image_url }} {{ dark_media.width }}w
+        {%- if media.preview_image.width >= 550 -%}{{ media.preview_image | image_url: width: 550 }} 550w,{%- endif -%}
+        {%- if media.preview_image.width >= 1100 -%}{{ media.preview_image | image_url: width: 1100 }} 1100w,{%- endif -%}
+        {%- if media.preview_image.width >= 1445 -%}{{ media.preview_image | image_url: width: 1445 }} 1445w,{%- endif -%}
+        {%- if media.preview_image.width >= 1680 -%}{{ media.preview_image | image_url: width: 1680 }} 1680w,{%- endif -%}
+        {%- if media.preview_image.width >= 2048 -%}{{ media.preview_image | image_url: width: 2048 }} 2048w,{%- endif -%}
+        {%- if media.preview_image.width >= 2200 -%}{{ media.preview_image | image_url: width: 2200 }} 2200w,{%- endif -%}
+        {%- if media.preview_image.width >= 2890 -%}{{ media.preview_image | image_url: width: 2890 }} 2890w,{%- endif -%}
+        {%- if media.preview_image.width >= 4096 -%}{{ media.preview_image | image_url: width: 4096 }} 4096w,{%- endif -%}
+        {{ media.preview_image | image_url }} {{ media.preview_image.width }}w
       "
       sizes="(min-width: 750px) calc(100vw - 22rem), 1100px"
-      src="{{ dark_media | image_url: width: 1445 }}"
+      src="{{ media.preview_image | image_url: width: 1445 }}"
       alt="{{ media.alt | escape }}"
       loading="lazy"
       width="1100"
-      height="{{ 1100 | divided_by: dark_media.aspect_ratio | ceil }}"
+      height="{{ 1100 | divided_by: media.preview_image.aspect_ratio | ceil }}"
       data-media-id="{{ media.id }}"
     >
-  {%- endif -%}
+    {%- if dark_media -%}
+      <div
+        class="product__media-image--dark{% if variant_image %} product__media-item--variant{% endif %}"
+        style="background-image: url({{ dark_media | image_url: width: 1445 }}); aspect-ratio: {{ dark_media.aspect_ratio | default: 1 }};"
+        role="img"
+        aria-label="{{ media.alt | escape }}"
+        data-media-id="{{ media.id }}"
+      ></div>
+    {%- endif -%}
+  </div>
 {%- else -%}
   {%- if media.media_type == 'model' -%}
     <div class="product-media-modal__model" data-media-id="{{ media.id }}">
