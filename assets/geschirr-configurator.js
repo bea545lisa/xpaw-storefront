@@ -365,29 +365,44 @@
     const sentinelDesktopParent = sentinel.parentElement;
     const sentinelDesktopNextSibling = sentinel.nextSibling;
     const optionsDesktopParent = options.parentElement;
-    const optionsDesktopNextSibling = options.nextSibling;
     const mobileQuery = window.matchMedia('(max-width: 749px)');
     let onMobile = null;
 
-    // A dedicated scope that ends exactly where the options end, so the
-    // sticky image lets go right there instead of dragging along through
-    // the rest of the product info (description etc. below the buy button).
+    // A dedicated scope from the very start of the info column (title,
+    // price, ...) up to and including the options, with the image put
+    // first inside it - so the image is always the first thing shown
+    // (consistent with normal products), while everything up to the
+    // options still shares the sticky scope in its original order.
     const scope = document.createElement('div');
     scope.className = 'geschirr-configurator__sticky-scope';
+    const scopeSiblings = [];
+    let restoreBeforeNode = null;
+    {
+      let node = optionsDesktopParent.firstChild;
+      while (node) {
+        const next = node.nextSibling;
+        scopeSiblings.push(node);
+        if (node === options) {
+          restoreBeforeNode = next;
+          break;
+        }
+        node = next;
+      }
+    }
 
     function apply() {
       const shouldBeMobile = mobileQuery.matches;
       if (shouldBeMobile === onMobile) return;
       onMobile = shouldBeMobile;
       if (shouldBeMobile) {
-        optionsDesktopParent.insertBefore(scope, options);
+        optionsDesktopParent.insertBefore(scope, scopeSiblings[0]);
         scope.appendChild(sentinel);
         scope.appendChild(previewWrapper);
-        scope.appendChild(options);
+        scopeSiblings.forEach((node) => scope.appendChild(node));
       } else {
         sentinelDesktopParent.insertBefore(sentinel, sentinelDesktopNextSibling);
         desktopParent.insertBefore(previewWrapper, desktopNextSibling);
-        optionsDesktopParent.insertBefore(options, optionsDesktopNextSibling);
+        scopeSiblings.forEach((node) => optionsDesktopParent.insertBefore(node, restoreBeforeNode));
         scope.remove();
       }
     }
