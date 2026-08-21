@@ -34,6 +34,13 @@ function openZoomOverlay(image, zoomRatio) {
   frame.style.backgroundPosition = '50% 50%';
   overlay.appendChild(frame);
 
+  const closeButton = document.createElement('button');
+  closeButton.type = 'button';
+  closeButton.className = 'image-magnify-full-size__close';
+  closeButton.setAttribute('aria-label', 'Schliessen');
+  closeButton.innerHTML = '&times;';
+  overlay.appendChild(closeButton);
+
   document.body.appendChild(overlay);
   document.body.style.overflow = 'hidden';
 
@@ -49,9 +56,7 @@ function openZoomOverlay(image, zoomRatio) {
     frame.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
   }
 
-  overlay.addEventListener('click', (event) => {
-    if (event.target === overlay) close();
-  });
+  closeButton.addEventListener('click', close);
 
   frame.addEventListener('mousemove', (event) => setPosition(event.clientX, event.clientY));
   frame.addEventListener('click', close);
