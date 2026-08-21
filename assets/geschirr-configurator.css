@@ -39,15 +39,25 @@
     height: var(--geschirr-preview-spacer-height, auto);
   }
 
-  .geschirr-configurator__preview-wrapper--pinned .geschirr-configurator__preview {
+  .geschirr-configurator__preview-wrapper--pinned {
     position: fixed;
-    top: calc(var(--header-height, 0px) + 1rem);
-    left: 50%;
-    transform: translateX(-50%);
-    width: 42vw;
-    max-width: 20rem;
+    top: var(--header-height, 0px);
+    left: 0;
+    right: 0;
     z-index: 5;
-    transition: width 0.15s ease, max-width 0.15s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.6rem 0;
+    background: rgb(var(--color-background));
+    box-shadow: 0 0.2rem 0.6rem rgba(var(--color-shadow), 0.2);
+  }
+
+  .geschirr-configurator__preview-wrapper--pinned .geschirr-configurator__preview {
+    width: var(--geschirr-preview-size, 8rem);
+    max-width: 8rem;
+    margin: 0;
+    transition: width 0.08s linear;
   }
 }
 
