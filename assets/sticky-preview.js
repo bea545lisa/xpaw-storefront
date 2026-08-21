@@ -167,9 +167,11 @@ window.initStickyPreview = function (config) {
   const releaseAt =
     config.releaseAt instanceof Element ? config.releaseAt : config.releaseAt ? document.querySelector(config.releaseAt) : null;
   if (releaseAt) {
+    const releaseGap = config.releaseGap || 0;
+
     function checkRelease() {
       const stickyTop = parseFloat(getComputedStyle(wrapper).top) || 0;
-      const naturalBottom = stickyTop + wrapper.offsetHeight;
+      const naturalBottom = stickyTop + wrapper.offsetHeight + releaseGap;
       const rect = releaseAt.getBoundingClientRect();
       const pushback = Math.max(0, naturalBottom - rect.top);
       wrapper.style.transform = pushback > 0 ? `translateY(-${pushback}px)` : '';

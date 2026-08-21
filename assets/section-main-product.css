@@ -1209,7 +1209,7 @@ a.product__text {
   .sticky-preview__scope .sticky-preview__release-anchor {
     padding-bottom: 80rem;
     margin-bottom: -80rem;
-    margin-top: 7.6rem;
+    margin-top: 1.6rem;
   }
 
   /* The mobile "peek next slide" gutter (negative margins + calc(100% + Nrem)
