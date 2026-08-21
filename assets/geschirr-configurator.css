@@ -50,11 +50,11 @@
 
   .geschirr-configurator__preview-wrapper--compact .geschirr-configurator__preview {
     position: fixed;
-    top: var(--header-height, 0px);
+    top: var(--geschirr-preview-top, 0px);
     left: 50%;
     transform: translateX(-50%);
-    width: 28vh;
-    height: 28vh;
+    width: var(--geschirr-preview-size, 28vh);
+    height: var(--geschirr-preview-size, 28vh);
     aspect-ratio: auto;
     margin: 0;
     box-shadow: none;

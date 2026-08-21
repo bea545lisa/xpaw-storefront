@@ -283,16 +283,49 @@
 
   function initStickyPreview() {
     const wrapper = document.querySelector('.geschirr-configurator__preview-wrapper');
+    const preview = document.querySelector('.geschirr-configurator__preview');
     const sentinel = document.querySelector('.geschirr-configurator__preview-sentinel');
     const options = document.querySelector('.geschirr-configurator__options');
-    if (!wrapper || !sentinel || !options) return;
+    const headerGroup = document.querySelector('#shopify-section-group-header-group');
+    if (!wrapper || !preview || !sentinel || !options) return;
+
+    const maxSize = 28; // vh, size right when it first becomes compact
+    const minSize = 12; // vh, size at the end of the shrink range
+    const shrinkRangePx = 220; // px scrolled over which it shrinks from maxSize to minSize
 
     let compact = false;
     let optionsVisible = true;
+    let ticking = false;
+
+    function headerOffset() {
+      if (headerGroup) return headerGroup.getBoundingClientRect().bottom;
+      const headerHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 0;
+      return headerHeight;
+    }
 
     function updateDetached() {
       const detached = compact && !optionsVisible;
       wrapper.classList.toggle('geschirr-configurator__preview-wrapper--detached', detached);
+    }
+
+    function updateSize() {
+      if (!compact) return;
+      const offset = Math.max(0, headerOffset());
+      wrapper.style.setProperty('--geschirr-preview-top', `${offset}px`);
+      const sentinelTop = sentinel.getBoundingClientRect().top;
+      const scrolledPast = Math.min(Math.max(offset - sentinelTop, 0), shrinkRangePx);
+      const progress = scrolledPast / shrinkRangePx;
+      const size = maxSize - progress * (maxSize - minSize);
+      wrapper.style.setProperty('--geschirr-preview-size', `${size}vh`);
+    }
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        updateSize();
+        ticking = false;
+      });
     }
 
     // The sentinel sits directly above the wrapper; once it scrolls out of
@@ -302,6 +335,7 @@
         compact = !entry.isIntersecting;
         wrapper.classList.toggle('geschirr-configurator__preview-wrapper--compact', compact);
         updateDetached();
+        updateSize();
       });
     }, { threshold: 0 });
     compactObserver.observe(sentinel);
@@ -313,6 +347,9 @@
       });
     }, { threshold: 0 });
     optionsObserver.observe(options);
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', updateSize);
   }
 
   if (document.readyState === 'loading') {
