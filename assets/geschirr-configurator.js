@@ -283,75 +283,36 @@
 
   function initStickyPreview() {
     const wrapper = document.querySelector('.geschirr-configurator__preview-wrapper');
-    const preview = document.querySelector('.geschirr-configurator__preview');
+    const sentinel = document.querySelector('.geschirr-configurator__preview-sentinel');
     const options = document.querySelector('.geschirr-configurator__options');
-    if (!wrapper || !preview || !options) return;
+    if (!wrapper || !sentinel || !options) return;
 
-    const mobileQuery = window.matchMedia('(max-width: 749px)');
-    const startWidth = 8; // rem, matches the pinned bar's steady-state size
-    const shrinkDistance = 160; // px scrolled over which the bar settles to startWidth
-    let pinned = false;
+    let compact = false;
     let optionsVisible = true;
-    let originalWidth = 0;
-    let ticking = false;
 
-    function setPinned(next) {
-      if (next === pinned) return;
-      pinned = next;
-      if (pinned) {
-        wrapper.style.setProperty('--geschirr-preview-spacer-height', `${wrapper.offsetHeight}px`);
-        wrapper.classList.add('geschirr-configurator__preview-wrapper--pinned');
-      } else {
-        wrapper.classList.remove('geschirr-configurator__preview-wrapper--pinned');
-        wrapper.style.removeProperty('height');
-      }
+    function updateDetached() {
+      const detached = compact && !optionsVisible;
+      wrapper.classList.toggle('geschirr-configurator__preview-wrapper--detached', detached);
     }
 
-    function update() {
-      if (!mobileQuery.matches) {
-        setPinned(false);
-        return;
-      }
-
-      if (!pinned) {
-        originalWidth = wrapper.offsetHeight ? preview.getBoundingClientRect().width : originalWidth;
-      }
-
-      const headerHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 0;
-      const wrapperTop = wrapper.getBoundingClientRect().top;
-      const pastTop = wrapperTop <= headerHeight;
-      const shouldPin = pastTop && optionsVisible;
-      setPinned(shouldPin);
-
-      if (pinned) {
-        const scrolledPast = Math.min(Math.max(headerHeight - wrapperTop, 0), shrinkDistance);
-        const progress = scrolledPast / shrinkDistance;
-        const widthRem = (originalWidth ? originalWidth / 16 : 20) - progress * ((originalWidth ? originalWidth / 16 : 20) - startWidth);
-        wrapper.style.setProperty('--geschirr-preview-size', `${Math.max(startWidth, widthRem)}rem`);
-      }
-    }
-
-    function onScroll() {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        update();
-        ticking = false;
+    // The sentinel sits directly above the wrapper; once it scrolls out of
+    // view the wrapper has reached its sticky "top" offset and is now stuck.
+    const compactObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        compact = !entry.isIntersecting;
+        wrapper.classList.toggle('geschirr-configurator__preview-wrapper--compact', compact);
+        updateDetached();
       });
-    }
+    }, { threshold: 0 });
+    compactObserver.observe(sentinel);
 
     const optionsObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         optionsVisible = entry.isIntersecting;
+        updateDetached();
       });
-      update();
-    }, { threshold: 0, rootMargin: '0px' });
+    }, { threshold: 0 });
     optionsObserver.observe(options);
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', update);
-    mobileQuery.addEventListener('change', update);
-    update();
   }
 
   if (document.readyState === 'loading') {
