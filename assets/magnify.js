@@ -92,15 +92,29 @@ function openZoomOverlaySrc(src, zoomRatio) {
 function enableZoomOnHover(zoomRatio) {
   let ignoreNextClick = false;
 
-  document.addEventListener('click', (event) => {
-    if (ignoreNextClick) {
-      ignoreNextClick = false;
-      return;
-    }
-    const image = event.target.closest('.image-magnify-hover');
-    if (!image) return;
-    openZoomOverlay(image, zoomRatio);
-  });
+  // Capture phase (fires before bubbling reaches the native Dawn
+  // modal-opener wrapping the thumbnail) so we can stop the click from also
+  // triggering the built-in gallery modal - without this, both open at once
+  // and the native one (higher in the DOM/z-index) hides ours underneath,
+  // making it look like zoom "doesn't work" until a second click closes it.
+  document.addEventListener(
+    'click',
+    (event) => {
+      const image = event.target.closest('.image-magnify-hover');
+      if (!image) return;
+      event.stopPropagation();
+      event.preventDefault();
+      if (ignoreNextClick) {
+        // Already handled via touchend - this is just the synthetic click
+        // that follows on real touch devices. Still block it from reaching
+        // the native modal-opener, just don't open zoom a second time.
+        ignoreNextClick = false;
+        return;
+      }
+      openZoomOverlay(image, zoomRatio);
+    },
+    true
+  );
 
   // Only treat it as a zoom-tap once the finger has stayed still (not scrolled).
   // Every listener here is passive - nothing ever blocks native scrolling.
