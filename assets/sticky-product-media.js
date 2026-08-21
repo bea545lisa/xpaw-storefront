@@ -6,9 +6,13 @@
     const infoContainer = document.querySelector('.product__info-container');
     if (!mediaWrapper || !sentinel || !infoContainer || typeof window.initStickyPreview !== 'function') return;
 
-    // Release right after the variant selectors - quantity and the Add to
-    // Cart button never join the sticky scope at all, and stickiness is
-    // force-detached the moment the cart button enters the viewport.
+    // Quantity and the Add to Cart button never join the sticky scope at
+    // all - but the *natural* CSS sticky release still depends on the full
+    // scope height (image + eyebrow + title + price + options all count
+    // toward it, since title/price have to be inside the scope too for the
+    // image-first layout), so it lets go far later than "right after the
+    // options" on its own. detachAt below is what actually forces the early
+    // release, independent of that scope height.
     const releaseAnchor = document.querySelector('variant-selects, .product-form__input:not(.product-form__quantity)');
     let scopeThroughEl = null;
     if (releaseAnchor) {
@@ -28,14 +32,18 @@
       scopeThroughEl.style.paddingBottom = '0.5rem';
     }
 
-    const submitButton = document.querySelector('[id^="ProductSubmitButton-"]');
+    // Detach right as the quantity field approaches (it sits ~15px below
+    // the options), not at the Add to Cart button further down - that's
+    // what actually makes the image let go right after the options instead
+    // of dragging all the way down.
+    const detachTarget = document.querySelector('.product-form__quantity') || document.querySelector('[id^="ProductSubmitButton-"]');
 
     window.initStickyPreview({
       wrapper: '.product__media-wrapper',
       sentinel: '.sticky-product-media__sentinel',
       scope: scopeThroughEl ? null : '.product__info-container',
       scopeThrough: scopeThroughEl,
-      detachAt: submitButton,
+      detachAt: detachTarget,
       priceMirror: {
         priceContainerSelector: '[id^="price-"]',
         title: titleH1 ? titleH1.textContent.trim() : '',
