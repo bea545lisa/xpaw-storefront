@@ -42,6 +42,36 @@
       { threshold: 0, rootMargin: '40px 0px 0px 0px' }
     );
     stuckObserver.observe(sentinel);
+
+    initPriceMirror(mediaWrapper);
+  }
+
+  // Mirror the title/price under the shrunken sticky image, same as the
+  // Geschirr configurator - otherwise picking a variant that changes price
+  // isn't visible once you've scrolled past the top of the page.
+  function initPriceMirror(mediaWrapper) {
+    const titleEl = document.querySelector('.product__title');
+    const priceContainer = document.querySelector('[id^="price-"]');
+    if (!titleEl || !priceContainer) return;
+
+    const mirror = document.createElement('div');
+    mirror.className = 'sticky-product-media__price-mirror';
+    mirror.innerHTML =
+      '<span class="sticky-product-media__price-mirror-title"></span>' +
+      '<span class="sticky-product-media__price-mirror-price"></span>';
+    mediaWrapper.appendChild(mirror);
+
+    const titleSpan = mirror.querySelector('.sticky-product-media__price-mirror-title');
+    const priceSpan = mirror.querySelector('.sticky-product-media__price-mirror-price');
+    titleSpan.textContent = titleEl.textContent.trim();
+
+    function syncPrice() {
+      const current = priceContainer.querySelector('.price-item--sale') || priceContainer.querySelector('.price-item--regular');
+      priceSpan.textContent = current ? current.textContent.trim() : '';
+    }
+
+    syncPrice();
+    new MutationObserver(syncPrice).observe(priceContainer, { childList: true, subtree: true, characterData: true });
   }
 
   if (document.readyState === 'loading') {
