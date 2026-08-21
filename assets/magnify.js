@@ -89,6 +89,28 @@ function openZoomOverlaySrc(src, zoomRatio) {
   );
 }
 
+// Dawn's modal-opener button has a `::after` pseudo-element stacked
+// (z-index: 2) directly over the whole thumbnail to catch clicks for its own
+// native gallery modal. A click there reports the BUTTON as event.target, not
+// the image underneath it, so a plain `.closest('.image-magnify-hover')`
+// check misses it entirely and the native modal opens unopposed on the first
+// click. Resolve through the toggle button to the image sitting next to it
+// in the same media container as a fallback.
+function resolveMagnifyImage(target) {
+  const direct = target.closest('.image-magnify-hover');
+  if (direct) return direct;
+  const toggle = target.closest('.product__media-toggle');
+  if (!toggle) return null;
+  const container = toggle.closest('.product-media-container') || toggle.parentElement;
+  if (!container) return null;
+  const candidates = container.querySelectorAll('.image-magnify-hover');
+  for (const el of candidates) {
+    const cs = getComputedStyle(el);
+    if (cs.display !== 'none' && cs.visibility !== 'hidden') return el;
+  }
+  return candidates[0] || null;
+}
+
 function enableZoomOnHover(zoomRatio) {
   let ignoreNextClick = false;
 
@@ -100,7 +122,7 @@ function enableZoomOnHover(zoomRatio) {
   document.addEventListener(
     'click',
     (event) => {
-      const image = event.target.closest('.image-magnify-hover');
+      const image = resolveMagnifyImage(event.target);
       if (!image) return;
       event.stopPropagation();
       event.preventDefault();
@@ -124,7 +146,7 @@ function enableZoomOnHover(zoomRatio) {
   document.addEventListener(
     'touchstart',
     (event) => {
-      const image = event.target.closest('.image-magnify-hover');
+      const image = resolveMagnifyImage(event.target);
       touchStartImage = image || null;
       touchStartPoint = image ? eventPoint(event) : null;
     },
