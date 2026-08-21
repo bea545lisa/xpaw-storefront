@@ -4,19 +4,53 @@
 }
 
 .geschirr-configurator__export-row {
-  display: flex;
+  position: relative;
+  display: inline-flex;
+}
+
+.geschirr-configurator__export-icon {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 0.75rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(var(--color-foreground), 0.06);
+  color: rgba(var(--color-foreground), 0.6);
+  cursor: pointer;
+}
+
+.geschirr-configurator__export-icon:hover {
+  color: rgb(var(--color-foreground));
+  background: rgba(var(--color-foreground), 0.12);
+}
+
+.geschirr-configurator__export-menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  border-radius: 0.5rem;
+  background: rgb(var(--color-background));
+  box-shadow: 0 0.4rem 1.2rem rgba(var(--color-shadow), 0.3);
+  white-space: nowrap;
 }
 
 .geschirr-configurator__export-button {
   font-size: 0.8rem;
-  color: rgba(var(--color-foreground), 0.6);
+  color: rgba(var(--color-foreground), 0.75);
   background: none;
   border: none;
   text-decoration: underline;
   cursor: pointer;
+  text-align: left;
+  padding: 0;
 }
 
 .geschirr-configurator__preview-sentinel {
@@ -55,7 +89,7 @@
     z-index: 2;
     width: 100vw;
     margin-left: calc(50% - 50vw);
-    margin-bottom: 0.4rem;
+    margin-bottom: 1.4rem;
     display: flex;
     flex-direction: column;
     align-items: center;

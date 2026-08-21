@@ -251,6 +251,36 @@
       return out;
     }
 
+    const exportIcon = document.querySelector('.geschirr-configurator__export-icon');
+    const exportMenu = document.querySelector('.geschirr-configurator__export-menu');
+    if (exportIcon && exportMenu) {
+      exportIcon.addEventListener('click', (event) => {
+        event.stopPropagation();
+        exportMenu.hidden = !exportMenu.hidden;
+      });
+      document.addEventListener('click', (event) => {
+        if (!exportMenu.hidden && !exportMenu.contains(event.target) && event.target !== exportIcon) {
+          exportMenu.hidden = true;
+        }
+      });
+      exportMenu.querySelectorAll('.geschirr-configurator__export-button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          exportMenu.hidden = true;
+        });
+      });
+    }
+
+    // Move the export-row icon to sit right next to the "Share" button
+    // instead of floating at the top of the page, above the title.
+    const exportRow = document.querySelector('.geschirr-configurator__export-row');
+    const shareButton = document.querySelector('.share-button');
+    if (exportRow && shareButton && shareButton.parentElement) {
+      shareButton.parentElement.insertBefore(exportRow, shareButton.nextSibling);
+      shareButton.parentElement.style.display = 'flex';
+      shareButton.parentElement.style.alignItems = 'center';
+      shareButton.parentElement.style.gap = '0.6rem';
+    }
+
     document.querySelectorAll('.geschirr-configurator__export-button').forEach((exportButton) => {
       exportButton.addEventListener('click', () => {
         const transparent = exportButton.dataset.mode === 'transparent';

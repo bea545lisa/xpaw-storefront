@@ -28,8 +28,17 @@
 </div>
 
 <div class="geschirr-configurator__export-row">
-  <button type="button" class="geschirr-configurator__export-button" data-mode="studio">Vorschaubild herunterladen</button>
-  <button type="button" class="geschirr-configurator__export-button" data-mode="transparent">Transparent (für Promo)</button>
+  <button type="button" class="geschirr-configurator__export-icon" aria-label="Vorschaubild herunterladen" aria-haspopup="dialog">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3v12"></path>
+      <path d="M7 10l5 5 5-5"></path>
+      <path d="M4 19h16"></path>
+    </svg>
+  </button>
+  <div class="geschirr-configurator__export-menu" hidden>
+    <button type="button" class="geschirr-configurator__export-button" data-mode="studio">Vorschaubild herunterladen</button>
+    <button type="button" class="geschirr-configurator__export-button" data-mode="transparent">Transparent (für Promo)</button>
+  </div>
 </div>
 
 <img class="geschirr-configurator__mask-source" data-mask="polsterung" src="{{ 'geschirr-mask-polsterung.png' | asset_url }}" hidden alt="">
