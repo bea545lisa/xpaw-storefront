@@ -5,76 +5,67 @@ function getImageSrc(image) {
   return match ? match[1] : '';
 }
 
-// create a container and set the full-size image as its background
-function createOverlay(image) {
-  const src = getImageSrc(image);
-  const overlayImage = document.createElement('img');
-  overlayImage.setAttribute('src', src);
-  overlay = document.createElement('div');
-  prepareOverlay(overlay, overlayImage);
-
-  image.style.opacity = '50%';
-  toggleLoadingSpinner(image);
-
-  overlayImage.onload = () => {
-    toggleLoadingSpinner(image);
-    image.parentElement.insertBefore(overlay, image);
-    image.style.opacity = '100%';
-  };
-
-  return overlay;
-}
-
-function prepareOverlay(container, image) {
-  container.setAttribute('class', 'image-magnify-full-size');
-  container.setAttribute('aria-hidden', 'true');
-  container.style.backgroundImage = `url('${image.src}')`;
-  container.style.backgroundColor = 'var(--gradient-background)';
-}
-
-function toggleLoadingSpinner(image) {
-  const loadingSpinner = image.parentElement.parentElement.querySelector(`.loading__spinner`);
-  loadingSpinner.classList.toggle('hidden');
-}
-
 function eventPoint(event) {
   if (event.touches && event.touches.length) {
     return { x: event.touches[0].clientX, y: event.touches[0].clientY };
   }
+  if (event.changedTouches && event.changedTouches.length) {
+    return { x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY };
+  }
   return { x: event.clientX, y: event.clientY };
 }
 
-function moveWithHover(image, event, zoomRatio) {
-  // calculate pointer position
-  const width = image.tagName === 'IMG' ? image.width : image.offsetWidth;
-  const height = image.tagName === 'IMG' ? image.height : image.offsetHeight;
-  const ratio = height / width;
-  const container = image.getBoundingClientRect();
-  const point = eventPoint(event);
-  const xPosition = point.x - container.left;
-  const yPosition = point.y - container.top;
-  const xPercent = `${xPosition / (image.clientWidth / 100)}%`;
-  const yPercent = `${yPosition / ((image.clientWidth * ratio) / 100)}%`;
+// Full-screen lightbox: shows the image large over a solid backdrop that
+// covers the whole viewport, so nothing scrolls through behind it. Panning
+// with mouse-drag or touch-drag moves the zoomed image within the frame.
+function openZoomOverlay(image, zoomRatio) {
+  const src = getImageSrc(image);
+  if (!src) return;
 
-  // determine what to show in the frame
-  overlay.style.backgroundPosition = `${xPercent} ${yPercent}`;
-  overlay.style.backgroundSize = `${width * zoomRatio}px`;
-}
+  const overlay = document.createElement('div');
+  overlay.className = 'image-magnify-full-size';
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-label', 'Bild vergroessert');
 
-function magnify(image, zoomRatio) {
-  const overlay = createOverlay(image);
-  overlay.onclick = () => overlay.remove();
-  overlay.onmousemove = (event) => moveWithHover(image, event, zoomRatio);
-  overlay.onmouseleave = () => overlay.remove();
-  overlay.addEventListener(
+  const frame = document.createElement('div');
+  frame.className = 'image-magnify-full-size__frame';
+  frame.style.backgroundImage = `url('${src}')`;
+  frame.style.backgroundSize = `${zoomRatio * 100}%`;
+  frame.style.backgroundPosition = '50% 50%';
+  overlay.appendChild(frame);
+
+  document.body.appendChild(overlay);
+  document.body.style.overflow = 'hidden';
+
+  function close() {
+    overlay.remove();
+    document.body.style.overflow = '';
+  }
+
+  function setPosition(clientX, clientY) {
+    const rect = frame.getBoundingClientRect();
+    const xPercent = ((clientX - rect.left) / rect.width) * 100;
+    const yPercent = ((clientY - rect.top) / rect.height) * 100;
+    frame.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
+  }
+
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) close();
+  });
+
+  frame.addEventListener('mousemove', (event) => setPosition(event.clientX, event.clientY));
+  frame.addEventListener('click', close);
+
+  frame.addEventListener(
     'touchmove',
     (event) => {
       event.preventDefault();
-      moveWithHover(image, event, zoomRatio);
+      const point = eventPoint(event);
+      setPosition(point.x, point.y);
     },
     { passive: false }
   );
-  overlay.addEventListener('touchend', () => overlay.remove());
+  frame.addEventListener('touchend', close);
 }
 
 function enableZoomOnHover(zoomRatio) {
@@ -87,8 +78,7 @@ function enableZoomOnHover(zoomRatio) {
     }
     const image = event.target.closest('.image-magnify-hover');
     if (!image) return;
-    magnify(image, zoomRatio);
-    moveWithHover(image, event, zoomRatio);
+    openZoomOverlay(image, zoomRatio);
   });
 
   // Only treat it as a zoom-tap once the finger has stayed still (not scrolled).
@@ -129,11 +119,10 @@ function enableZoomOnHover(zoomRatio) {
       touchStartImage = null;
       touchStartPoint = null;
       ignoreNextClick = true;
-      magnify(image, zoomRatio);
-      moveWithHover(image, { touches: event.changedTouches }, zoomRatio);
+      openZoomOverlay(image, zoomRatio);
     },
     { passive: true }
   );
 }
 
-enableZoomOnHover(3);
+enableZoomOnHover(2.5);

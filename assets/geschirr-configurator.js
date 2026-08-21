@@ -353,9 +353,20 @@
     const compactObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         compact = !entry.isIntersecting;
+        wrapper.classList.remove('geschirr-configurator__preview-wrapper--animate');
         wrapper.classList.toggle('geschirr-configurator__preview-wrapper--compact', compact);
         updateDetached();
         updateSize();
+        if (compact) {
+          // Skip the transform/opacity transition for the very first frame so
+          // becoming compact never animates in sideways - only later detach/
+          // reattach toggles (handled below) should be smooth.
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              wrapper.classList.add('geschirr-configurator__preview-wrapper--animate');
+            });
+          });
+        }
       });
     }, { threshold: 0 });
     compactObserver.observe(sentinel);
