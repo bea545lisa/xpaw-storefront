@@ -87,6 +87,24 @@ window.initStickyPreview = function (config) {
 
   apply();
   mobileQuery.addEventListener('change', apply);
+  // Extra fallback: if the page was loaded (or a preview/testing tool set
+  // its viewport) narrower than 749px and later resized wider without a
+  // clean matchMedia "change" firing - e.g. a browser window resized rather
+  // than an actual device rotation - the layout would otherwise stay stuck
+  // in the mobile, reparented structure forever, even on a wide viewport.
+  let resizeTicking = false;
+  window.addEventListener(
+    'resize',
+    () => {
+      if (resizeTicking) return;
+      resizeTicking = true;
+      requestAnimationFrame(() => {
+        apply();
+        resizeTicking = false;
+      });
+    },
+    { passive: true }
+  );
 
   // Both the stuck and detach state are backed by an IntersectionObserver
   // *and* a plain scroll check - Safari has a known bug where
