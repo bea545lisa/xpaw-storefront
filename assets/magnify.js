@@ -24,8 +24,11 @@ function openZoomOverlay(image, zoomRatio) {
   openZoomOverlaySrc(src, zoomRatio);
 }
 
+let zoomOverlayOpen = false;
+
 function openZoomOverlaySrc(src, zoomRatio) {
-  if (!src) return;
+  if (!src || zoomOverlayOpen) return;
+  zoomOverlayOpen = true;
 
   const overlay = document.createElement('div');
   overlay.className = 'image-magnify-full-size';
@@ -65,6 +68,7 @@ function openZoomOverlaySrc(src, zoomRatio) {
   function close() {
     overlay.remove();
     document.body.style.overflow = '';
+    zoomOverlayOpen = false;
   }
 
   function setPosition(clientX, clientY) {

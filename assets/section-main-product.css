@@ -1105,56 +1105,14 @@ a.product__text {
   border-color: rgb(var(--color-foreground));
 }
 
-.sticky-product-media__sentinel {
-  display: block !important;
-  height: 1px;
-}
-
+/* Base sticky/stuck/price-mirror styling lives in sticky-preview.css
+   (shared with the Geschirr configurator). Only the width shrink needs
+   extra specificity here to beat Dawn's own .grid__item.product__media-wrapper
+   rules. */
 @media screen and (max-width: 749px) {
-  .product__media-wrapper {
-    position: sticky;
-    top: calc(var(--header-height, 6rem) - 9px);
-    z-index: 2;
-    background: transparent;
-    transition: background-color 0.75s ease;
-  }
-
-  .grid__item.product__media-wrapper.product__media-wrapper--stuck {
-    background: rgba(10, 10, 10, 0.55) !important;
-    backdrop-filter: blur(var(--header-scrolled-blur, 16px));
-    -webkit-backdrop-filter: blur(var(--header-scrolled-blur, 16px));
-    padding: 0.4rem 0;
+  .grid__item.product__media-wrapper.sticky-preview--stuck {
     width: 54% !important;
     margin: 0 auto !important;
-    transition: width 0.75s ease, background-color 0.75s ease;
-  }
-
-  .sticky-product-media__price-mirror {
-    display: none;
-  }
-
-  .product__media-wrapper--stuck .sticky-product-media__price-mirror {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-    line-height: 1.15;
-    font-size: 1.25rem;
-    color: rgb(var(--color-foreground));
-    margin-top: 0.2rem;
-    text-align: center;
-  }
-
-  .sticky-product-media__price-mirror-title {
-    font-weight: 600;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 60vw;
-  }
-
-  .sticky-product-media__price-mirror-price {
-    color: rgba(var(--color-foreground), 0.75);
   }
 }
 
