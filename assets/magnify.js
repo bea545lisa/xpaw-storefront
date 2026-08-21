@@ -188,4 +188,4 @@ function enableZoomOnHover(ratios) {
 
 window.openZoomOverlaySrc = openZoomOverlaySrc;
 
-enableZoomOnHover({ mobile: 1.9, desktop: 1.3 });
+enableZoomOnHover({ mobile: 2.4, desktop: 1.3 });
