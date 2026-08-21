@@ -294,9 +294,17 @@
 
     if (typeof window.initStickyPreview === 'function') {
       const titleEl = document.querySelector('.product__title h1');
+      // Everything up to and including the title block stays untouched in
+      // its normal spot, so it can never end up visually overlapped by the
+      // sticky image once scrolling starts - only what comes after it joins
+      // the sticky scope.
+      const titleBlock = document.querySelector('.product__title');
+      const scopeFrom = titleBlock && titleBlock.nextElementSibling;
+
       window.initStickyPreview({
         wrapper: '.geschirr-configurator__preview-wrapper',
         sentinel: '.geschirr-configurator__preview-sentinel',
+        scopeFrom: scopeFrom,
         scopeThrough: '.geschirr-configurator__options',
         priceMirror: {
           priceContainerSelector: '[id^="price-"]',
