@@ -21,7 +21,7 @@
     backdrop-filter: blur(var(--header-scrolled-blur, 6px));
     -webkit-backdrop-filter: blur(var(--header-scrolled-blur, 6px));
     padding: 0.4rem 0;
-    border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
+    border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.12);
     box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.4);
   }
 
