@@ -41,7 +41,7 @@
       scope: scopeThroughEl ? null : '.product__info-container',
       scopeThrough: scopeThroughEl,
       releaseAt: releaseAnchor,
-      releaseGap: 46,
+      releaseGap: 32,
       priceMirror: {
         priceContainerSelector: '[id^="price-"]',
         title: titleH1 ? titleH1.textContent.trim() : '',
