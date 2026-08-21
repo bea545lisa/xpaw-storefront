@@ -309,6 +309,20 @@ a.product__text {
   margin-bottom: 1.5rem;
 }
 
+@media screen and (max-width: 749px) {
+  .product__title {
+    margin-bottom: 0.2rem;
+  }
+
+  [id^="price-"] {
+    margin-bottom: 1.6rem;
+  }
+
+  [id^="price-"] .price-item {
+    font-size: 2rem;
+  }
+}
+
 .product__title > * {
   margin: 0;
 }
