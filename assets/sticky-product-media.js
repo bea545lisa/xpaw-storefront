@@ -6,14 +6,13 @@
     const infoContainer = document.querySelector('.product__info-container');
     if (!mediaWrapper || !sentinel || !infoContainer || typeof window.initStickyPreview !== 'function') return;
 
-    // Quantity and the Add to Cart button never join the sticky scope at
-    // all - but the natural CSS sticky release only lets go once the whole
-    // scope (image + eyebrow + title + price + options) has scrolled past,
-    // which in practice released much later than that geometry suggested it
-    // should. releaseAt (passed below) pushes the wrapper up by hand once
-    // this element has scrolled past instead, timed directly off its real
-    // position rather than the scope's total height.
+    // Unlike the Geschirr configurator (which has a long, multi-fieldset
+    // options list that genuinely needs to stay attached to the image while
+    // scrolling through it), a normal product's options are short - no
+    // reason to keep the image pinned through them at all. Release right
+    // after the price instead.
     const releaseAnchor = document.querySelector('variant-selects, .product-form__input:not(.product-form__quantity)');
+    const priceEl = document.querySelector('[id^="price-"]');
     let scopeThroughEl = null;
     if (releaseAnchor) {
       let node = releaseAnchor;
@@ -37,7 +36,7 @@
       sentinel: '.sticky-product-media__sentinel',
       scope: scopeThroughEl ? null : '.product__info-container',
       scopeThrough: scopeThroughEl,
-      releaseAt: releaseAnchor,
+      releaseAt: priceEl,
       priceMirror: {
         priceContainerSelector: '[id^="price-"]',
         title: titleH1 ? titleH1.textContent.trim() : '',

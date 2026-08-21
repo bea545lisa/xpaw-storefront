@@ -141,10 +141,16 @@ window.initStickyPreview = function (config) {
   const releaseAt =
     config.releaseAt instanceof Element ? config.releaseAt : config.releaseAt ? document.querySelector(config.releaseAt) : null;
   if (releaseAt) {
+    // Captured once, up front, as a document-relative position rather than
+    // read live on every scroll - releaseAt (e.g. the price) may itself get
+    // hidden once stuck (replaced by a mirror in the bar), at which point
+    // its own getBoundingClientRect() would collapse to 0 and break this.
+    const releaseAtDocumentBottom = releaseAt.getBoundingClientRect().bottom + window.scrollY;
+
     function checkRelease() {
       const stickyTop = parseFloat(getComputedStyle(wrapper).top) || 0;
-      const rect = releaseAt.getBoundingClientRect();
-      const pushback = Math.max(0, stickyTop - rect.bottom);
+      const currentBottom = releaseAtDocumentBottom - window.scrollY;
+      const pushback = Math.max(0, stickyTop - currentBottom);
       wrapper.style.transform = pushback > 0 ? `translateY(-${pushback}px)` : '';
     }
 
