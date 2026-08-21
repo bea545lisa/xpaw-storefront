@@ -21,6 +21,7 @@
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     padding: 0.4rem 0;
+    border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
   }
 
   .sticky-preview.sticky-preview--detached {
