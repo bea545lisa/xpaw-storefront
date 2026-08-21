@@ -34,15 +34,20 @@ window.initStickyPreview = function (config) {
   const mobileQuery = window.matchMedia('(max-width: 749px)');
   let onMobile = null;
 
+  const scopeFrom =
+    config.scopeFrom instanceof Element ? config.scopeFrom : config.scopeFrom ? document.querySelector(config.scopeFrom) : null;
+
   const builtScope = scopeThrough ? document.createElement('div') : null;
   const throughParent = scopeThrough ? scopeThrough.parentElement : null;
-  // Everything from the start of throughParent up to and including
-  // scopeThrough, captured now (before we move anything) - and whatever
-  // originally followed, so we can put it all back in the right order later.
+  // Everything from scopeFrom (or the start of throughParent, if not given)
+  // up to and including scopeThrough, captured now (before we move anything)
+  // - and whatever originally followed, so we can put it all back in the
+  // right order later. Content *before* scopeFrom (e.g. the title) is never
+  // touched, so it can't end up visually overlapped by the sticky wrapper.
   const throughSiblings = [];
   let restoreBeforeNode = null;
   if (scopeThrough) {
-    let node = throughParent.firstChild;
+    let node = scopeFrom || throughParent.firstChild;
     while (node) {
       const next = node.nextSibling;
       throughSiblings.push(node);
