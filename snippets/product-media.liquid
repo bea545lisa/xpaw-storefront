@@ -39,7 +39,7 @@
       endif
     endif
   -%}
-  <div class="{% if dark_media %}product__media--has-dark{% endif %}">
+  <div class="{% if dark_media %}product__media--has-dark{% endif %}" data-media-id="{{ media.id }}">
     <img
       class="global-media-settings global-media-settings--no-shadow{% if variant_image %} product__media-item--variant{% endif %}"
       srcset="
