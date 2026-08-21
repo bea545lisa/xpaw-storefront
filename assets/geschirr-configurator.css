@@ -19,6 +19,11 @@
   cursor: pointer;
 }
 
+.geschirr-configurator__preview-sentinel {
+  display: block !important;
+  height: 1px;
+}
+
 .geschirr-configurator__preview-wrapper {
   position: relative;
 }
@@ -42,10 +47,15 @@
 @media screen and (max-width: 749px) {
   .geschirr-configurator__preview-wrapper {
     position: sticky;
-    top: calc(var(--header-height, 6rem) + 1rem);
+    top: var(--header-height, 6rem);
     z-index: 2;
-    width: 60%;
+    width: 100%;
     margin: 0 auto 1rem;
+    transition: width 0.2s ease;
+  }
+
+  .geschirr-configurator__preview-wrapper--stuck {
+    width: 60%;
   }
 }
 
