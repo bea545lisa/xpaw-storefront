@@ -64,7 +64,7 @@
     transition: padding 0.75s ease, background-color 0.75s ease;
   }
 
-  .geschirr-configurator__preview-wrapper .geschirr-configurator__price-mirror {
+  .geschirr-configurator__preview-wrapper--stuck .geschirr-configurator__price-mirror {
     display: flex;
     align-items: baseline;
     gap: 0.5rem;
