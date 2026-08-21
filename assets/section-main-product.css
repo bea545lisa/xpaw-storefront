@@ -1135,6 +1135,7 @@ a.product__text {
     box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.4) !important;
   }
 
+
   /* Kill the slider's own focus/shadow padding while stuck - it was pushing
      the shrunk image down inside the bar, and remove any opaque background
      the gallery components paint over our semi-transparent stuck background. */
