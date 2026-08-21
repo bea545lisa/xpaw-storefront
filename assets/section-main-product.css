@@ -1141,6 +1141,23 @@ a.product__text {
     box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.4) !important;
   }
 
+  /* Tighten the sticky scope's own height (eyebrow/title/price sit inside it
+     for the image-first layout) so the natural sticky release happens
+     shortly after the options, not after scrolling past their full,
+     uncompressed spacing too - same idea as the Geschirr configurator's
+     .geschirr-configurator__sticky-scope. */
+  .sticky-preview__scope .product__text {
+    margin: 0 0 0.2rem;
+  }
+
+  .sticky-preview__scope .product__title {
+    margin-bottom: 0.2rem;
+  }
+
+  .sticky-preview__scope [id^='price-'] {
+    margin-bottom: 0.8rem;
+  }
+
   .product__media-wrapper media-gallery {
     display: block;
     width: 100%;
@@ -1164,6 +1181,26 @@ a.product__text {
   .product__media-wrapper.sticky-preview--stuck .product-media-container,
   .product__media-wrapper.sticky-preview--stuck .media {
     background: transparent !important;
+  }
+
+  /* The mobile "peek next slide" gutter (negative margins + calc(100% + Nrem)
+     width) is sized in rem, but now resolves against the much narrower
+     54%-wide media-gallery while stuck - leaving a visible gap on the sides
+     instead of the image filling the shrunk box. Not needed at this size
+     anyway, so just undo it while stuck. */
+  .product__media-wrapper.sticky-preview--stuck .product__media-list {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .product__media-wrapper.sticky-preview--stuck slider-component:not(.thumbnail-slider--no-slide) {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .product__media-wrapper.sticky-preview--stuck .product__media-item {
+    padding-left: 0;
+    padding-right: 0;
   }
 }
 

@@ -38,6 +38,7 @@ window.initStickyPreview = function (config) {
     config.scopeFrom instanceof Element ? config.scopeFrom : config.scopeFrom ? document.querySelector(config.scopeFrom) : null;
 
   const builtScope = scopeThrough ? document.createElement('div') : null;
+  if (builtScope) builtScope.className = 'sticky-preview__scope';
   const throughParent = scopeThrough ? scopeThrough.parentElement : null;
   // Everything from scopeFrom (or the start of throughParent, if not given)
   // up to and including scopeThrough, captured now (before we move anything)
