@@ -126,7 +126,7 @@
           mehr funktionierte.
         {%- endcomment -%}
         <div
-          class="product__media-image--dark"
+          class="product__media-image--dark{% if image_class %} {{ image_class }}{% endif %}"
           style="background-image: url({{ dark_media | image_url: width: 1946 }});"
           role="img"
           aria-label="{{ media.alt | escape }}"

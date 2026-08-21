@@ -1,7 +1,15 @@
+function getImageSrc(image) {
+  if (image.tagName === 'IMG') return image.src;
+  const bg = image.style.backgroundImage;
+  const match = bg.match(/url\(["']?(.*?)["']?\)/);
+  return match ? match[1] : '';
+}
+
 // create a container and set the full-size image as its background
 function createOverlay(image) {
+  const src = getImageSrc(image);
   const overlayImage = document.createElement('img');
-  overlayImage.setAttribute('src', `${image.src}`);
+  overlayImage.setAttribute('src', src);
   overlay = document.createElement('div');
   prepareOverlay(overlay, overlayImage);
 
@@ -31,7 +39,9 @@ function toggleLoadingSpinner(image) {
 
 function moveWithHover(image, event, zoomRatio) {
   // calculate mouse position
-  const ratio = image.height / image.width;
+  const width = image.tagName === 'IMG' ? image.width : image.offsetWidth;
+  const height = image.tagName === 'IMG' ? image.height : image.offsetHeight;
+  const ratio = height / width;
   const container = event.target.getBoundingClientRect();
   const xPosition = event.clientX - container.left;
   const yPosition = event.clientY - container.top;
@@ -40,7 +50,7 @@ function moveWithHover(image, event, zoomRatio) {
 
   // determine what to show in the frame
   overlay.style.backgroundPosition = `${xPercent} ${yPercent}`;
-  overlay.style.backgroundSize = `${image.width * zoomRatio}px`;
+  overlay.style.backgroundSize = `${width * zoomRatio}px`;
 }
 
 function magnify(image, zoomRatio) {
