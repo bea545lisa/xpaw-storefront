@@ -297,19 +297,20 @@
   }
 
   // The real price is up near the product title, out of view once you're
-  // scrolled down to the color options - mirror it there too so price
-  // changes (e.g. picking "Mit Brustring") are actually visible.
+  // scrolled down and the preview has stuck to the top - show a small copy
+  // there too so price changes (e.g. picking "Mit Brustring") stay visible.
   function initPriceMirror() {
-    const mirror = document.querySelector('.geschirr-configurator__price-mirror');
-    const source = document.querySelector('[id^="price-"]');
-    if (!mirror || !source) return;
+    const priceEl = document.querySelector('.geschirr-configurator__price-mirror-price');
+    const sourceContainer = document.querySelector('[id^="price-"]');
+    if (!priceEl || !sourceContainer) return;
 
     function sync() {
-      mirror.innerHTML = source.innerHTML;
+      const current = sourceContainer.querySelector('.price-item--sale') || sourceContainer.querySelector('.price-item--regular');
+      priceEl.textContent = current ? current.textContent.trim() : '';
     }
 
     sync();
-    new MutationObserver(sync).observe(source, { childList: true, subtree: true, characterData: true });
+    new MutationObserver(sync).observe(sourceContainer, { childList: true, subtree: true, characterData: true });
   }
 
   // On mobile, move the preview image to sit right above the color options
