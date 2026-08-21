@@ -350,7 +350,9 @@
           previewWrapper.classList.toggle('geschirr-configurator__preview-wrapper--stuck', !entry.isIntersecting);
         });
       },
-      { threshold: 0 }
+      // A small rootMargin buffer so the shrink-triggered height change can't
+      // itself nudge the sentinel back across the exact toggle line.
+      { threshold: 0, rootMargin: '40px 0px 0px 0px' }
     );
     stuckObserver.observe(sentinel);
   }

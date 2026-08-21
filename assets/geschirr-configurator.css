@@ -54,22 +54,28 @@
     margin-bottom: 1rem;
     display: flex;
     justify-content: center;
+    align-items: flex-start;
+    padding: 0;
+    background: transparent;
+    transition: padding 0.75s ease, background-color 0.75s ease;
   }
 
-  /* Fixed width + scale (never a width/height *change*) so the sticky
-     element's own layout box never changes size while shrinking - resizing
-     via width would shift the sentinel above it and retrigger the
-     IntersectionObserver, causing visible flicker. */
+  .geschirr-configurator__preview-wrapper--stuck {
+    padding: 0.6rem 0;
+    background: rgb(var(--color-background));
+  }
+
   .geschirr-configurator__preview-wrapper .geschirr-configurator__preview {
     width: 90%;
     flex: none;
     transform-origin: top center;
     transform: scale(1);
-    transition: transform 0.75s ease;
+    transition: transform 0.75s ease, width 0.75s ease;
   }
 
   .geschirr-configurator__preview-wrapper--stuck .geschirr-configurator__preview {
-    transform: scale(0.6);
+    width: 54%;
+    transform: none;
   }
 }
 
