@@ -1125,8 +1125,12 @@ a.product__text {
    rules. */
 @media screen and (max-width: 749px) {
   .grid__item.product__media-wrapper.sticky-preview--stuck {
-    width: 54% !important;
-    margin: 0 auto !important;
+    /* transform instead of width: Dawn's slider markup inside has its own
+       fixed sizing that doesn't shrink along with a narrower box - the image
+       just overflowed past a width:54% box, hiding the background behind it.
+       Scaling the whole element (image and all) avoids that entirely. */
+    transform: scale(0.54) !important;
+    transform-origin: top center !important;
     background: rgba(10, 10, 10, 0.92) !important;
     backdrop-filter: blur(var(--header-scrolled-blur, 6px)) !important;
     -webkit-backdrop-filter: blur(var(--header-scrolled-blur, 6px)) !important;
