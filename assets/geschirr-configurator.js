@@ -310,19 +310,31 @@
     const desktopNextSibling = previewWrapper.nextSibling;
     const sentinelDesktopParent = sentinel.parentElement;
     const sentinelDesktopNextSibling = sentinel.nextSibling;
+    const optionsDesktopParent = options.parentElement;
+    const optionsDesktopNextSibling = options.nextSibling;
     const mobileQuery = window.matchMedia('(max-width: 749px)');
     let onMobile = null;
+
+    // A dedicated scope that ends exactly where the options end, so the
+    // sticky image lets go right there instead of dragging along through
+    // the rest of the product info (description etc. below the buy button).
+    const scope = document.createElement('div');
+    scope.className = 'geschirr-configurator__sticky-scope';
 
     function apply() {
       const shouldBeMobile = mobileQuery.matches;
       if (shouldBeMobile === onMobile) return;
       onMobile = shouldBeMobile;
       if (shouldBeMobile) {
-        options.parentElement.insertBefore(sentinel, options);
-        options.parentElement.insertBefore(previewWrapper, options);
+        optionsDesktopParent.insertBefore(scope, options);
+        scope.appendChild(sentinel);
+        scope.appendChild(previewWrapper);
+        scope.appendChild(options);
       } else {
         sentinelDesktopParent.insertBefore(sentinel, sentinelDesktopNextSibling);
         desktopParent.insertBefore(previewWrapper, desktopNextSibling);
+        optionsDesktopParent.insertBefore(options, optionsDesktopNextSibling);
+        scope.remove();
       }
     }
 
