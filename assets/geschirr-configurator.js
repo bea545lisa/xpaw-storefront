@@ -267,17 +267,11 @@
     });
 
     const preview = document.querySelector('.geschirr-configurator__preview');
-    if (preview) {
-      preview.style.cursor = 'zoom-in';
+    if (preview && typeof window.openZoomOverlaySrc === 'function') {
+      preview.classList.add('image-magnify-hover');
       preview.addEventListener('click', () => {
         const out = buildCompositeCanvas(false);
-        const overlay = document.createElement('div');
-        overlay.className = 'geschirr-configurator__zoom-overlay';
-        const img = document.createElement('img');
-        img.src = out.toDataURL('image/png');
-        overlay.appendChild(img);
-        overlay.addEventListener('click', () => overlay.remove());
-        document.body.appendChild(overlay);
+        window.openZoomOverlaySrc(out.toDataURL('image/png'), 2.5);
       });
     }
 
@@ -301,88 +295,34 @@
     initStickyPreview();
   }
 
+  // On mobile, move the preview image to sit right above the color options
+  // and make it `position: sticky` there. Sticky is native browser behaviour:
+  // it sticks while scrolling through that shared container (image + options)
+  // and lets go by itself once the container (i.e. the options) scrolls past -
+  // no JS position/size math, so it can't drift out of sync with the header.
   function initStickyPreview() {
-    const wrapper = document.querySelector('.geschirr-configurator__preview-wrapper');
-    const preview = document.querySelector('.geschirr-configurator__preview');
-    const sentinel = document.querySelector('.geschirr-configurator__preview-sentinel');
+    const previewWrapper = document.querySelector('.geschirr-configurator__preview-wrapper');
     const options = document.querySelector('.geschirr-configurator__options');
-    const headerGroup = document.querySelector('.shopify-section-group-header-group');
-    if (!wrapper || !preview || !sentinel || !options) return;
+    if (!previewWrapper || !options) return;
 
-    const maxSize = 34; // vh, size right when it first becomes compact
-    const minSize = 24; // vh, size at the end of the shrink range
-    const shrinkRangePx = 500; // px scrolled over which it shrinks from maxSize to minSize
+    const desktopParent = previewWrapper.parentElement;
+    const desktopNextSibling = previewWrapper.nextSibling;
+    const mobileQuery = window.matchMedia('(max-width: 749px)');
+    let onMobile = null;
 
-    let compact = false;
-    let optionsVisible = true;
-    let ticking = false;
-
-    function headerOffset() {
-      // -1px overlap so no subpixel rounding gap can ever show between the
-      // header and the pinned bar.
-      if (headerGroup) return Math.ceil(headerGroup.getBoundingClientRect().bottom) - 1;
-      const headerHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 0;
-      return Math.ceil(headerHeight) - 1;
+    function apply() {
+      const shouldBeMobile = mobileQuery.matches;
+      if (shouldBeMobile === onMobile) return;
+      onMobile = shouldBeMobile;
+      if (shouldBeMobile) {
+        options.parentElement.insertBefore(previewWrapper, options);
+      } else {
+        desktopParent.insertBefore(previewWrapper, desktopNextSibling);
+      }
     }
 
-    function updateDetached() {
-      const detached = compact && !optionsVisible;
-      wrapper.classList.toggle('geschirr-configurator__preview-wrapper--detached', detached);
-    }
-
-    function updateSize() {
-      if (!compact) return;
-      const offset = Math.max(0, headerOffset());
-      wrapper.style.setProperty('--geschirr-preview-top', `${offset}px`);
-      const sentinelTop = sentinel.getBoundingClientRect().top;
-      const scrolledPast = Math.min(Math.max(offset - sentinelTop, 0), shrinkRangePx);
-      const progress = scrolledPast / shrinkRangePx;
-      const size = maxSize - progress * (maxSize - minSize);
-      wrapper.style.setProperty('--geschirr-preview-size', `${size}vh`);
-    }
-
-    function onScroll() {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        updateSize();
-        ticking = false;
-      });
-    }
-
-    // The sentinel sits directly above the wrapper; once it scrolls out of
-    // view the wrapper has reached its sticky "top" offset and is now stuck.
-    const compactObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        compact = !entry.isIntersecting;
-        wrapper.classList.remove('geschirr-configurator__preview-wrapper--animate');
-        wrapper.classList.toggle('geschirr-configurator__preview-wrapper--compact', compact);
-        updateDetached();
-        updateSize();
-        if (compact) {
-          // Skip the transform/opacity transition for the very first frame so
-          // becoming compact never animates in sideways - only later detach/
-          // reattach toggles (handled below) should be smooth.
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              wrapper.classList.add('geschirr-configurator__preview-wrapper--animate');
-            });
-          });
-        }
-      });
-    }, { threshold: 0 });
-    compactObserver.observe(sentinel);
-
-    const optionsObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        optionsVisible = entry.isIntersecting;
-        updateDetached();
-      });
-    }, { threshold: 0 });
-    optionsObserver.observe(options);
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', updateSize);
+    apply();
+    mobileQuery.addEventListener('change', apply);
   }
 
   if (document.readyState === 'loading') {
