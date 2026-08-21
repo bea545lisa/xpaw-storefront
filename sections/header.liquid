@@ -195,6 +195,10 @@
     endif
   -%}
 
+  :root {
+    --header-scrolled-bg: {{ scrolled_bg }};
+  }
+
   {%- comment -%}
     .hero-overlay-active wird per JS nur gesetzt, wenn auf der Seite wirklich
     eine Banner-Sektion existiert. Ohne diese Klasse bleibt der Header immer im
