@@ -86,6 +86,13 @@ window.initStickyPreview = function (config) {
   }
 
   apply();
+  // Re-check shortly after the very first paint too - on some browsers,
+  // matchMedia has occasionally reported the wrong result for the first
+  // apply() call right at page load (before layout has fully settled),
+  // reparenting into the mobile structure on an actual desktop viewport for
+  // a moment before snapping back - a visible flash. Re-running apply()
+  // once things have settled corrects that even if it happened.
+  requestAnimationFrame(() => requestAnimationFrame(apply));
   mobileQuery.addEventListener('change', apply);
   // Extra fallback: if the page was loaded (or a preview/testing tool set
   // its viewport) narrower than 749px and later resized wider without a
