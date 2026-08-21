@@ -38,22 +38,18 @@ function openZoomOverlaySrc(src, zoomRatio) {
   const frame = document.createElement('div');
   frame.className = 'image-magnify-full-size__frame';
   frame.style.backgroundImage = `url('${src}')`;
-  frame.style.backgroundSize = `${zoomRatio * 100}%`;
+  // Pixel size based on the window's own dimensions (known synchronously,
+  // right now) rather than a percentage of the frame's own box - a percentage
+  // depends on the frame having already been laid out, which on the very
+  // first open of the whole page wasn't reliably true yet and showed
+  // unzoomed until closed and reopened.
+  frame.style.backgroundSize = `${Math.round(window.innerWidth * zoomRatio)}px auto`;
   frame.style.backgroundPosition = '50% 50%';
   // A zero-width space keeps this div from matching the theme's global
   // `div:empty { display: none }` rule (an empty background-image div still
   // counts as "empty" for that selector, which was collapsing it to 0x0).
   frame.appendChild(document.createTextNode('​'));
   overlay.appendChild(frame);
-
-  // On the very first open (cold layout), the initial background-size can
-  // paint before the frame's own box has settled - re-apply it one frame
-  // later so it always shows zoomed in from the start, not just on repeats.
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      frame.style.backgroundSize = `${zoomRatio * 100}%`;
-    });
-  });
 
   const closeButton = document.createElement('button');
   closeButton.type = 'button';
