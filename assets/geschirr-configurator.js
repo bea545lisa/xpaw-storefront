@@ -254,19 +254,31 @@
     const exportIcon = document.querySelector('.geschirr-configurator__export-icon');
     const exportMenu = document.querySelector('.geschirr-configurator__export-menu');
     if (exportIcon && exportMenu) {
+      function openMenu() {
+        exportMenu.hidden = false;
+        // Force a reflow so the browser registers the display change before
+        // the opacity transition starts, otherwise it just pops in instantly.
+        void exportMenu.offsetHeight;
+        exportMenu.classList.add('geschirr-configurator__export-menu--visible');
+      }
+      function closeMenu() {
+        exportMenu.classList.remove('geschirr-configurator__export-menu--visible');
+        window.setTimeout(() => {
+          exportMenu.hidden = true;
+        }, 200);
+      }
       exportIcon.addEventListener('click', (event) => {
         event.stopPropagation();
-        exportMenu.hidden = !exportMenu.hidden;
+        if (exportMenu.hidden) openMenu();
+        else closeMenu();
       });
       document.addEventListener('click', (event) => {
         if (!exportMenu.hidden && !exportMenu.contains(event.target) && event.target !== exportIcon) {
-          exportMenu.hidden = true;
+          closeMenu();
         }
       });
       exportMenu.querySelectorAll('.geschirr-configurator__export-button').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          exportMenu.hidden = true;
-        });
+        btn.addEventListener('click', closeMenu);
       });
     }
 
@@ -284,7 +296,7 @@
       shareButton.style.verticalAlign = 'middle';
       exportRow.style.display = 'inline-flex';
       exportRow.style.verticalAlign = 'middle';
-      exportRow.style.marginLeft = '0.6rem';
+      exportRow.style.marginLeft = '2rem';
     }
 
     document.querySelectorAll('.geschirr-configurator__export-button').forEach((exportButton) => {
