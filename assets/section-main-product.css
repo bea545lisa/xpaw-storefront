@@ -1109,16 +1109,35 @@ a.product__text {
   position: fixed;
   inset: 0;
   z-index: 1000;
+  background: rgba(0, 0, 0, 0.9);
+  cursor: zoom-out;
+  overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: contain;
+}
+
+.image-magnify-full-size__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1;
+  width: 4rem;
+  height: 4rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.9);
-  cursor: zoom-out;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 2.4rem;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .image-magnify-full-size__frame {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  inset: 0;
   background-repeat: no-repeat;
 }
 
