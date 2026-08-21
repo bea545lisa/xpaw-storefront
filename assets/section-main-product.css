@@ -1133,6 +1133,11 @@ a.product__text {
      left Dawn's own slider markup inside at full size, overflowing past a
      narrower box and hiding the background behind it. */
   .grid__item.product__media-wrapper.sticky-preview--stuck {
+    /* Full viewport bleed, matching the configurator's outer bar
+       (width: 100vw + negative margin) instead of just 100% of this
+       column's own (page-padded) grid width. */
+    width: 100vw !important;
+    margin-left: calc(50% - 50vw) !important;
     background: rgba(10, 10, 10, 0.92) !important;
     backdrop-filter: blur(var(--header-scrolled-blur, 6px)) !important;
     -webkit-backdrop-filter: blur(var(--header-scrolled-blur, 6px)) !important;
@@ -1141,21 +1146,18 @@ a.product__text {
     box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.4) !important;
   }
 
-  /* Tighten the sticky scope's own height (eyebrow/title/price sit inside it
-     for the image-first layout) so the natural sticky release happens
-     shortly after the options, not after scrolling past their full,
-     uncompressed spacing too - same idea as the Geschirr configurator's
-     .geschirr-configurator__sticky-scope. */
-  .sticky-preview__scope .product__text {
-    margin: 0 0 0.2rem;
-  }
-
-  .sticky-preview__scope .product__title {
-    margin-bottom: 0.2rem;
-  }
-
+  /* position: sticky always releases only once *everything* inside the
+     sticky element's containing block (here: .sticky-preview__scope) has
+     scrolled past - compact spacing alone can't get that down to "right
+     after the options" while eyebrow/title/price still sit in that same
+     scope for the image-first layout. So they're hidden here instead - the
+     already-existing .sticky-preview__price-mirror inside the stuck bar
+     covers title+price while scrolling, and this scope then only contains
+     image + options, releasing right after them. */
+  .sticky-preview__scope .product__text,
+  .sticky-preview__scope .product__title,
   .sticky-preview__scope [id^='price-'] {
-    margin-bottom: 0.8rem;
+    display: none;
   }
 
   .product__media-wrapper media-gallery {
