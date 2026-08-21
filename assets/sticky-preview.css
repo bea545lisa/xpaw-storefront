@@ -17,9 +17,9 @@
   }
 
   .sticky-preview.sticky-preview--stuck {
-    background: var(--header-scrolled-bg, rgba(10, 10, 10, 0.55)) !important;
-    backdrop-filter: blur(var(--header-scrolled-blur, 16px));
-    -webkit-backdrop-filter: blur(var(--header-scrolled-blur, 16px));
+    background: rgba(10, 10, 10, 0.4) !important;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     padding: 0.4rem 0;
   }
 
