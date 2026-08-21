@@ -90,7 +90,7 @@
 
   .geschirr-configurator__preview-wrapper--stuck {
     padding: 0.4rem 0;
-    background: rgba(10, 10, 10, 0.75) !important;
+    background: rgba(10, 10, 10, 0.55) !important;
     backdrop-filter: blur(var(--header-scrolled-blur, 16px));
     -webkit-backdrop-filter: blur(var(--header-scrolled-blur, 16px));
   }
