@@ -43,6 +43,15 @@ function openZoomOverlaySrc(src, zoomRatio) {
   frame.appendChild(document.createTextNode('​'));
   overlay.appendChild(frame);
 
+  // On the very first open (cold layout), the initial background-size can
+  // paint before the frame's own box has settled - re-apply it one frame
+  // later so it always shows zoomed in from the start, not just on repeats.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      frame.style.backgroundSize = `${zoomRatio * 100}%`;
+    });
+  });
+
   const closeButton = document.createElement('button');
   closeButton.type = 'button';
   closeButton.className = 'image-magnify-full-size__close';
@@ -139,4 +148,4 @@ function enableZoomOnHover(zoomRatio) {
 
 window.openZoomOverlaySrc = openZoomOverlaySrc;
 
-enableZoomOnHover(2.5);
+enableZoomOnHover(1.6);
