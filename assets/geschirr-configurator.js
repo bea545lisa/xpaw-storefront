@@ -297,7 +297,7 @@
       window.initStickyPreview({
         wrapper: '.geschirr-configurator__preview-wrapper',
         sentinel: '.geschirr-configurator__preview-sentinel',
-        scopeWith: '.geschirr-configurator__options',
+        scopeThrough: '.geschirr-configurator__options',
         priceMirror: {
           priceContainerSelector: '[id^="price-"]',
           title: titleEl ? titleEl.textContent.trim() : document.title,

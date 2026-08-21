@@ -10,20 +10,20 @@
     // through the description etc. further down - find the button and use
     // whichever of its ancestors is a direct child of .product__info-container.
     const submitButton = document.querySelector('[id^="ProductSubmitButton-"]');
-    let scopeWithEl = infoContainer;
+    let scopeThroughEl = null;
     if (submitButton) {
       let node = submitButton;
       while (node.parentElement && node.parentElement !== infoContainer) {
         node = node.parentElement;
       }
-      if (node.parentElement === infoContainer) scopeWithEl = node;
+      if (node.parentElement === infoContainer) scopeThroughEl = node;
     }
 
     window.initStickyPreview({
       wrapper: '.product__media-wrapper',
       sentinel: '.sticky-product-media__sentinel',
-      scope: scopeWithEl === infoContainer ? '.product__info-container' : null,
-      scopeWith: scopeWithEl === infoContainer ? null : scopeWithEl,
+      scope: scopeThroughEl ? null : '.product__info-container',
+      scopeThrough: scopeThroughEl,
       priceMirror: {
         priceContainerSelector: '[id^="price-"]',
         title: titleH1 ? titleH1.textContent.trim() : '',
