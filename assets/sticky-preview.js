@@ -8,14 +8,21 @@ window.initStickyPreview = function (config) {
   const wrapper = document.querySelector(config.wrapper);
   const sentinel = document.querySelector(config.sentinel);
   // Either a plain container to move [sentinel, wrapper] into (`scope`), or
-  // an existing element (`scopeWith`) that a fresh, tightly-fitted wrapper
-  // gets built around together with [sentinel, wrapper] - this makes the
-  // sticky element let go right after that element instead of dragging
-  // along through everything else in a much taller shared ancestor.
+  // an existing element (`scopeThrough`) whose parent's children - from the
+  // start up to and including that element, in their original order - all
+  // get gathered (together with [sentinel, wrapper] prepended first) into a
+  // freshly built wrapper. That makes the sticky element let go right after
+  // scopeThrough instead of dragging along through everything else in a much
+  // taller shared ancestor, while keeping wrapper visually first (not moved
+  // down past content that came after it in the DOM).
   const scope = config.scope ? document.querySelector(config.scope) : null;
-  const scopeWith =
-    config.scopeWith instanceof Element ? config.scopeWith : config.scopeWith ? document.querySelector(config.scopeWith) : null;
-  if (!wrapper || !sentinel || (!scope && !scopeWith)) return;
+  const scopeThrough =
+    config.scopeThrough instanceof Element
+      ? config.scopeThrough
+      : config.scopeThrough
+        ? document.querySelector(config.scopeThrough)
+        : null;
+  if (!wrapper || !sentinel || (!scope && !scopeThrough)) return;
 
   wrapper.classList.add('sticky-preview');
   sentinel.classList.add('sticky-preview__sentinel');
@@ -27,20 +34,36 @@ window.initStickyPreview = function (config) {
   const mobileQuery = window.matchMedia('(max-width: 749px)');
   let onMobile = null;
 
-  const builtScope = scopeWith ? document.createElement('div') : null;
-  const scopeWithDesktopParent = scopeWith ? scopeWith.parentElement : null;
-  const scopeWithDesktopNextSibling = scopeWith ? scopeWith.nextSibling : null;
+  const builtScope = scopeThrough ? document.createElement('div') : null;
+  const throughParent = scopeThrough ? scopeThrough.parentElement : null;
+  // Everything from the start of throughParent up to and including
+  // scopeThrough, captured now (before we move anything) - and whatever
+  // originally followed, so we can put it all back in the right order later.
+  const throughSiblings = [];
+  let restoreBeforeNode = null;
+  if (scopeThrough) {
+    let node = throughParent.firstChild;
+    while (node) {
+      const next = node.nextSibling;
+      throughSiblings.push(node);
+      if (node === scopeThrough) {
+        restoreBeforeNode = next;
+        break;
+      }
+      node = next;
+    }
+  }
 
   function apply() {
     const shouldBeMobile = mobileQuery.matches;
     if (shouldBeMobile === onMobile) return;
     onMobile = shouldBeMobile;
     if (shouldBeMobile) {
-      if (scopeWith) {
-        scopeWithDesktopParent.insertBefore(builtScope, scopeWith);
+      if (scopeThrough) {
+        throughParent.insertBefore(builtScope, throughSiblings[0]);
         builtScope.appendChild(sentinel);
         builtScope.appendChild(wrapper);
-        builtScope.appendChild(scopeWith);
+        throughSiblings.forEach((node) => builtScope.appendChild(node));
       } else {
         scope.insertBefore(sentinel, scope.firstChild);
         scope.insertBefore(wrapper, sentinel.nextSibling);
@@ -48,8 +71,9 @@ window.initStickyPreview = function (config) {
     } else {
       sentinelDesktopParent.insertBefore(sentinel, sentinelDesktopNextSibling);
       desktopParent.insertBefore(wrapper, desktopNextSibling);
-      if (scopeWith) {
-        scopeWithDesktopParent.insertBefore(scopeWith, scopeWithDesktopNextSibling);
+      if (scopeThrough) {
+        // Put every gathered node back exactly where it came from, in order.
+        throughSiblings.forEach((node) => throughParent.insertBefore(node, restoreBeforeNode));
         builtScope.remove();
       }
     }
