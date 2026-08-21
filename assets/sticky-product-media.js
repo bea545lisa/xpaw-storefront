@@ -24,13 +24,24 @@
       if (node.parentElement === infoContainer) scopeThroughEl = node;
     }
 
-    // Small bit of room at the end of the sticky scope so it doesn't
-    // release mid-row on the last swatch - but small enough to still let go
-    // right after the options, before the quantity field starts (the two sit
-    // only ~15px apart, so anything close to 4rem was dragging the release
-    // point down into the quantity field itself).
+    // releaseAt (below) is what actually controls when the image lets go
+    // now, not the scope's own height - but the *native* CSS sticky release
+    // was still happening too, later on, once scrolled past the scope's own
+    // (smaller, real) height, adding its own movement on top of the
+    // transform releaseAt already applies. Together that looked like the
+    // image accelerating right at the end of its exit. A large padding
+    // keeps the scope tall enough that native release never actually
+    // triggers on any realistic page length, leaving releaseAt as the only
+    // thing moving it.
     if (scopeThroughEl) {
-      scopeThroughEl.style.paddingBottom = '0.5rem';
+      // The padding makes the scope tall (delays native release); the equal
+      // negative margin pulls the *following* content (quantity,
+      // description, ...) straight back up so it doesn't visually leave an
+      // 80rem gap - padding still counts toward this element's own box
+      // height for the containing-block calculation, the margin only
+      // affects the gap to what comes after it.
+      scopeThroughEl.style.paddingBottom = '80rem';
+      scopeThroughEl.style.marginBottom = '-80rem';
     }
 
     window.initStickyPreview({
