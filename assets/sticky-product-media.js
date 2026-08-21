@@ -7,12 +7,14 @@
     if (!mediaWrapper || !sentinel || !infoContainer || typeof window.initStickyPreview !== 'function') return;
 
     // Quantity and the Add to Cart button never join the sticky scope at
-    // all - but the *natural* CSS sticky release still depends on the full
-    // scope height (image + eyebrow + title + price + options all count
-    // toward it, since title/price have to be inside the scope too for the
-    // image-first layout), so it lets go far later than "right after the
-    // options" on its own. detachAt below is what actually forces the early
-    // release, independent of that scope height.
+    // all - the natural CSS sticky release lets go once the whole scope
+    // (image + eyebrow + title + price + options) has scrolled past. A
+    // forced JS detach (position: static) was tried here to release
+    // earlier, but that's an instant, untransitioned property change - it
+    // fought with the natural release and made the image visibly *pop* out
+    // instead of scrolling away smoothly. Tightened via compact spacing in
+    // CSS instead (.sticky-preview__scope), same approach as the Geschirr
+    // configurator's own sticky scope.
     const releaseAnchor = document.querySelector('variant-selects, .product-form__input:not(.product-form__quantity)');
     let scopeThroughEl = null;
     if (releaseAnchor) {
@@ -32,18 +34,11 @@
       scopeThroughEl.style.paddingBottom = '0.5rem';
     }
 
-    // Detach right as the quantity field approaches (it sits ~15px below
-    // the options), not at the Add to Cart button further down - that's
-    // what actually makes the image let go right after the options instead
-    // of dragging all the way down.
-    const detachTarget = document.querySelector('.product-form__quantity') || document.querySelector('[id^="ProductSubmitButton-"]');
-
     window.initStickyPreview({
       wrapper: '.product__media-wrapper',
       sentinel: '.sticky-product-media__sentinel',
       scope: scopeThroughEl ? null : '.product__info-container',
       scopeThrough: scopeThroughEl,
-      detachAt: detachTarget,
       priceMirror: {
         priceContainerSelector: '[id^="price-"]',
         title: titleH1 ? titleH1.textContent.trim() : '',
