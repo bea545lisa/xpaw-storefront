@@ -302,11 +302,14 @@
   // no JS position/size math, so it can't drift out of sync with the header.
   function initStickyPreview() {
     const previewWrapper = document.querySelector('.geschirr-configurator__preview-wrapper');
+    const sentinel = document.querySelector('.geschirr-configurator__preview-sentinel');
     const options = document.querySelector('.geschirr-configurator__options');
-    if (!previewWrapper || !options) return;
+    if (!previewWrapper || !sentinel || !options) return;
 
     const desktopParent = previewWrapper.parentElement;
     const desktopNextSibling = previewWrapper.nextSibling;
+    const sentinelDesktopParent = sentinel.parentElement;
+    const sentinelDesktopNextSibling = sentinel.nextSibling;
     const mobileQuery = window.matchMedia('(max-width: 749px)');
     let onMobile = null;
 
@@ -315,14 +318,29 @@
       if (shouldBeMobile === onMobile) return;
       onMobile = shouldBeMobile;
       if (shouldBeMobile) {
+        options.parentElement.insertBefore(sentinel, options);
         options.parentElement.insertBefore(previewWrapper, options);
       } else {
+        sentinelDesktopParent.insertBefore(sentinel, sentinelDesktopNextSibling);
         desktopParent.insertBefore(previewWrapper, desktopNextSibling);
       }
     }
 
     apply();
     mobileQuery.addEventListener('change', apply);
+
+    // The sentinel sits right before the wrapper; once it scrolls out of view
+    // the wrapper has hit its sticky "top" offset and is now actually stuck -
+    // that's when we shrink it. Position itself stays 100% native `sticky`.
+    const stuckObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          previewWrapper.classList.toggle('geschirr-configurator__preview-wrapper--stuck', !entry.isIntersecting);
+        });
+      },
+      { threshold: 0 }
+    );
+    stuckObserver.observe(sentinel);
   }
 
   if (document.readyState === 'loading') {
