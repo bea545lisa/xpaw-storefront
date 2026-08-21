@@ -177,6 +177,15 @@ window.initStickyPreview = function (config) {
     const releaseGap = config.releaseGap || 0;
 
     function checkRelease() {
+      // Desktop shows image and info side by side, not stacked - releaseAt
+      // (e.g. variant-selects) sits up near the top there, not far below
+      // the image like on mobile. Running this math there anyway produced a
+      // large, nonsensical pushback that shoved the image off-screen
+      // entirely (found live via a translateY(-813px) on the element).
+      if (!mobileQuery.matches) {
+        if (wrapper.style.transform) wrapper.style.transform = '';
+        return;
+      }
       const stickyTop = parseFloat(getComputedStyle(wrapper).top) || 0;
       const naturalBottom = stickyTop + wrapper.offsetHeight + releaseGap;
       const rect = releaseAt.getBoundingClientRect();
