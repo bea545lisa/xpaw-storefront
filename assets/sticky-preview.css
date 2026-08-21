@@ -16,11 +16,20 @@
     transition: background-color 0.75s ease, width 0.75s ease, padding 0.75s ease;
   }
 
+  /* Structured like the navbar: blur on the outer element, background/
+     border/shadow on a separate layer behind the content. */
   .sticky-preview.sticky-preview--stuck {
-    background: rgba(10, 10, 10, 0.75) !important;
     backdrop-filter: blur(var(--header-scrolled-blur, 6px));
     -webkit-backdrop-filter: blur(var(--header-scrolled-blur, 6px));
     padding: 0.4rem 0;
+  }
+
+  .sticky-preview.sticky-preview--stuck::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgba(10, 10, 10, 0.75);
     border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
     box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.4);
   }
