@@ -1105,6 +1105,38 @@ a.product__text {
   border-color: rgb(var(--color-foreground));
 }
 
+.sticky-product-media__sentinel {
+  display: block !important;
+  height: 1px;
+}
+
+@media screen and (max-width: 749px) {
+  .product__media-wrapper {
+    position: sticky;
+    top: calc(var(--header-height, 6rem) - 9px);
+    z-index: 2;
+    background: transparent;
+    transition: background-color 0.75s ease;
+  }
+
+  .product__media-wrapper--stuck {
+    background: rgba(10, 10, 10, 0.55) !important;
+    backdrop-filter: blur(var(--header-scrolled-blur, 16px));
+    -webkit-backdrop-filter: blur(var(--header-scrolled-blur, 16px));
+    padding: 0.4rem 0;
+  }
+
+  .product__media-wrapper--stuck .product__media-list,
+  .product__media-wrapper--stuck .product-media-container {
+    transition: width 0.75s ease;
+  }
+
+  .product__media-wrapper--stuck {
+    width: 54%;
+    margin: 0 auto;
+  }
+}
+
 .image-magnify-full-size {
   position: fixed;
   inset: 0;
