@@ -128,6 +128,42 @@ window.initStickyPreview = function (config) {
     { passive: true }
   );
 
+  // Optional: instead of trusting the *native* sticky release (which
+  // depends on the whole scope's containing-block height - hard to reason
+  // about precisely once title/price/eyebrow are also inside it for the
+  // image-first layout, and proved to release much later than the geometry
+  // suggested it should), push the wrapper up by hand once a specific
+  // element (releaseAt, e.g. the color/size options) has scrolled past the
+  // sticky offset. Computed continuously from real, live positions every
+  // scroll frame via a transform - so it's smooth (no jump, unlike toggling
+  // position: static) and its timing is exactly tied to releaseAt, not to
+  // an estimate of the scope's total height.
+  const releaseAt =
+    config.releaseAt instanceof Element ? config.releaseAt : config.releaseAt ? document.querySelector(config.releaseAt) : null;
+  if (releaseAt) {
+    function checkRelease() {
+      const stickyTop = parseFloat(getComputedStyle(wrapper).top) || 0;
+      const rect = releaseAt.getBoundingClientRect();
+      const pushback = Math.max(0, stickyTop - rect.bottom);
+      wrapper.style.transform = pushback > 0 ? `translateY(-${pushback}px)` : '';
+    }
+
+    let releaseTicking = false;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (releaseTicking) return;
+        releaseTicking = true;
+        requestAnimationFrame(() => {
+          checkRelease();
+          releaseTicking = false;
+        });
+      },
+      { passive: true }
+    );
+    checkRelease();
+  }
+
   // Optional: force the wrapper to let go entirely (position: static) once a
   // given element - e.g. the Add to Cart button - is getting close to the
   // viewport, instead of waiting for it to scroll fully into view.
