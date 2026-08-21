@@ -1197,6 +1197,20 @@ a.product__text {
     background: transparent !important;
   }
 
+  /* Keeps the native CSS sticky release from ever actually triggering (it
+     was adding its own movement on top of the JS releaseAt transform once
+     scrolled past the scope's real height, making the image visibly
+     accelerate right at the end of its exit) - padding makes this element's
+     own box tall enough that the containing block never runs out, the equal
+     negative margin pulls whatever comes after it back up so it doesn't
+     leave a visible gap. Scoped to .sticky-preview__scope (mobile-only
+     structure) so it can never reach this element on desktop, where an
+     earlier, unconditional JS version of this collapsed the whole layout. */
+  .sticky-preview__scope .sticky-preview__release-anchor {
+    padding-bottom: 80rem;
+    margin-bottom: -80rem;
+  }
+
   /* The mobile "peek next slide" gutter (negative margins + calc(100% + Nrem)
      width) is sized in rem, but now resolves against the much narrower
      54%-wide media-gallery while stuck - leaving a visible gap on the sides
