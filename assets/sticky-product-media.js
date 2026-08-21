@@ -19,6 +19,13 @@
       if (node.parentElement === infoContainer) scopeThroughEl = node;
     }
 
+    // Extra room at the end of the sticky scope so it lets go well past the
+    // last visible swatch row, instead of releasing mid-row (same fix as
+    // the Geschirr configurator).
+    if (scopeThroughEl) {
+      scopeThroughEl.style.paddingBottom = '4rem';
+    }
+
     const submitButton = document.querySelector('[id^="ProductSubmitButton-"]');
 
     window.initStickyPreview({
