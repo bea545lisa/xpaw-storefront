@@ -209,47 +209,52 @@
       });
     });
 
+    function buildCompositeCanvas(transparent) {
+      const size = 1000;
+      const out = document.createElement('canvas');
+      out.width = size;
+      out.height = size;
+      const octx = out.getContext('2d');
+
+      if (!transparent) {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+          const bgGrad = octx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+          bgGrad.addColorStop(0, '#3a3a3a');
+          bgGrad.addColorStop(0.7, '#202020');
+          bgGrad.addColorStop(1, '#121212');
+          octx.fillStyle = bgGrad;
+        } else {
+          octx.fillStyle = '#ffffff';
+        }
+        octx.fillRect(0, 0, size, size);
+
+        if (outlineCanvas) {
+          octx.filter = 'blur(9px)';
+          octx.drawImage(outlineCanvas, 0, 0, size, size);
+          octx.filter = 'none';
+        }
+      }
+
+      ['polsterung', 'gurt', 'schnallen', 'metal', 'label'].forEach((layer) => {
+        if (canvases[layer]) octx.drawImage(canvases[layer], 0, 0, size, size);
+      });
+
+      if (shadingCanvas) {
+        octx.filter = 'brightness(1.18)';
+        octx.globalCompositeOperation = 'multiply';
+        octx.drawImage(shadingCanvas, 0, 0, size, size);
+        octx.globalCompositeOperation = 'source-over';
+        octx.filter = 'none';
+      }
+
+      return out;
+    }
+
     document.querySelectorAll('.geschirr-configurator__export-button').forEach((exportButton) => {
       exportButton.addEventListener('click', () => {
         const transparent = exportButton.dataset.mode === 'transparent';
-        const size = 1000;
-        const out = document.createElement('canvas');
-        out.width = size;
-        out.height = size;
-        const octx = out.getContext('2d');
-
-        if (!transparent) {
-          const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-          if (isDark) {
-            const bgGrad = octx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-            bgGrad.addColorStop(0, '#3a3a3a');
-            bgGrad.addColorStop(0.7, '#202020');
-            bgGrad.addColorStop(1, '#121212');
-            octx.fillStyle = bgGrad;
-          } else {
-            octx.fillStyle = '#ffffff';
-          }
-          octx.fillRect(0, 0, size, size);
-
-          if (outlineCanvas) {
-            octx.filter = 'blur(9px)';
-            octx.drawImage(outlineCanvas, 0, 0, size, size);
-            octx.filter = 'none';
-          }
-        }
-
-        ['polsterung', 'gurt', 'schnallen', 'metal', 'label'].forEach((layer) => {
-          if (canvases[layer]) octx.drawImage(canvases[layer], 0, 0, size, size);
-        });
-
-        if (shadingCanvas) {
-          octx.filter = 'brightness(1.18)';
-          octx.globalCompositeOperation = 'multiply';
-          octx.drawImage(shadingCanvas, 0, 0, size, size);
-          octx.globalCompositeOperation = 'source-over';
-          octx.filter = 'none';
-        }
-
+        const out = buildCompositeCanvas(transparent);
         out.toBlob((blob) => {
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
@@ -260,6 +265,21 @@
         }, 'image/png');
       });
     });
+
+    const preview = document.querySelector('.geschirr-configurator__preview');
+    if (preview) {
+      preview.style.cursor = 'zoom-in';
+      preview.addEventListener('click', () => {
+        const out = buildCompositeCanvas(false);
+        const overlay = document.createElement('div');
+        overlay.className = 'geschirr-configurator__zoom-overlay';
+        const img = document.createElement('img');
+        img.src = out.toDataURL('image/png');
+        overlay.appendChild(img);
+        overlay.addEventListener('click', () => overlay.remove());
+        document.body.appendChild(overlay);
+      });
+    }
 
     document.addEventListener('change', (event) => {
       const input = event.target;
@@ -290,7 +310,7 @@
     if (!wrapper || !preview || !sentinel || !options) return;
 
     const maxSize = 28; // vh, size right when it first becomes compact
-    const minSize = 12; // vh, size at the end of the shrink range
+    const minSize = 18; // vh, size at the end of the shrink range
     const shrinkRangePx = 220; // px scrolled over which it shrinks from maxSize to minSize
 
     let compact = false;
