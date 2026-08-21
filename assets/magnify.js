@@ -78,21 +78,50 @@ function magnify(image, zoomRatio) {
 }
 
 function enableZoomOnHover(zoomRatio) {
-  const images = document.querySelectorAll('.image-magnify-hover');
-  images.forEach((image) => {
-    image.onclick = (event) => {
-      magnify(image, zoomRatio);
-      moveWithHover(image, event, zoomRatio);
-    };
-    image.addEventListener(
-      'touchstart',
-      (event) => {
-        event.preventDefault();
-        magnify(image, zoomRatio);
-        moveWithHover(image, event, zoomRatio);
-      },
-      { passive: false }
-    );
+  document.addEventListener('click', (event) => {
+    const image = event.target.closest('.image-magnify-hover');
+    if (!image) return;
+    magnify(image, zoomRatio);
+    moveWithHover(image, event, zoomRatio);
+  });
+
+  // Only treat it as a zoom-tap once the finger has stayed still (not scrolled);
+  // touchstart itself must stay passive so page scrolling still works normally.
+  let touchStartImage = null;
+  let touchStartPoint = null;
+
+  document.addEventListener(
+    'touchstart',
+    (event) => {
+      const image = event.target.closest('.image-magnify-hover');
+      touchStartImage = image || null;
+      touchStartPoint = image ? eventPoint(event) : null;
+    },
+    { passive: true }
+  );
+
+  document.addEventListener(
+    'touchmove',
+    (event) => {
+      if (!touchStartImage || !touchStartPoint) return;
+      const point = eventPoint(event);
+      const moved = Math.hypot(point.x - touchStartPoint.x, point.y - touchStartPoint.y);
+      if (moved > 10) {
+        // the finger is scrolling the page, not tapping to zoom
+        touchStartImage = null;
+        touchStartPoint = null;
+      }
+    },
+    { passive: true }
+  );
+
+  document.addEventListener('touchend', (event) => {
+    if (!touchStartImage) return;
+    event.preventDefault();
+    magnify(touchStartImage, zoomRatio);
+    moveWithHover(touchStartImage, event.changedTouches[0] ? { touches: event.changedTouches } : event, zoomRatio);
+    touchStartImage = null;
+    touchStartPoint = null;
   });
 }
 
