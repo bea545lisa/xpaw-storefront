@@ -30,6 +30,16 @@
   overflow: hidden;
 }
 
+@media screen and (max-width: 749px) {
+  .geschirr-configurator__preview {
+    position: sticky;
+    top: calc(var(--header-height, 0px) + 1rem);
+    z-index: 2;
+    width: 45vw;
+    max-width: 22rem;
+  }
+}
+
 [data-theme="dark"] .geschirr-configurator__preview {
   background: radial-gradient(ellipse at center, #3a3a3a 0%, #202020 70%, #121212 100%);
 }
