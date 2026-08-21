@@ -97,6 +97,23 @@ window.initStickyPreview = function (config) {
   );
   stuckObserver.observe(sentinel);
 
+  // Optional: force the wrapper to let go entirely (position: static) the
+  // moment a given element - e.g. the Add to Cart button - enters the
+  // viewport, instead of waiting for it to scroll out of the sticky scope.
+  const detachAt =
+    config.detachAt instanceof Element ? config.detachAt : config.detachAt ? document.querySelector(config.detachAt) : null;
+  if (detachAt) {
+    const detachObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          wrapper.classList.toggle('sticky-preview--detached', entry.isIntersecting);
+        });
+      },
+      { threshold: 0 }
+    );
+    detachObserver.observe(detachAt);
+  }
+
   if (config.priceMirror) {
     initPriceMirror(wrapper, config.priceMirror);
   }
