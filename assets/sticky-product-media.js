@@ -33,16 +33,7 @@
     // keeps the scope tall enough that native release never actually
     // triggers on any realistic page length, leaving releaseAt as the only
     // thing moving it.
-    if (scopeThroughEl) {
-      // The padding makes the scope tall (delays native release); the equal
-      // negative margin pulls the *following* content (quantity,
-      // description, ...) straight back up so it doesn't visually leave an
-      // 80rem gap - padding still counts toward this element's own box
-      // height for the containing-block calculation, the margin only
-      // affects the gap to what comes after it.
-      scopeThroughEl.style.paddingBottom = '80rem';
-      scopeThroughEl.style.marginBottom = '-80rem';
-    }
+    if (scopeThroughEl) scopeThroughEl.classList.add('sticky-preview__release-anchor');
 
     window.initStickyPreview({
       wrapper: '.product__media-wrapper',
