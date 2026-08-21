@@ -132,29 +132,28 @@ window.initStickyPreview = function (config) {
   // depends on the whole scope's containing-block height - hard to reason
   // about precisely once title/price/eyebrow are also inside it for the
   // image-first layout, and proved to release much later than the geometry
-  // suggested it should), push the wrapper up by hand once a specific
-  // element (releaseAt) has scrolled past the sticky offset (minus
-  // releaseBuffer, for content like title/price that sits before releaseAt
-  // but gets hidden once stuck - see sticky-product-media.js). Computed
-  // continuously from live positions every scroll frame via a transform, so
-  // it's smooth (no jump, unlike toggling position: static).
+  // suggested it should), push the wrapper up by hand the instant a given
+  // element (releaseAt) would otherwise start scrolling underneath it -
+  // zero overlap allowed, not just "eventually". Computed every scroll
+  // frame via a transform, so it's smooth (no jump, unlike toggling
+  // position: static).
   //
-  // releaseAt itself must stay visible/normally laid out the whole time
-  // (unlike title/price, which get hidden once stuck) - an earlier version
-  // measured releaseAt's position just once, up front, to sidestep that,
-  // but that position was captured while the image was still full-size
-  // (before any shrinking), so it was stale as soon as the image shrank -
-  // releasing much later than intended. Reading it live each frame instead
-  // avoids that entirely.
+  // The reference point is the wrapper's own *natural* (untransformed)
+  // bottom edge - stickyTop + its current offsetHeight, which correctly
+  // reflects however small it currently is once shrunk, without depending
+  // on releaseAt's own height/visibility (releaseAt, e.g. variant-selects,
+  // must stay normally laid out and visible the whole time, unlike title/
+  // price which get hidden once stuck). Deliberately not wrapper's own live
+  // getBoundingClientRect() - that already includes whatever transform was
+  // applied last frame, which would feed back into itself and never settle.
   const releaseAt =
     config.releaseAt instanceof Element ? config.releaseAt : config.releaseAt ? document.querySelector(config.releaseAt) : null;
   if (releaseAt) {
-    const releaseBuffer = config.releaseBuffer || 0;
-
     function checkRelease() {
       const stickyTop = parseFloat(getComputedStyle(wrapper).top) || 0;
+      const naturalBottom = stickyTop + wrapper.offsetHeight;
       const rect = releaseAt.getBoundingClientRect();
-      const pushback = Math.max(0, stickyTop + releaseBuffer - rect.top);
+      const pushback = Math.max(0, naturalBottom - rect.top);
       wrapper.style.transform = pushback > 0 ? `translateY(-${pushback}px)` : '';
     }
 
