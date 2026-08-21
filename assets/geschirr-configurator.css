@@ -20,6 +20,7 @@
 }
 
 .geschirr-configurator__preview-sentinel {
+  display: block !important;
   position: relative;
   height: 1px;
 }
@@ -59,13 +60,17 @@
     margin: 0;
     box-shadow: none;
     border-radius: 0 0 0.6rem 0.6rem;
-    background: rgb(var(--color-background));
+    background: rgba(var(--color-background), 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     z-index: 5;
     transition: none;
   }
 
   [data-theme="dark"] .geschirr-configurator__preview-wrapper--compact .geschirr-configurator__preview {
-    background: rgb(var(--color-background));
+    background: rgba(var(--color-background), 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
   }
 
   /* Detached = also scrolled past the color options: stop pinning, the
