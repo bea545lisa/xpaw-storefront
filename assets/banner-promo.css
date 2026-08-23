@@ -64,22 +64,22 @@
     transform: var(--banner-promo-arrow-base) translate(0, 0);
   }
   14% {
-    transform: var(--banner-promo-arrow-base) translate(0.3px, -0.4px);
+    transform: var(--banner-promo-arrow-base) translate(0.6px, -0.8px);
   }
   28% {
-    transform: var(--banner-promo-arrow-base) translate(-0.4px, 0.3px);
+    transform: var(--banner-promo-arrow-base) translate(-0.8px, 0.6px);
   }
   42% {
-    transform: var(--banner-promo-arrow-base) translate(0.2px, 0.3px);
+    transform: var(--banner-promo-arrow-base) translate(0.4px, 0.6px);
   }
   57% {
-    transform: var(--banner-promo-arrow-base) translate(-0.3px, -0.3px);
+    transform: var(--banner-promo-arrow-base) translate(-0.6px, -0.6px);
   }
   71% {
-    transform: var(--banner-promo-arrow-base) translate(0.4px, 0.1px);
+    transform: var(--banner-promo-arrow-base) translate(0.8px, 0.2px);
   }
   85% {
-    transform: var(--banner-promo-arrow-base) translate(-0.2px, -0.2px);
+    transform: var(--banner-promo-arrow-base) translate(-0.4px, -0.4px);
   }
   100% {
     transform: var(--banner-promo-arrow-base) translate(0, 0);
