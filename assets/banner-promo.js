@@ -1,18 +1,5 @@
 (function () {
-  function setupArrowAnimation(promo) {
-    const arrow = promo.querySelector('.banner-promo__arrow[data-animate-arrow]');
-    if (!arrow) return;
-    // A scroll-triggered IntersectionObserver version of this left the
-    // arrow permanently invisible when the observer didn't fire (a known
-    // issue elsewhere in this theme too) - this banner is normally visible
-    // without scrolling anyway, so a plain delay after load is simpler and
-    // can't silently fail the same way.
-    setTimeout(() => arrow.classList.add('banner-promo__arrow--in-view'), 400);
-  }
-
   function setup(promo) {
-    setupArrowAnimation(promo);
-
     const slides = Array.from(promo.querySelectorAll('.banner-promo__slide'));
     if (slides.length < 2) return;
 

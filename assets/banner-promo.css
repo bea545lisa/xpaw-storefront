@@ -48,36 +48,40 @@
   transform: translate(-8rem, 9.5rem);
 }
 
-/* "Draws itself" reveal, the way explainer-graphic arrows on TV (e.g. ZDF
-   frontal) animate in - a wipe uncovers the hand-drawn line left to right,
-   then a small overshoot/settle bounce gives it a bit of pen-lift energy.
-   Starts fully hidden so there's no flash of the finished arrow before JS
-   (IntersectionObserver, banner-promo.js) adds --in-view on scroll into
-   view; without JS this rule alone still reveals it (data-animate-arrow
-   guards against a no-JS page never showing it at all). */
+/* Gentle, irregular drift - the arrow stays fully visible the whole time,
+   just wanders a few px up/down/left/right (with a touch of rotation) on an
+   uneven rhythm, the loose "floating" motion trendy sites use rather than a
+   smooth, predictable sine-wave bob. */
 .banner-promo__arrow[data-animate-arrow] {
-  clip-path: inset(0 100% 0 0);
+  animation: banner-promo-arrow-float 7s ease-in-out infinite;
 }
 
-.banner-promo__arrow[data-animate-arrow].banner-promo__arrow--in-view {
-  animation: banner-promo-arrow-draw 1.1s cubic-bezier(0.65, 0, 0.35, 1) forwards;
-}
-
-@keyframes banner-promo-arrow-draw {
+@keyframes banner-promo-arrow-float {
   0% {
-    clip-path: inset(0 100% 0 0);
+    transform: translate(0, 0) rotate(0deg);
   }
-  75% {
-    clip-path: inset(0 -8% 0 0);
+  17% {
+    transform: translate(4px, -6px) rotate(-1.5deg);
+  }
+  33% {
+    transform: translate(-3px, 3px) rotate(1deg);
+  }
+  48% {
+    transform: translate(-6px, -2px) rotate(0.5deg);
+  }
+  64% {
+    transform: translate(3px, 5px) rotate(-1deg);
+  }
+  81% {
+    transform: translate(5px, -3px) rotate(1.5deg);
   }
   100% {
-    clip-path: inset(0 0 0 0);
+    transform: translate(0, 0) rotate(0deg);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .banner-promo__arrow[data-animate-arrow] {
-    clip-path: none;
     animation: none;
   }
 }
