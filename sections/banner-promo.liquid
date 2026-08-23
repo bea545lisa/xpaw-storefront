@@ -53,7 +53,7 @@
   </div>
 
   {%- if section.settings.show_arrow -%}
-    <div class="banner-promo__arrow" data-animate-arrow aria-hidden="true">
+    <div class="banner-promo__arrow"{% if section.settings.animate_arrow %} data-animate-arrow{% endif %} aria-hidden="true">
       {%- if section.settings.arrow_image != blank -%}
         <img class="banner-promo__arrow-image" src="{{ section.settings.arrow_image | image_url: width: 400 }}" alt="">
       {%- else -%}
@@ -224,6 +224,12 @@
       "type": "checkbox",
       "id": "show_arrow",
       "label": "Pfeil anzeigen",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_arrow",
+      "label": "Pfeil animieren (leichtes Flackern)",
       "default": true
     },
     {
