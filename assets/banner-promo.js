@@ -1,5 +1,24 @@
 (function () {
+  function setupArrowAnimation(promo) {
+    const arrow = promo.querySelector('.banner-promo__arrow[data-animate-arrow]');
+    if (!arrow) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            arrow.classList.add('banner-promo__arrow--in-view');
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+    observer.observe(arrow);
+  }
+
   function setup(promo) {
+    setupArrowAnimation(promo);
+
     const slides = Array.from(promo.querySelectorAll('.banner-promo__slide'));
     if (slides.length < 2) return;
 
