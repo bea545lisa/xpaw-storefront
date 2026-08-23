@@ -45,38 +45,44 @@
   color: var(--banner-promo-arrow-color, rgba(var(--color-foreground), 0.7));
   width: 210px;
   align-self: start;
-  transform: translate(-8rem, 9.5rem);
+  --banner-promo-arrow-base: translate(-8rem, 13rem);
+  transform: var(--banner-promo-arrow-base);
 }
 
-/* Gentle, irregular drift - the arrow stays fully visible the whole time,
-   just wanders a few px up/down/left/right (with a touch of rotation) on an
-   uneven rhythm, the loose "floating" motion trendy sites use rather than a
-   smooth, predictable sine-wave bob. */
+/* Fast, jittery flicker - the arrow stays fully visible the whole time, just
+   twitches a few px up/down/left/right (with a touch of rotation) on a
+   quick, uneven rhythm, closer to a flicker than a slow drift. Each step
+   re-includes --banner-promo-arrow-base (the element's own resting
+   position, redefined for mobile below) since a keyframe's transform
+   replaces the base one entirely rather than adding to it. */
 .banner-promo__arrow[data-animate-arrow] {
-  animation: banner-promo-arrow-float 7s ease-in-out infinite;
+  animation: banner-promo-arrow-float 0.5s steps(1, end) infinite;
 }
 
 @keyframes banner-promo-arrow-float {
   0% {
-    transform: translate(0, 0) rotate(0deg);
+    transform: var(--banner-promo-arrow-base) translate(0, 0) rotate(0deg);
   }
-  17% {
-    transform: translate(4px, -6px) rotate(-1.5deg);
+  14% {
+    transform: var(--banner-promo-arrow-base) translate(3px, -4px) rotate(-2deg);
   }
-  33% {
-    transform: translate(-3px, 3px) rotate(1deg);
+  28% {
+    transform: var(--banner-promo-arrow-base) translate(-4px, 2px) rotate(1.5deg);
   }
-  48% {
-    transform: translate(-6px, -2px) rotate(0.5deg);
+  42% {
+    transform: var(--banner-promo-arrow-base) translate(2px, 3px) rotate(-1deg);
   }
-  64% {
-    transform: translate(3px, 5px) rotate(-1deg);
+  57% {
+    transform: var(--banner-promo-arrow-base) translate(-3px, -3px) rotate(2deg);
   }
-  81% {
-    transform: translate(5px, -3px) rotate(1.5deg);
+  71% {
+    transform: var(--banner-promo-arrow-base) translate(4px, 1px) rotate(-1.5deg);
+  }
+  85% {
+    transform: var(--banner-promo-arrow-base) translate(-2px, -2px) rotate(1deg);
   }
   100% {
-    transform: translate(0, 0) rotate(0deg);
+    transform: var(--banner-promo-arrow-base) translate(0, 0) rotate(0deg);
   }
 }
 
@@ -144,7 +150,8 @@
 
   .banner-promo__arrow {
     width: 60px;
-    transform: rotate(90deg);
+    --banner-promo-arrow-base: rotate(90deg);
+    transform: var(--banner-promo-arrow-base);
     margin: 1.5rem 0;
   }
 
