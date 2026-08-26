@@ -1151,55 +1151,23 @@ a.product__text {
      sticky element's containing block (here: .sticky-preview__scope) has
      scrolled past - compact spacing alone can't get that down to "right
      after the options" while eyebrow/title/price still sit in that same
-     scope for the image-first layout. So they're collapsed away here once
-     stuck - the already-existing .sticky-preview__price-mirror inside the
-     stuck bar covers title+price at that point, and the scope then only
-     effectively contains image + options, releasing right after them.
-     Gated on .sticky-preview--stuck specifically (not just "inside the
-     scope"), so they still show normally during the brief moment before
-     stuck kicks in - hiding them unconditionally left that moment with
-     neither the real title/price nor the mirror visible.
+     scope for the image-first layout. So max-height/opacity on them are
+     collapsed away in step with the shrink - the already-existing
+     .sticky-preview__price-mirror inside the stuck bar covers title+price
+     at that point, and the scope then only effectively contains image +
+     options, releasing right after them.
 
-     A height animation (max-height) here always fights the fade - either
-     the buffer's too big and the visible collapse gets compressed into a
-     fraction of the transition (looked like a jump), or tight enough to
-     look right but then the whole thing reads as fast because there's only
-     ~0.1s of "still fully there" before it starts shrinking. Decoupled
-     instead: switching to position: absolute removes them from the
-     document flow *instantly* (so the scope's height - and therefore
-     release timing - updates in one clean reflow, not an animated one),
-     while their static position is what they keep rendering at, letting
-     opacity fade slowly there on its own timeline without disturbing
-     layout. .sticky-preview__scope needs position: relative so "static
-     position" fallback anchors to it, not to some further-out ancestor. */
-  .sticky-preview__scope {
-    position: relative;
-  }
-
-  .sticky-preview__scope .product__text,
-  .sticky-preview__scope .product__title,
-  .sticky-preview__scope [id^='price-'] {
-    opacity: 1;
-    transition: opacity 1.3s ease;
-  }
-
-  .sticky-preview__scope .product__media-wrapper.sticky-preview--stuck ~ .product__text,
-  .sticky-preview__scope .product__media-wrapper.sticky-preview--stuck ~ .product__title,
-  .sticky-preview__scope .product__media-wrapper.sticky-preview--stuck ~ [id^='price-'] {
-    position: absolute;
-    /* Without these, an absolutely positioned block shrinks to fit its
-       content instead of staying full-width like it was in flow - visibly
-       changing text wrapping/size right as position: absolute takes
-       effect. left/right: 0 keeps it stretched to the same width it had a
-       moment ago, so only opacity is actually changing. top is left alone
-       so each element keeps its own "static position" fallback (where it
-       already was, vertically) - setting top:0 here would snap all three
-       (eyebrow/title/price) to the same spot instead of each staying put. */
-    left: 0;
-    right: 0;
-    opacity: 0;
-    pointer-events: none;
-  }
+     That collapse itself is driven directly by sticky-preview.js
+     (collapseTargets), per scroll frame, using the exact same progress
+     value as the image's own width shrink below - not a CSS transition.
+     Two earlier attempts each had their own problem: a CSS max-height
+     transition either looked jumpy (buffer larger than content = dead time
+     up front) or fast (tight buffer = barely any "still fully there" time),
+     and switching to position: absolute to decouple the fade from layout
+     didn't reliably keep title and price at their own separate positions
+     once several siblings went absolute at the same time - they visibly
+     swapped places. Driving max-height directly from JS avoids both: exact
+     sync with the image, and elements never leave normal flow at all. */
 
   /* Width itself is set directly, per scroll frame, by sticky-preview.js
      (shrinkTarget/shrinkFrom/shrinkTo/shrinkDistance) - tied straight to
@@ -1252,25 +1220,19 @@ a.product__text {
     margin-top: 1.6rem;
   }
 
-  /* The mobile "peek next slide" gutter (negative margins + calc(100% + Nrem)
-     width) is sized in rem, but now resolves against the much narrower
-     54%-wide media-gallery while stuck - leaving a visible gap on the sides
-     instead of the image filling the shrunk box. Not needed at this size
-     anyway, so just undo it while stuck. */
-  .product__media-wrapper.sticky-preview--stuck .product__media-list {
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .product__media-wrapper.sticky-preview--stuck slider-component:not(.thumbnail-slider--no-slide) {
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  .product__media-wrapper.sticky-preview--stuck .product__media-item {
-    padding-left: 0;
-    padding-right: 0;
-  }
+  /* The mobile "peek next slide" gutter (negative margins on
+     .product__media-list/slider-component, extra padding on
+     .product__media-item) is sized in rem, and resolves oddly against the
+     narrower stuck media-gallery - left as a gap on the sides instead of
+     the image filling the shrunk box. Undoing it used to happen instantly
+     here via a --stuck-gated rule; now interpolated in JS instead
+     (sticky-product-media.js, styleInterpolations), in the same lockstep as
+     the width shrink itself - the instant version snapped to its end value
+     on the very first scroll pixel while the real shrink had barely
+     started, reading as a sideways jump. .product__media-list's own width
+     (calc(100% + 4rem)) is left alone - media-gallery's overflow: hidden
+     above already clips the extra 4rem, so there was nothing to animate
+     there in the first place. */
 }
 
 .image-magnify-full-size {

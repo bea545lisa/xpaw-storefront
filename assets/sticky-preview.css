@@ -18,23 +18,11 @@
     color: rgb(var(--color-foreground));
     margin-top: 0.2rem;
     text-align: center;
+    /* Opacity itself is driven directly by sticky-preview.js
+       (checkShrink), per scroll frame, in exact sync with the image's own
+       shrink and the eyebrow/title/price collapse - not a CSS transition.
+       This base value only matters before any scroll has happened. */
     opacity: 0;
-    transform: translateY(-0.4rem);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-  }
-
-  .sticky-preview--stuck .sticky-preview__price-mirror {
-    opacity: 1;
-    transform: translateY(0);
-    /* A short delay only on the way in - .sticky-preview--stuck also
-       triggers backdrop-filter appearing (not itself transitioned, so it
-       repaints instantly) and title/price switching to position: absolute
-       (an instant reflow) in that same frame. Starting the mirror's own
-       fade a beat later keeps it from competing with that burst of work,
-       which was the jump reported only on scroll-down/entering stuck (exit
-       is lighter - no backdrop-filter to newly paint - and was already
-       smooth). */
-    transition-delay: 0.12s;
   }
 }
 

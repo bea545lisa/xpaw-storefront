@@ -35,6 +35,33 @@
     // thing moving it.
     if (scopeThroughEl) scopeThroughEl.classList.add('sticky-preview__release-anchor');
 
+    const eyebrowEl = document.querySelector('.product__info-container .product__text');
+    const titleEl = document.querySelector('.product__info-container .product__title');
+    const priceEl = document.querySelector('.product__info-container [id^="price-"]');
+
+    // The mobile slider's own "peek next slide" bleed (negative margins,
+    // extra padding) used to reset instantly via a --stuck-gated CSS rule -
+    // fine when the shrink itself was also instant/CSS-driven, but once
+    // width became scroll-linked (see shrinkTarget below) that reset still
+    // snapped to its end value on the very first scroll pixel while the
+    // real shrink had barely started, reading as a sideways jump. Interpolated
+    // here in the same lockstep instead, in rem-derived px (this theme uses
+    // 1rem = 10px, not the browser default 16px).
+    const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 10;
+    const mediaList = mediaWrapper.querySelector('.product__media-list');
+    const sliderComponent = mediaWrapper.querySelector('slider-component:not(.thumbnail-slider--no-slide)');
+    const mediaItems = Array.from(mediaWrapper.querySelectorAll('.product__media-item'));
+    const styleInterpolations = [];
+    if (mediaList) styleInterpolations.push({ el: mediaList, property: 'marginLeft', from: -2.5 * remPx, to: 0, unit: 'px' });
+    if (sliderComponent) {
+      styleInterpolations.push({ el: sliderComponent, property: 'marginLeft', from: -1.5 * remPx, to: 0, unit: 'px' });
+      styleInterpolations.push({ el: sliderComponent, property: 'marginRight', from: -1.5 * remPx, to: 0, unit: 'px' });
+    }
+    mediaItems.forEach((item) => {
+      styleInterpolations.push({ el: item, property: 'paddingLeft', from: 2.5 * remPx, to: 0, unit: 'px' });
+      styleInterpolations.push({ el: item, property: 'paddingRight', from: 1.5 * remPx, to: 0, unit: 'px' });
+    });
+
     window.initStickyPreview({
       wrapper: '.product__media-wrapper',
       sentinel: '.sticky-product-media__sentinel',
@@ -46,6 +73,8 @@
       shrinkFrom: 100,
       shrinkTo: 64,
       shrinkDistance: 150,
+      collapseTargets: [eyebrowEl, titleEl, priceEl],
+      styleInterpolations,
       priceMirror: {
         priceContainerSelector: '[id^="price-"]',
         title: titleH1 ? titleH1.textContent.trim() : '',
