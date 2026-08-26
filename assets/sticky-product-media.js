@@ -70,6 +70,14 @@
       );
     });
 
+    // Slider prev/next arrows shrink the same way (base size is 44px).
+    mediaWrapper.querySelectorAll('.slider-button').forEach((sliderButton) => {
+      wrapperStyleInterpolations.push(
+        { el: sliderButton, property: 'width', from: 44, to: 32, unit: 'px', important: true },
+        { el: sliderButton, property: 'height', from: 44, to: 32, unit: 'px', important: true }
+      );
+    });
+
     window.initStickyPreview({
       wrapper: '.product__media-wrapper',
       sentinel: '.sticky-product-media__sentinel',

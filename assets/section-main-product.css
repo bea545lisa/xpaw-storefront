@@ -1234,8 +1234,8 @@ a.product__text {
   .product__media-wrapper .product__media-icon {
     width: 3.6rem;
     height: 3.6rem;
-    left: 1.2rem;
-    top: 2.2rem;
+    left: 2.2rem;
+    top: 1.2rem;
   }
 
   slider-component.slider-mobile-gutter .slider-buttons .slider-button--prev {
