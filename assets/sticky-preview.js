@@ -167,8 +167,13 @@ window.initStickyPreview = function (config) {
   // between a read forces an extra synchronous layout recalculation, which
   // was making the whole scroll feel janky.
   function checkScrollState() {
-    const rect = sentinel.getBoundingClientRect();
-    setStuck(rect.top < 40);
+    // Was rect.top < 40, meaning shrinking only started once already
+    // scrolled some way in - but the wrapper's own native position: sticky
+    // pinning kicks in earlier than that (as soon as its natural position
+    // would go above the sticky offset), so there was a visible gap where
+    // the image was already pinned at the top but not yet shrinking.
+    // window.scrollY > 0 starts it right on the very first scroll pixel.
+    setStuck(window.scrollY > 0);
     if (releaseAt) checkRelease();
   }
 
