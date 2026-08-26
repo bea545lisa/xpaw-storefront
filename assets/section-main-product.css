@@ -1178,16 +1178,14 @@ a.product__text {
     display: block;
     width: 100%;
     margin: 0 auto;
-  }
-
-  .product__media-wrapper.sticky-preview--stuck media-gallery {
-    /* max-height used to be capped here too, tied to the --stuck class -
-       but --stuck now flips true on the very first scroll pixel while the
-       actual width shrink (in JS, sticky-preview.js) runs gradually over
-       150px. That mismatch left it briefly still full width but already
-       height-capped, showing a squashed image with the mirror text
-       overlapping it. Width shrinking for real should reduce height
-       naturally via the media's own aspect ratio anyway. */
+    /* Always clipped (not just once stuck) - the mobile slider's own "peek
+       next slide" bleed (negative margins on .product__media-list/
+       slider-component) is left at its natural, constant value rather than
+       being reset/interpolated, relying entirely on this to hide it. An
+       earlier version reset those margins to 0 in JS, in lockstep with the
+       width shrink - but that extra simultaneous animation fought visually
+       with media-gallery's own margin: 0 auto centering, showing up as the
+       image drifting slightly left right as shrinking began. */
     overflow: hidden;
   }
 
