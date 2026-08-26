@@ -215,15 +215,32 @@ window.initStickyPreview = function (config) {
       });
       return;
     }
-    const progress = Math.min(1, Math.max(0, window.scrollY / shrinkDistance));
+    const linearProgress = Math.min(1, Math.max(0, window.scrollY / shrinkDistance));
+    // Eased (quadratic ease-in): starts noticeably slower than a straight
+    // linear ramp, picking up speed toward the end - a flat linear rate
+    // felt too fast right at the first scroll pixels.
+    const progress = linearProgress * linearProgress;
     if (shrinkTarget) shrinkTarget.style.width = shrinkFrom + (shrinkTo - shrinkFrom) * progress + '%';
     styleInterpolations.forEach(({ el, property, from, to, unit }) => {
       el.style[property] = from + (to - from) * progress + (unit || '');
     });
+    // Height/position stay untouched for almost the whole fade - only
+    // opacity changes, so title/price never visibly move or resize (a
+    // height collapse running at the same time as the fade was described as
+    // "sliding into"/overlapping the mirror and the options below). Height
+    // is only actually removed right at the very end (progress > 0.92),
+    // once opacity is already down to ~0.08 or less - by then invisible
+    // enough that the one-step snap needed for correct release-scroll
+    // timing doesn't read as a jump.
     collapseTargets.forEach((el, i) => {
-      el.style.overflow = 'hidden';
-      el.style.maxHeight = collapseNaturalHeights[i] * (1 - progress) + 'px';
       el.style.opacity = 1 - progress;
+      if (progress > 0.92) {
+        el.style.overflow = 'hidden';
+        el.style.maxHeight = collapseNaturalHeights[i] * (1 - progress) * 12.5 + 'px';
+      } else {
+        el.style.overflow = '';
+        el.style.maxHeight = '';
+      }
     });
     if (priceMirror) priceMirror.style.opacity = progress;
   }
