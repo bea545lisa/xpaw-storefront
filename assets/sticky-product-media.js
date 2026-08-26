@@ -94,55 +94,38 @@
       const scrollEl = galleryViewerSlider.slider;
       const nextArrowBtn = galleryViewerSlider.querySelector('button[name="next"]');
       const prevArrowBtn = galleryViewerSlider.querySelector('button[name="previous"]');
-      const EPS = 10;
-      // Comparing against scrollWidth (the first version of this fix) was
-      // itself wrong, confirmed live: the "peek" gutter leaves the last
-      // slide's own snap position (its offsetLeft) short of the theoretical
-      // scrollWidth - clientWidth maximum by a good ~19px on a real product
-      // (853 - 415 = 438 max vs the last slide actually sitting at 419) -
-      // a mandatory-snap slider never scrolls into that trailing gap at
-      // all, so scrollLeft can never reach within EPS of scrollWidth and
-      // the condition was never true. Comparing against the *slide
-      // elements'* own offsetLeft instead - which is what the snap actually
-      // settles on - has no such gap. Re-queried live rather than cached,
-      // since updateMedia() (product-info.js) can add/remove slides on a
-      // variant change.
-      const syncArrowVisibility = () => {
-        const items = galleryViewerSlider.querySelectorAll('[id^="Slide-"]');
-        if (!items.length) return;
+      const items = galleryViewerSlider.querySelectorAll('[id^="Slide-"]');
+      // Two earlier versions of this fix (comparing scrollLeft against
+      // scrollWidth, then against the slide elements' own offsetLeft, plus
+      // 'scroll'/'scrollend'/'touchend' listeners) worked in DevTools'
+      // mouse-driven mobile emulation but confirmed live to never update at
+      // all on an actual phone - touch/momentum scrolling doesn't reliably
+      // fire the events any of that relied on. IntersectionObserver tracks
+      // visibility at the compositor level regardless of *how* the scroll
+      // happened (touch, momentum, snap catch-up, programmatic), so it
+      // doesn't depend on any particular event firing - watching whether
+      // the first/last slide itself is (nearly) fully in view of the
+      // slider's own scroll container is the actual question anyway, more
+      // directly than reasoning about scrollLeft/offsetLeft at all.
+      if (items.length) {
         const firstItem = items[0];
         const lastItem = items[items.length - 1];
-        if (prevArrowBtn) prevArrowBtn.classList.toggle('sticky-preview__arrow-hidden', scrollEl.scrollLeft <= firstItem.offsetLeft + EPS);
-        if (nextArrowBtn) nextArrowBtn.classList.toggle('sticky-preview__arrow-hidden', scrollEl.scrollLeft >= lastItem.offsetLeft - EPS);
-      };
-      syncArrowVisibility();
-      let arrowTicking = false;
-      const scheduleSync = () => {
-        if (arrowTicking) return;
-        arrowTicking = true;
-        requestAnimationFrame(() => {
-          syncArrowVisibility();
-          arrowTicking = false;
-        });
-      };
-      scrollEl.addEventListener('scroll', scheduleSync, { passive: true });
-      // Real touch devices don't reliably fire (or coalesce) 'scroll'
-      // events during momentum/inertial scrolling the way mouse-driven
-      // scrolling (incl. DevTools mobile emulation, which is mouse-based)
-      // does - confirmed live: this worked correctly in DevTools' mobile
-      // view but never updated on an actual phone. 'scrollend' fires once
-      // scrolling (including the mandatory-snap catch-up) has fully
-      // settled and is the more reliable signal on touch devices; a
-      // 'touchend' + short delay covers browsers that don't support it yet.
-      scrollEl.addEventListener('scrollend', scheduleSync, { passive: true });
-      scrollEl.addEventListener(
-        'touchend',
-        () => {
-          setTimeout(syncArrowVisibility, 350);
-        },
-        { passive: true }
-      );
-      new ResizeObserver(syncArrowVisibility).observe(scrollEl);
+        const arrowObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.target === firstItem && prevArrowBtn) {
+                prevArrowBtn.classList.toggle('sticky-preview__arrow-hidden', entry.isIntersecting);
+              }
+              if (entry.target === lastItem && nextArrowBtn) {
+                nextArrowBtn.classList.toggle('sticky-preview__arrow-hidden', entry.isIntersecting);
+              }
+            });
+          },
+          { root: scrollEl, threshold: 0.95 }
+        );
+        arrowObserver.observe(firstItem);
+        arrowObserver.observe(lastItem);
+      }
     }
 
     window.initStickyPreview({
