@@ -200,13 +200,11 @@ window.initStickyPreview = function (config) {
   // still barely underway, reading as a sideways jump right at the start.
   const styleInterpolations = Array.isArray(config.styleInterpolations) ? config.styleInterpolations : [];
   let smoothedLinearProgress = 0;
-  let lastWrittenWidthPct = null;
 
   function checkShrink() {
     if (!shrinkTarget && !collapseTargets.length && !priceMirror && !styleInterpolations.length) return true;
     if (!mobileQuery.matches) {
       if (shrinkTarget && shrinkTarget.style.width) shrinkTarget.style.width = '';
-      lastWrittenWidthPct = null;
       collapseTargets.forEach((el) => {
         el.style.maxHeight = '';
         el.style.opacity = '';
@@ -235,21 +233,16 @@ window.initStickyPreview = function (config) {
     // felt too fast right at the first scroll pixels.
     const progress = linearProgress * linearProgress;
     if (shrinkTarget) {
+      // Reverted the >=0.3-percentage-point write threshold this had -
+      // meant as a defensive measure against Dawn's slider-component
+      // ResizeObserver (initPages/update in global.js) firing on every
+      // frame, but the ease-in curve makes progress barely move for the
+      // first several scroll pixels, so the threshold delayed the very
+      // first write - then applied a comparatively large jump all at once
+      // when it finally fired, which read as a jump in exactly the way this
+      // was meant to prevent. Writing every frame instead.
       const targetWidthPct = shrinkFrom + (shrinkTo - shrinkFrom) * progress;
-      // Only actually write when it's moved enough to matter visually
-      // (>0.3 percentage points) - Dawn's own slider-component has a
-      // ResizeObserver on this element that recalculates its internal
-      // pagination/scroll math (initPages/update in global.js) on every
-      // resize; writing a new width every single scroll frame fires that
-      // very frequently, and a mismatch between our continuous update and
-      // its own (debounced) catch-up showed up live as a one-time width
-      // jump on an inner element right as scrolling started. Skipping
-      // sub-threshold writes cuts how often that observer fires without
-      // any visible loss of smoothness.
-      if (lastWrittenWidthPct == null || Math.abs(targetWidthPct - lastWrittenWidthPct) >= 0.3) {
-        shrinkTarget.style.width = targetWidthPct + '%';
-        lastWrittenWidthPct = targetWidthPct;
-      }
+      shrinkTarget.style.width = targetWidthPct + '%';
     }
     styleInterpolations.forEach(({ el, property, from, to, unit }) => {
       el.style[property] = from + (to - from) * progress + (unit || '');
