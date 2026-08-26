@@ -134,6 +134,15 @@
     width: 94%;
     flex: none;
   }
+
+  /* The shared .sticky-preview__price-mirror margin-top (sticky-preview.css)
+     is barely visible here - this wrapper is a flex column with no other
+     spacing contributing to the gap, unlike a normal product's
+     .product__media-wrapper layout. Configurator-only override, same
+     spacing feel as a normal product's mirror ends up with. */
+  .geschirr-configurator__preview-wrapper .sticky-preview__price-mirror {
+    margin-top: 0.8rem;
+  }
 }
 
 [data-theme="dark"] .geschirr-configurator__preview {
