@@ -128,6 +128,18 @@ function enableZoomOnHover(ratios) {
     (event) => {
       const image = resolveMagnifyImage(event.target);
       if (!image) return;
+      // The Geschirr configurator's canvas-composite preview also carries
+      // .image-magnify-hover (for the cursor/hover styling), but it's a
+      // plain <div> of <canvas> layers - neither an <img> nor a
+      // background-image div, so getImageSrc() can't get anything out of
+      // it. Stopping propagation unconditionally here swallowed the click
+      // before it could ever reach the configurator's own click listener
+      // (geschirr-configurator.js, builds the composite canvas and calls
+      // window.openZoomOverlaySrc itself) - zoom silently did nothing.
+      // Only intercept when there's actually a usable src; otherwise let
+      // the click proceed normally so another handler can deal with it.
+      const src = getImageSrc(image);
+      if (!src) return;
       event.stopPropagation();
       event.preventDefault();
       if (ignoreNextClick) {
@@ -137,7 +149,7 @@ function enableZoomOnHover(ratios) {
         ignoreNextClick = false;
         return;
       }
-      openZoomOverlay(image, currentZoomRatio());
+      openZoomOverlaySrc(src, currentZoomRatio());
     },
     true
   );
@@ -151,8 +163,15 @@ function enableZoomOnHover(ratios) {
     'touchstart',
     (event) => {
       const image = resolveMagnifyImage(event.target);
-      touchStartImage = image || null;
-      touchStartPoint = image ? eventPoint(event) : null;
+      // Same reasoning as the capture-phase click handler above: only
+      // track it here if there's an actual usable src (plain <img> or
+      // background-image element) - otherwise (e.g. the Geschirr
+      // configurator's canvas-composite preview) touchend below would set
+      // ignoreNextClick and silently no-op, leaving that flag stuck true
+      // for whatever the next real click elsewhere happened to be.
+      const hasSrc = image && !!getImageSrc(image);
+      touchStartImage = hasSrc ? image : null;
+      touchStartPoint = hasSrc ? eventPoint(event) : null;
     },
     { passive: true }
   );
