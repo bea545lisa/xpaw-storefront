@@ -39,6 +39,26 @@
     const titleEl = document.querySelector('.product__info-container .product__title');
     const priceEl = document.querySelector('.product__info-container [id^="price-"]');
 
+    // The outer bar itself (mediaWrapper) bleeds to full viewport width once
+    // stuck (width: 100vw + margin-left: calc(50% - 50vw), both !important,
+    // in section-main-product.css) - but that CSS rule only has background/
+    // padding/border/box-shadow in its transition list, not width or
+    // margin-left, so the bleed itself snapped in instantly right as
+    // scrolling started ("the wrapper gets bigger" - confirmed live via its
+    // own class). Interpolated here instead, in the same scroll-linked
+    // lockstep as everything else. Measured before any of this runs, so
+    // naturalWidth reflects the plain grid-column width, not the bled one.
+    // setProperty(..., 'important') is required - a plain (non-!important)
+    // inline style can't win against the CSS rule's own !important once
+    // --stuck adds it.
+    const naturalWidth = mediaWrapper.getBoundingClientRect().width;
+    const scopeWidth = mediaWrapper.parentElement.getBoundingClientRect().width;
+    const bleedMarginLeft = scopeWidth / 2 - window.innerWidth / 2;
+    const wrapperStyleInterpolations = [
+      { el: mediaWrapper, property: 'width', from: naturalWidth, to: window.innerWidth, unit: 'px', important: true },
+      { el: mediaWrapper, property: 'margin-left', from: 0, to: bleedMarginLeft, unit: 'px', important: true },
+    ];
+
     window.initStickyPreview({
       wrapper: '.product__media-wrapper',
       sentinel: '.sticky-product-media__sentinel',
@@ -63,6 +83,7 @@
       // "speeding up" feeling right as title/price finished collapsing.
       shrinkDistance: 90,
       collapseTargets: [eyebrowEl, titleEl, priceEl],
+      styleInterpolations: wrapperStyleInterpolations,
       priceMirror: {
         priceContainerSelector: '[id^="price-"]',
         title: titleH1 ? titleH1.textContent.trim() : '',

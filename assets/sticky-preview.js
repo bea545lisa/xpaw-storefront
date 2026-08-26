@@ -212,7 +212,7 @@ window.initStickyPreview = function (config) {
       });
       if (priceMirror) priceMirror.style.opacity = '';
       styleInterpolations.forEach(({ el, property }) => {
-        el.style[property] = '';
+        el.style.removeProperty(property);
       });
       return true;
     }
@@ -244,8 +244,8 @@ window.initStickyPreview = function (config) {
       const targetWidthPct = shrinkFrom + (shrinkTo - shrinkFrom) * progress;
       shrinkTarget.style.width = targetWidthPct + '%';
     }
-    styleInterpolations.forEach(({ el, property, from, to, unit }) => {
-      el.style[property] = from + (to - from) * progress + (unit || '');
+    styleInterpolations.forEach(({ el, property, from, to, unit, important }) => {
+      el.style.setProperty(property, from + (to - from) * progress + (unit || ''), important ? 'important' : '');
     });
     // Height/position stay untouched for almost the whole fade - only
     // opacity changes, so title/price never visibly move or resize (a
