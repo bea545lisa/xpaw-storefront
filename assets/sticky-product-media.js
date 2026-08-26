@@ -46,8 +46,15 @@
       scopeThrough: scopeThroughEl,
       releaseAt: releaseAnchor,
       releaseGap: 32,
+      // shrinkFrom used to be 100 (full width) - explicitly setting that via
+      // JS was itself the cause of a brief "grows to 100% width" jump right
+      // as scrolling started (before that JS wrote anything, the element
+      // was already narrower - ~94% of the column - just from its own
+      // layout). Starting the shrink already at that same ~94% instead
+      // keeps it at the narrower look throughout, matching what looked
+      // better anyway.
       shrinkTarget: mediaWrapper.querySelector('media-gallery'),
-      shrinkFrom: 100,
+      shrinkFrom: 94,
       shrinkTo: 64,
       // Shorter than before (was 150) so the whole shrink+collapse settles
       // early, well before enough has been scrolled for the release
