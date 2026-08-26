@@ -158,7 +158,17 @@ window.initStickyPreview = function (config) {
     // screen and, combined with the huge padding-bottom trick elsewhere,
     // apparently confusing the page's own scroll math too. Bail out clean
     // instead of computing anything from a detached reference.
-    if (releaseAt && !releaseAt.isConnected) {
+    //
+    // The old node isn't actually removed until 500ms after the swap
+    // (HTMLUpdateUtility.viewTransition in global.js just sets
+    // display:none and removes it later) - isConnected alone stays true
+    // for that whole window, so a click while deep in the shrink/release
+    // range (image mostly pushed off-screen already) read the same
+    // all-zero rect from the still-connected-but-hidden old node and
+    // yanked the image further up until the 500ms timeout finally removed
+    // it. offsetParent is null for a display:none element immediately, so
+    // checking it catches this right away instead of waiting.
+    if (releaseAt && (!releaseAt.isConnected || releaseAt.offsetParent === null)) {
       const fresh = document.querySelector('variant-selects, .product-form__input:not(.product-form__quantity)');
       if (fresh) fresh.classList.add('sticky-preview__release-anchor');
       releaseAt = fresh;
