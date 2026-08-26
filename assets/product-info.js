@@ -125,8 +125,15 @@ if (!customElements.get('product-info')) {
             this.pendingRequestUrl = null;
             const html = new DOMParser().parseFromString(responseText, 'text/html');
             callback(html);
-            // set focus to last clicked option value
-            document.querySelector(`#${targetId}`)?.focus();
+            // set focus to last clicked option value - preventScroll because
+            // the sticky preview's release-anchor element (an ancestor of
+            // these option inputs on mobile) carries a large artificial
+            // padding-bottom for unrelated reasons (keeps native CSS sticky
+            // release from ever triggering), and the browser's default
+            // focus-scroll-into-view was factoring that padding into its
+            // target position, jumping the page to an unexpected scroll
+            // position on every variant change.
+            document.querySelector(`#${targetId}`)?.focus({ preventScroll: true });
           })
           .catch((error) => {
             if (error.name === 'AbortError') {
