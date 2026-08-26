@@ -95,36 +95,50 @@
       const nextArrowBtn = galleryViewerSlider.querySelector('button[name="next"]');
       const prevArrowBtn = galleryViewerSlider.querySelector('button[name="previous"]');
       const items = galleryViewerSlider.querySelectorAll('[id^="Slide-"]');
-      // Two earlier versions of this fix (comparing scrollLeft against
-      // scrollWidth, then against the slide elements' own offsetLeft, plus
-      // 'scroll'/'scrollend'/'touchend' listeners) worked in DevTools'
-      // mouse-driven mobile emulation but confirmed live to never update at
-      // all on an actual phone - touch/momentum scrolling doesn't reliably
-      // fire the events any of that relied on. IntersectionObserver tracks
-      // visibility at the compositor level regardless of *how* the scroll
-      // happened (touch, momentum, snap catch-up, programmatic), so it
-      // doesn't depend on any particular event firing - watching whether
-      // the first/last slide itself is (nearly) fully in view of the
-      // slider's own scroll container is the actual question anyway, more
-      // directly than reasoning about scrollLeft/offsetLeft at all.
+      // Three earlier versions of this fix landed on real touch devices in
+      // varying degrees of wrong:
+      // 1) comparing scrollLeft against scrollWidth (never accounted for
+      //    the peek-gutter trailing gap a mandatory-snap slider never
+      //    scrolls into)
+      // 2) comparing scrollLeft against the slide elements' own offsetLeft,
+      //    woken up by 'scroll'/'scrollend'/'touchend' listeners (correct
+      //    geometry, but those events don't fire reliably enough during
+      //    real touch/momentum scrolling to ever run the check)
+      // 3) trusting IntersectionObserver's own isIntersecting boolean
+      //    directly (a reliable wake-up signal even on touch, but its
+      //    ratio read out mid-snap-transition, not the truly settled one -
+      //    confirmed live as "hides while swiping, then reappears once the
+      //    swipe stops", i.e. exactly backwards)
+      // Combining the two working halves: IntersectionObserver as the
+      // wake-up (fires reliably regardless of how the scroll happened,
+      // including snap catch-up), but re-deriving the actual show/hide
+      // decision from scrollLeft/offsetLeft at that moment instead of
+      // trusting the entry's own isIntersecting value.
       if (items.length) {
         const firstItem = items[0];
         const lastItem = items[items.length - 1];
-        const arrowObserver = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.target === firstItem && prevArrowBtn) {
-                prevArrowBtn.classList.toggle('sticky-preview__arrow-hidden', entry.isIntersecting);
-              }
-              if (entry.target === lastItem && nextArrowBtn) {
-                nextArrowBtn.classList.toggle('sticky-preview__arrow-hidden', entry.isIntersecting);
-              }
-            });
-          },
-          { root: scrollEl, threshold: 0.95 }
-        );
+        const EPS = 10;
+        const syncArrowVisibility = () => {
+          if (prevArrowBtn) prevArrowBtn.classList.toggle('sticky-preview__arrow-hidden', scrollEl.scrollLeft <= firstItem.offsetLeft + EPS);
+          if (nextArrowBtn) nextArrowBtn.classList.toggle('sticky-preview__arrow-hidden', scrollEl.scrollLeft >= lastItem.offsetLeft - EPS);
+        };
+        syncArrowVisibility();
+        const arrowObserver = new IntersectionObserver(syncArrowVisibility, { root: scrollEl, threshold: [0, 0.5, 1] });
         arrowObserver.observe(firstItem);
         arrowObserver.observe(lastItem);
+        let arrowTicking = false;
+        scrollEl.addEventListener(
+          'scroll',
+          () => {
+            if (arrowTicking) return;
+            arrowTicking = true;
+            requestAnimationFrame(() => {
+              syncArrowVisibility();
+              arrowTicking = false;
+            });
+          },
+          { passive: true }
+        );
       }
     }
 
