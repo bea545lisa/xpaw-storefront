@@ -424,6 +424,13 @@
       // meaningfully (avoids the original "sliding into the mirror"
       // overlap issue that the 0.7 default was chosen to prevent).
       collapseStartProgress: 0.3,
+      // Spreading shrinkDistance to 180 for the height-collapse fix above
+      // also stretched the opacity fade (which runs across the whole
+      // distance by default) out just as much, reading as too slow. Fading
+      // fully out by the 40% mark (72px) keeps the fade itself brisk while
+      // still leaving the later, larger shrinkDistance for the height
+      // collapse and shrink.
+      fadeEndProgress: 0.4,
       collapseTargets: [eyebrowEl, titleEl, priceEl],
       styleInterpolations: styleInterpolations,
       priceMirror: {
