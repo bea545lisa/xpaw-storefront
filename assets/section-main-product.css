@@ -1124,6 +1124,18 @@ a.product__text {
    extra specificity here to beat Dawn's own .grid__item.product__media-wrapper
    rules. */
 @media screen and (max-width: 749px) {
+  /* The browser's own CSS scroll anchoring tries to compensate scroll
+     position automatically whenever content above the viewport changes
+     height - exactly what our max-height collapse on eyebrow/title/price
+     does every frame. That showed up as the page seeming to scroll a bit
+     on its own right as they finished collapsing, and a faint "floating"
+     feeling generally. Turned off for the whole scope so our own,
+     deliberate scroll-linked positioning is the only thing moving anything. */
+  .sticky-preview__scope,
+  .sticky-preview__scope * {
+    overflow-anchor: none;
+  }
+
   /* Same two-layer approach as the Geschirr configurator: the outer bar
      (background/blur/border) always stays full width, only the inner media
      box shrinks - that's what the configurator's
