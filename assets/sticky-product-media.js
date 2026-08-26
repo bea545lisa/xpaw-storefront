@@ -49,7 +49,12 @@
       shrinkTarget: mediaWrapper.querySelector('media-gallery'),
       shrinkFrom: 100,
       shrinkTo: 64,
-      shrinkDistance: 150,
+      // Shorter than before (was 150) so the whole shrink+collapse settles
+      // early, well before enough has been scrolled for the release
+      // mechanism (releaseAt, below) to start reacting to variant-selects
+      // approaching - the two overlapping in time was adding up to a
+      // "speeding up" feeling right as title/price finished collapsing.
+      shrinkDistance: 90,
       collapseTargets: [eyebrowEl, titleEl, priceEl],
       priceMirror: {
         priceContainerSelector: '[id^="price-"]',
