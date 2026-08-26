@@ -73,6 +73,14 @@ product-info {
     display: none;
   }
 
+  /* Eigene, von Dawns [disabled]-Logik unabhaengige Sichtbarkeit fuer die
+     Produktbild-Pfeile (siehe sticky-product-media.js) - dort per echter
+     Scroll-Geometrie gesetzt statt ueber Dawns seiten-basierte Zaehlung,
+     die bei genau 2 Bildern mit Peek-Gutter einen eigenen Randfall hat. */
+  .sticky-preview__arrow-hidden {
+    display: none !important;
+  }
+
   slider-component.slider-mobile-gutter .slider-buttons .slider-counter {
     display: none;
   }
