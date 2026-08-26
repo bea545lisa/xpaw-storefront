@@ -88,22 +88,32 @@
     // page" the way the disabled check expects, so the right arrow never
     // gets disabled at all, regardless of scroll/shrink state. Bypassing
     // that entirely here: hide/show each arrow from the slider's own raw
-    // scroll geometry (scrollLeft/scrollWidth/clientWidth) instead, which
-    // has no such edge case.
+    // scroll geometry instead.
     const galleryViewerSlider = mediaWrapper.querySelector('slider-component[id^="GalleryViewer-"]');
     if (galleryViewerSlider && galleryViewerSlider.slider) {
       const scrollEl = galleryViewerSlider.slider;
       const nextArrowBtn = galleryViewerSlider.querySelector('button[name="next"]');
       const prevArrowBtn = galleryViewerSlider.querySelector('button[name="previous"]');
       const EPS = 2;
+      // Comparing against scrollWidth (the first version of this fix) was
+      // itself wrong, confirmed live: the "peek" gutter leaves the last
+      // slide's own snap position (its offsetLeft) short of the theoretical
+      // scrollWidth - clientWidth maximum by a good ~19px on a real product
+      // (853 - 415 = 438 max vs the last slide actually sitting at 419) -
+      // a mandatory-snap slider never scrolls into that trailing gap at
+      // all, so scrollLeft can never reach within EPS of scrollWidth and
+      // the condition was never true. Comparing against the *slide
+      // elements'* own offsetLeft instead - which is what the snap actually
+      // settles on - has no such gap. Re-queried live rather than cached,
+      // since updateMedia() (product-info.js) can add/remove slides on a
+      // variant change.
       const syncArrowVisibility = () => {
-        if (prevArrowBtn) prevArrowBtn.classList.toggle('sticky-preview__arrow-hidden', scrollEl.scrollLeft <= EPS);
-        if (nextArrowBtn) {
-          nextArrowBtn.classList.toggle(
-            'sticky-preview__arrow-hidden',
-            scrollEl.scrollLeft + scrollEl.clientWidth >= scrollEl.scrollWidth - EPS
-          );
-        }
+        const items = galleryViewerSlider.querySelectorAll('[id^="Slide-"]');
+        if (!items.length) return;
+        const firstItem = items[0];
+        const lastItem = items[items.length - 1];
+        if (prevArrowBtn) prevArrowBtn.classList.toggle('sticky-preview__arrow-hidden', scrollEl.scrollLeft <= firstItem.offsetLeft + EPS);
+        if (nextArrowBtn) nextArrowBtn.classList.toggle('sticky-preview__arrow-hidden', scrollEl.scrollLeft >= lastItem.offsetLeft - EPS);
       };
       syncArrowVisibility();
       let arrowTicking = false;
