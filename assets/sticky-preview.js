@@ -215,6 +215,11 @@ window.initStickyPreview = function (config) {
   // element exactly where normal flow already puts it.
   const collapseTargets = Array.isArray(config.collapseTargets) ? config.collapseTargets.filter(Boolean) : [];
   const collapseNaturalHeights = collapseTargets.map((el) => el.offsetHeight);
+  // Fraction of progress (0-1) after which maxHeight starts actually
+  // reducing - default 0.7 (last 30%) matches the normal-product tuning.
+  // Configurable per caller since how much height needs collapsing varies
+  // (see the comment at the actual collapse calculation below).
+  const collapseStartProgress = config.collapseStartProgress != null ? config.collapseStartProgress : 0.7;
   // Set by initPriceMirror below (declared here so checkShrink's closure can
   // see it once it exists - checkShrink itself only ever runs later, from a
   // scroll event, by which point setup below has already run).
@@ -360,16 +365,21 @@ window.initStickyPreview = function (config) {
     // opacity changes, so title/price never visibly move or resize (a
     // height collapse running at the same time as the fade was described as
     // "sliding into"/overlapping the mirror and the options below). Height
-    // only starts reducing in the last 30% of the shrink (progress > 0.7,
-    // opacity already down to 0.3) rather than the last 8% - collapsing
-    // that much height over so little scroll distance read as a quick jerk
-    // right when title/price finished fading. Spread over more distance
-    // instead, still while mostly faded out.
+    // only starts reducing in the last (1 - collapseStartProgress) share of
+    // the shrink (opacity already mostly down) rather than all at once -
+    // collapsing that much height over too little scroll distance read as a
+    // quick jerk right when title/price finished fading, and on the
+    // Geschirr configurator (larger title/price block than a normal
+    // product, same window) as the page visibly speeding up while still
+    // actively scrolling through that collapse. Spread over more distance
+    // instead, still while mostly faded out - how much of the tail is
+    // configurable per caller since how much height needs collapsing
+    // varies.
     collapseTargets.forEach((el, i) => {
       el.style.opacity = 1 - progress;
-      if (progress > 0.7) {
+      if (progress > collapseStartProgress) {
         el.style.overflow = 'hidden';
-        el.style.maxHeight = collapseNaturalHeights[i] * ((1 - progress) / 0.3) + 'px';
+        el.style.maxHeight = collapseNaturalHeights[i] * ((1 - progress) / (1 - collapseStartProgress)) + 'px';
       } else {
         el.style.overflow = '';
         el.style.maxHeight = '';

@@ -412,6 +412,18 @@
       // by the time it finished. More scroll distance to spread the same
       // fade over.
       shrinkDistance: 180,
+      // The default (0.7, last 30%) concentrates the title/price height
+      // collapse into a short window - fine for a normal product's smaller
+      // title/price block, but this configurator's larger price--large +
+      // bigger heading collapsing that much height in that short a window
+      // made the page visibly speed up if you were still actively
+      // scrolling right when it happened. Starting earlier (last 70% of
+      // 180px = 126px instead of 54px) spreads the same height change over
+      // more distance - kept above 0 rather than the whole range, so
+      // height still only starts moving once opacity has faded
+      // meaningfully (avoids the original "sliding into the mirror"
+      // overlap issue that the 0.7 default was chosen to prevent).
+      collapseStartProgress: 0.3,
       collapseTargets: [eyebrowEl, titleEl, priceEl],
       styleInterpolations: styleInterpolations,
       priceMirror: {
