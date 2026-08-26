@@ -95,25 +95,21 @@
       const nextArrowBtn = galleryViewerSlider.querySelector('button[name="next"]');
       const prevArrowBtn = galleryViewerSlider.querySelector('button[name="previous"]');
       const items = galleryViewerSlider.querySelectorAll('[id^="Slide-"]');
-      // Three earlier versions of this fix landed on real touch devices in
-      // varying degrees of wrong:
-      // 1) comparing scrollLeft against scrollWidth (never accounted for
-      //    the peek-gutter trailing gap a mandatory-snap slider never
-      //    scrolls into)
-      // 2) comparing scrollLeft against the slide elements' own offsetLeft,
-      //    woken up by 'scroll'/'scrollend'/'touchend' listeners (correct
-      //    geometry, but those events don't fire reliably enough during
-      //    real touch/momentum scrolling to ever run the check)
-      // 3) trusting IntersectionObserver's own isIntersecting boolean
-      //    directly (a reliable wake-up signal even on touch, but its
-      //    ratio read out mid-snap-transition, not the truly settled one -
-      //    confirmed live as "hides while swiping, then reappears once the
-      //    swipe stops", i.e. exactly backwards)
-      // Combining the two working halves: IntersectionObserver as the
-      // wake-up (fires reliably regardless of how the scroll happened,
-      // including snap catch-up), but re-deriving the actual show/hide
-      // decision from scrollLeft/offsetLeft at that moment instead of
-      // trusting the entry's own isIntersecting value.
+      // Three earlier event-driven versions of this fix all failed on a
+      // real phone in different ways (scrollWidth math ignoring the
+      // peek-gutter gap; scroll/scrollend/touchend listeners that don't
+      // fire reliably enough during real touch/momentum scrolling to ever
+      // run; IntersectionObserver's own isIntersecting read out mid-snap-
+      // transition instead of at the true settled state - confirmed live as
+      // hiding while swiping and reappearing once the swipe stopped).
+      // Giving up on finding "the one correct event" and polling instead:
+      // a plain requestAnimationFrame loop, running only while a touch
+      // interaction is plausibly still in progress (from touchstart until
+      // a bit after the last touchmove/touchend, long enough to cover
+      // momentum + snap settling), re-checking the real scrollLeft against
+      // the slide elements' own offsetLeft every single frame. Doesn't
+      // depend on any particular event firing or on trusting an
+      // observer's own timing - just repeatedly asks "where are we now".
       if (items.length) {
         const firstItem = items[0];
         const lastItem = items[items.length - 1];
@@ -123,22 +119,30 @@
           if (nextArrowBtn) nextArrowBtn.classList.toggle('sticky-preview__arrow-hidden', scrollEl.scrollLeft >= lastItem.offsetLeft - EPS);
         };
         syncArrowVisibility();
-        const arrowObserver = new IntersectionObserver(syncArrowVisibility, { root: scrollEl, threshold: [0, 0.5, 1] });
-        arrowObserver.observe(firstItem);
-        arrowObserver.observe(lastItem);
-        let arrowTicking = false;
-        scrollEl.addEventListener(
-          'scroll',
-          () => {
-            if (arrowTicking) return;
-            arrowTicking = true;
-            requestAnimationFrame(() => {
-              syncArrowVisibility();
-              arrowTicking = false;
-            });
-          },
-          { passive: true }
-        );
+
+        let pollUntil = 0;
+        let polling = false;
+        const pollTick = () => {
+          syncArrowVisibility();
+          if (performance.now() < pollUntil) {
+            requestAnimationFrame(pollTick);
+          } else {
+            polling = false;
+          }
+        };
+        // 1200ms covers touch lift-off, momentum deceleration and the
+        // mandatory-snap catch-up settling into its final position -
+        // generous on purpose, this is cheap (two offsetLeft reads/frame).
+        const keepPolling = (durationMs) => {
+          pollUntil = performance.now() + durationMs;
+          if (!polling) {
+            polling = true;
+            requestAnimationFrame(pollTick);
+          }
+        };
+        ['touchstart', 'touchmove', 'touchend', 'scroll'].forEach((eventName) => {
+          scrollEl.addEventListener(eventName, () => keepPolling(1200), { passive: true });
+        });
       }
     }
 
