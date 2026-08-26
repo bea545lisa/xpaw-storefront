@@ -95,21 +95,16 @@
       const nextArrowBtn = galleryViewerSlider.querySelector('button[name="next"]');
       const prevArrowBtn = galleryViewerSlider.querySelector('button[name="previous"]');
       const items = galleryViewerSlider.querySelectorAll('[id^="Slide-"]');
-      // Three earlier event-driven versions of this fix all failed on a
-      // real phone in different ways (scrollWidth math ignoring the
-      // peek-gutter gap; scroll/scrollend/touchend listeners that don't
-      // fire reliably enough during real touch/momentum scrolling to ever
-      // run; IntersectionObserver's own isIntersecting read out mid-snap-
-      // transition instead of at the true settled state - confirmed live as
-      // hiding while swiping and reappearing once the swipe stopped).
-      // Giving up on finding "the one correct event" and polling instead:
-      // a plain requestAnimationFrame loop, running only while a touch
-      // interaction is plausibly still in progress (from touchstart until
-      // a bit after the last touchmove/touchend, long enough to cover
-      // momentum + snap settling), re-checking the real scrollLeft against
-      // the slide elements' own offsetLeft every single frame. Doesn't
-      // depend on any particular event firing or on trusting an
-      // observer's own timing - just repeatedly asks "where are we now".
+      // Four earlier versions of this fix, all triggered by some browser
+      // event (scroll/scrollend/touchend/IntersectionObserver/touch-gated
+      // rAF polling), each failed differently on a real phone - up to and
+      // including touchstart/touchmove/touchend themselves apparently not
+      // firing reliably enough on this element/device to ever kick off the
+      // rAF polling loop, leaving the arrow stuck at whatever it was on
+      // page load. No more waiting on any event at all: a plain interval,
+      // unconditionally re-checking real scrollLeft against the slide
+      // elements' own offsetLeft the whole time the page is open. Slower
+      // (200ms) than per-frame, but nothing to actually miss it depends on.
       if (items.length) {
         const firstItem = items[0];
         const lastItem = items[items.length - 1];
@@ -119,30 +114,7 @@
           if (nextArrowBtn) nextArrowBtn.classList.toggle('sticky-preview__arrow-hidden', scrollEl.scrollLeft >= lastItem.offsetLeft - EPS);
         };
         syncArrowVisibility();
-
-        let pollUntil = 0;
-        let polling = false;
-        const pollTick = () => {
-          syncArrowVisibility();
-          if (performance.now() < pollUntil) {
-            requestAnimationFrame(pollTick);
-          } else {
-            polling = false;
-          }
-        };
-        // 1200ms covers touch lift-off, momentum deceleration and the
-        // mandatory-snap catch-up settling into its final position -
-        // generous on purpose, this is cheap (two offsetLeft reads/frame).
-        const keepPolling = (durationMs) => {
-          pollUntil = performance.now() + durationMs;
-          if (!polling) {
-            polling = true;
-            requestAnimationFrame(pollTick);
-          }
-        };
-        ['touchstart', 'touchmove', 'touchend', 'scroll'].forEach((eventName) => {
-          scrollEl.addEventListener(eventName, () => keepPolling(1200), { passive: true });
-        });
+        setInterval(syncArrowVisibility, 200);
       }
     }
 
