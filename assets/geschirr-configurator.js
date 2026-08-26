@@ -401,7 +401,7 @@
       sentinel: '.geschirr-configurator__preview-sentinel',
       scopeThrough: scopeThroughEl,
       shrinkTarget: previewEl,
-      shrinkFrom: 90,
+      shrinkFrom: 94,
       shrinkTo: 54,
       shrinkDistance: 90,
       collapseTargets: [eyebrowEl, titleEl, priceEl],
