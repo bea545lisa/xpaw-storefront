@@ -78,10 +78,54 @@
       );
     });
 
+    // Dawn's own prev/next [disabled] logic (SliderComponent.update() in
+    // global.js) is driven by its page-based math (currentPage/totalPages),
+    // which has its own edge case completely independent of our sticky
+    // shrinking: with exactly 2 images and the mobile "peek" gutter, the
+    // slide is wider than the visible viewport, so its slidesPerPage
+    // calculation floors to 0 and totalPages comes out as 3 for only 2 real
+    // images - after which currentPage never actually reaches "the last
+    // page" the way the disabled check expects, so the right arrow never
+    // gets disabled at all, regardless of scroll/shrink state. Bypassing
+    // that entirely here: hide/show each arrow from the slider's own raw
+    // scroll geometry (scrollLeft/scrollWidth/clientWidth) instead, which
+    // has no such edge case.
+    const galleryViewerSlider = mediaWrapper.querySelector('slider-component[id^="GalleryViewer-"]');
+    if (galleryViewerSlider && galleryViewerSlider.slider) {
+      const scrollEl = galleryViewerSlider.slider;
+      const nextArrowBtn = galleryViewerSlider.querySelector('button[name="next"]');
+      const prevArrowBtn = galleryViewerSlider.querySelector('button[name="previous"]');
+      const EPS = 2;
+      const syncArrowVisibility = () => {
+        if (prevArrowBtn) prevArrowBtn.classList.toggle('sticky-preview__arrow-hidden', scrollEl.scrollLeft <= EPS);
+        if (nextArrowBtn) {
+          nextArrowBtn.classList.toggle(
+            'sticky-preview__arrow-hidden',
+            scrollEl.scrollLeft + scrollEl.clientWidth >= scrollEl.scrollWidth - EPS
+          );
+        }
+      };
+      syncArrowVisibility();
+      let arrowTicking = false;
+      scrollEl.addEventListener(
+        'scroll',
+        () => {
+          if (arrowTicking) return;
+          arrowTicking = true;
+          requestAnimationFrame(() => {
+            syncArrowVisibility();
+            arrowTicking = false;
+          });
+        },
+        { passive: true }
+      );
+      new ResizeObserver(syncArrowVisibility).observe(scrollEl);
+    }
+
     window.initStickyPreview({
       wrapper: '.product__media-wrapper',
       sentinel: '.sticky-product-media__sentinel',
-      sliderComponent: mediaWrapper.querySelector('slider-component[id^="GalleryViewer-"]'),
+      sliderComponent: galleryViewerSlider,
       scope: scopeThroughEl ? null : '.product__info-container',
       scopeThrough: scopeThroughEl,
       releaseAt: releaseAnchor,
