@@ -81,6 +81,7 @@
     window.initStickyPreview({
       wrapper: '.product__media-wrapper',
       sentinel: '.sticky-product-media__sentinel',
+      sliderComponent: mediaWrapper.querySelector('slider-component[id^="GalleryViewer-"]'),
       scope: scopeThroughEl ? null : '.product__info-container',
       scopeThrough: scopeThroughEl,
       releaseAt: releaseAnchor,

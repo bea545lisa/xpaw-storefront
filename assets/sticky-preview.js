@@ -247,15 +247,49 @@ window.initStickyPreview = function (config) {
       byProperty = new Map();
       lastWrittenValues.set(el, byProperty);
     }
-    if (byProperty.get(property) === rounded) return;
+    if (byProperty.get(property) === rounded) return false;
     byProperty.set(property, rounded);
     el.style.setProperty(property, rounded, important ? 'important' : '');
+    return true;
+  }
+
+  // Dawn's own slider-component (global.js) tracks prev/next button
+  // [[disabled]] state from its *own* measured this.slider.clientWidth,
+  // recalculated only when its ResizeObserver fires - async, on its own
+  // schedule. slider-component itself keeps its natural (peek-gutter)
+  // width the whole time (only the ancestor media-gallery/wrapper actually
+  // shrinks, see the media-gallery overflow:hidden comment below), so as
+  // that ancestor narrows, slider-component's own width measurement
+  // increasingly disagrees with what's actually visible - its ResizeObserver
+  // still fires (it observes the same box), but seemingly not reliably
+  // enough while continuously resized, so the next-button on the last image
+  // was staying enabled/visible once shrunk. Forcing a synchronous
+  // recalculation right after our own resize keeps it always in lockstep
+  // with the true, current geometry instead of trailing behind on its own.
+  // Same root cause also left the horizontal scroll position itself out of
+  // sync: scrollLeft is a plain pixel value, but shrinking/growing the
+  // ancestor changes each slide's actual pixel width, so a scrollLeft that
+  // exactly framed a slide before no longer does after - swipe to image 2
+  // while shrunk, then scroll back up (grow again), and the old pixel
+  // scrollLeft now lands between two slides, showing a sliver of each.
+  // Re-snapping to the currently active slide's own (freshly laid out)
+  // offsetLeft after every resize keeps it exactly framed regardless of how
+  // much the container just changed size.
+  const sliderComponent = config.sliderComponent instanceof Element ? config.sliderComponent : null;
+  function resyncSlider() {
+    if (!sliderComponent) return;
+    sliderComponent.initPages?.();
+    const activeSlide = sliderComponent.querySelector('.is-active');
+    if (activeSlide) sliderComponent.slider?.scrollTo?.({ left: activeSlide.offsetLeft });
   }
 
   function checkShrink() {
     if (!shrinkTarget && !collapseTargets.length && !priceMirror && !styleInterpolations.length) return true;
     if (!mobileQuery.matches) {
-      if (shrinkTarget && shrinkTarget.style.width) shrinkTarget.style.width = '';
+      if (shrinkTarget && shrinkTarget.style.width) {
+        shrinkTarget.style.width = '';
+        resyncSlider();
+      }
       collapseTargets.forEach((el) => {
         el.style.maxHeight = '';
         el.style.opacity = '';
@@ -294,7 +328,7 @@ window.initStickyPreview = function (config) {
       // was meant to prevent. Writing every frame instead - but rounded (see
       // writeInterpolatedStyle below), which already skips no-op rewrites.
       const targetWidthPct = shrinkFrom + (shrinkTo - shrinkFrom) * progress;
-      writeInterpolatedStyle(shrinkTarget, 'width', targetWidthPct, '%');
+      if (writeInterpolatedStyle(shrinkTarget, 'width', targetWidthPct, '%')) resyncSlider();
     }
     styleInterpolations.forEach(({ el, property, from, to, unit, important }) => {
       writeInterpolatedStyle(el, property, from + (to - from) * progress, unit || '', important);
