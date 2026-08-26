@@ -375,8 +375,13 @@ window.initStickyPreview = function (config) {
     // instead, still while mostly faded out - how much of the tail is
     // configurable per caller since how much height needs collapsing
     // varies.
+    // Opacity itself uses linearProgress, not the quadratic-eased progress
+    // used everywhere else here - the quadratic curve is deliberately slow
+    // to start and fast to finish (tuned for the shrink), which for a fade
+    // read as snapping to 0 abruptly right near the end instead of a
+    // steady, gradual fade the whole way through.
     collapseTargets.forEach((el, i) => {
-      el.style.opacity = 1 - progress;
+      el.style.opacity = 1 - linearProgress;
       if (progress > collapseStartProgress) {
         el.style.overflow = 'hidden';
         el.style.maxHeight = collapseNaturalHeights[i] * ((1 - progress) / (1 - collapseStartProgress)) + 'px';
@@ -385,7 +390,7 @@ window.initStickyPreview = function (config) {
         el.style.maxHeight = '';
       }
     });
-    if (priceMirror) priceMirror.style.opacity = progress;
+    if (priceMirror) priceMirror.style.opacity = linearProgress;
     return smoothedLinearProgress === targetLinearProgress;
   }
 
