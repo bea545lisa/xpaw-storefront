@@ -113,45 +113,18 @@ window.initStickyPreview = function (config) {
     { passive: true }
   );
 
-  // Both the stuck and detach state are backed by an IntersectionObserver
-  // *and* a plain scroll check - Safari has a known bug where
-  // IntersectionObserver targets tied to a position:sticky element (the
-  // sentinel is inside the same sticky-scrolled scope as wrapper) can just
-  // never fire, silently leaving the class toggle stuck at its initial
-  // value forever. The scroll check is what actually keeps this working
-  // there.
+  // The stuck state is backed by an IntersectionObserver *and* a plain
+  // scroll check - Safari has a known bug where IntersectionObserver
+  // targets tied to a position:sticky element (the sentinel is inside the
+  // same sticky-scrolled scope as wrapper) can just never fire, silently
+  // leaving the class toggle stuck at its initial value forever. The scroll
+  // check is what actually keeps this working there.
   let stuck = false;
   function setStuck(next) {
     if (next === stuck) return;
     stuck = next;
     wrapper.classList.toggle('sticky-preview--stuck', stuck);
   }
-  function checkStuck() {
-    const rect = sentinel.getBoundingClientRect();
-    setStuck(rect.top < 40);
-  }
-  const stuckObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => setStuck(!entry.isIntersecting));
-    },
-    { threshold: 0, rootMargin: '40px 0px 0px 0px' }
-  );
-  stuckObserver.observe(sentinel);
-  checkStuck();
-
-  let stuckTicking = false;
-  window.addEventListener(
-    'scroll',
-    () => {
-      if (stuckTicking) return;
-      stuckTicking = true;
-      requestAnimationFrame(() => {
-        checkStuck();
-        stuckTicking = false;
-      });
-    },
-    { passive: true }
-  );
 
   // Optional: instead of trusting the *native* sticky release (which
   // depends on the whole scope's containing-block height - hard to reason
@@ -173,41 +146,54 @@ window.initStickyPreview = function (config) {
   // applied last frame, which would feed back into itself and never settle.
   const releaseAt =
     config.releaseAt instanceof Element ? config.releaseAt : config.releaseAt ? document.querySelector(config.releaseAt) : null;
-  if (releaseAt) {
-    const releaseGap = config.releaseGap || 0;
+  const releaseGap = config.releaseGap || 0;
 
-    function checkRelease() {
-      // Desktop shows image and info side by side, not stacked - releaseAt
-      // (e.g. variant-selects) sits up near the top there, not far below
-      // the image like on mobile. Running this math there anyway produced a
-      // large, nonsensical pushback that shoved the image off-screen
-      // entirely (found live via a translateY(-813px) on the element).
-      if (!mobileQuery.matches) {
-        if (wrapper.style.transform) wrapper.style.transform = '';
-        return;
-      }
-      const stickyTop = parseFloat(getComputedStyle(wrapper).top) || 0;
-      const naturalBottom = stickyTop + wrapper.offsetHeight + releaseGap;
-      const rect = releaseAt.getBoundingClientRect();
-      const pushback = Math.max(0, naturalBottom - rect.top);
-      wrapper.style.transform = pushback > 0 ? `translateY(-${pushback}px)` : '';
+  function checkRelease() {
+    if (!mobileQuery.matches) {
+      if (wrapper.style.transform) wrapper.style.transform = '';
+      return;
     }
-
-    let releaseTicking = false;
-    window.addEventListener(
-      'scroll',
-      () => {
-        if (releaseTicking) return;
-        releaseTicking = true;
-        requestAnimationFrame(() => {
-          checkRelease();
-          releaseTicking = false;
-        });
-      },
-      { passive: true }
-    );
-    checkRelease();
+    const stickyTop = parseFloat(getComputedStyle(wrapper).top) || 0;
+    const naturalBottom = stickyTop + wrapper.offsetHeight + releaseGap;
+    const rect = releaseAt.getBoundingClientRect();
+    const pushback = Math.max(0, naturalBottom - rect.top);
+    wrapper.style.transform = pushback > 0 ? `translateY(-${pushback}px)` : '';
   }
+
+  // stuck and release are checked together, in one rAF tick per scroll
+  // event, so all the layout reads (getBoundingClientRect/offsetHeight)
+  // happen before any of the style writes (classList.toggle/style.transform)
+  // instead of interleaved across two separate ticks - each write in
+  // between a read forces an extra synchronous layout recalculation, which
+  // was making the whole scroll feel janky.
+  function checkScrollState() {
+    const rect = sentinel.getBoundingClientRect();
+    setStuck(rect.top < 40);
+    if (releaseAt) checkRelease();
+  }
+
+  const stuckObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => setStuck(!entry.isIntersecting));
+    },
+    { threshold: 0, rootMargin: '40px 0px 0px 0px' }
+  );
+  stuckObserver.observe(sentinel);
+  checkScrollState();
+
+  let scrollTicking = false;
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (scrollTicking) return;
+      scrollTicking = true;
+      requestAnimationFrame(() => {
+        checkScrollState();
+        scrollTicking = false;
+      });
+    },
+    { passive: true }
+  );
 
   // Optional: force the wrapper to let go entirely (position: static) once a
   // given element - e.g. the Add to Cart button - is getting close to the
