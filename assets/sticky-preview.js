@@ -199,9 +199,10 @@ window.initStickyPreview = function (config) {
   // end value on the very first scroll pixel while the real shrink was
   // still barely underway, reading as a sideways jump right at the start.
   const styleInterpolations = Array.isArray(config.styleInterpolations) ? config.styleInterpolations : [];
+  let smoothedLinearProgress = 0;
 
   function checkShrink() {
-    if (!shrinkTarget && !collapseTargets.length && !priceMirror && !styleInterpolations.length) return;
+    if (!shrinkTarget && !collapseTargets.length && !priceMirror && !styleInterpolations.length) return true;
     if (!mobileQuery.matches) {
       if (shrinkTarget && shrinkTarget.style.width) shrinkTarget.style.width = '';
       collapseTargets.forEach((el) => {
@@ -213,9 +214,20 @@ window.initStickyPreview = function (config) {
       styleInterpolations.forEach(({ el, property }) => {
         el.style[property] = '';
       });
-      return;
+      return true;
     }
-    const linearProgress = Math.min(1, Math.max(0, window.scrollY / shrinkDistance));
+    const targetLinearProgress = Math.min(1, Math.max(0, window.scrollY / shrinkDistance));
+    // Smoothed rather than used directly - real scroll position isn't
+    // perfectly stable frame to frame (momentum scrolling settling,
+    // elastic/rubber-band bounce, sub-pixel jitter), and reading it 1:1
+    // showed up live as a visible flicker (DevTools caught opacity
+    // oscillating between 0.61 and 0.618844 while the page looked
+    // stationary). Easing the tracked value toward the real one instead of
+    // snapping to it irons that out, at the cost of trailing slightly
+    // behind during fast scrolling - not noticeable in practice.
+    smoothedLinearProgress += (targetLinearProgress - smoothedLinearProgress) * 0.3;
+    if (Math.abs(smoothedLinearProgress - targetLinearProgress) < 0.0015) smoothedLinearProgress = targetLinearProgress;
+    const linearProgress = smoothedLinearProgress;
     // Eased (quadratic ease-in): starts noticeably slower than a straight
     // linear ramp, picking up speed toward the end - a flat linear rate
     // felt too fast right at the first scroll pixels.
@@ -243,6 +255,28 @@ window.initStickyPreview = function (config) {
       }
     });
     if (priceMirror) priceMirror.style.opacity = progress;
+    return smoothedLinearProgress === targetLinearProgress;
+  }
+
+  // Smoothing (above) only approaches the real scroll-derived value over
+  // several frames - if it just relied on new scroll events to keep ticking,
+  // stopping scrolling abruptly would freeze it part-way there. This keeps
+  // requesting frames on its own, independent of scroll events, until it's
+  // actually caught up.
+  let settling = false;
+  function settleShrink() {
+    if (checkShrink()) {
+      settling = false;
+      return;
+    }
+    requestAnimationFrame(settleShrink);
+  }
+  function checkShrinkAndSettle() {
+    checkShrink();
+    if (!settling) {
+      settling = true;
+      requestAnimationFrame(settleShrink);
+    }
   }
 
   // stuck and release are checked together, in one rAF tick per scroll
@@ -259,7 +293,7 @@ window.initStickyPreview = function (config) {
     // the image was already pinned at the top but not yet shrinking.
     // window.scrollY > 0 starts it right on the very first scroll pixel.
     setStuck(window.scrollY > 0);
-    checkShrink();
+    checkShrinkAndSettle();
     if (releaseAt) checkRelease();
   }
 
