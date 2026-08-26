@@ -95,23 +95,27 @@
       const nextArrowBtn = galleryViewerSlider.querySelector('button[name="next"]');
       const prevArrowBtn = galleryViewerSlider.querySelector('button[name="previous"]');
       const items = galleryViewerSlider.querySelectorAll('[id^="Slide-"]');
-      // Four earlier versions of this fix, all triggered by some browser
-      // event (scroll/scrollend/touchend/IntersectionObserver/touch-gated
-      // rAF polling), each failed differently on a real phone - up to and
-      // including touchstart/touchmove/touchend themselves apparently not
-      // firing reliably enough on this element/device to ever kick off the
-      // rAF polling loop, leaving the arrow stuck at whatever it was on
-      // page load. No more waiting on any event at all: a plain interval,
-      // unconditionally re-checking real scrollLeft against the slide
-      // elements' own offsetLeft the whole time the page is open. Slower
-      // (200ms) than per-frame, but nothing to actually miss it depends on.
-      if (items.length) {
-        const firstItem = items[0];
-        const lastItem = items[items.length - 1];
-        const EPS = 10;
+      // Turns out this was never actually an event-timing problem - an
+      // unconditional plain interval (no event dependency left at all)
+      // showed the exact same live symptom as every earlier version: hides
+      // while actively swiping, reappears once settled. That means the
+      // *geometry* comparison itself is wrong, not when it runs: on this
+      // device, the real post-snap scrollLeft doesn't land within a fixed
+      // few px of lastItem.offsetLeft the way it did on the product
+      // measured earlier - probably scroll-snap-align/rounding differences
+      // between devices/browsers. A fixed pixel tolerance (EPS) can't be
+      // sized correctly for that. Rounding scrollLeft to the *nearest slide
+      // index* instead has no such fixed-tolerance guesswork - a snap
+      // slider settles within half an item's width of a snap point by
+      // definition, so this is correct regardless of exactly how many px
+      // off any given device's settle happens to land.
+      if (items.length > 1) {
+        const itemOffset = items[1].offsetLeft - items[0].offsetLeft;
         const syncArrowVisibility = () => {
-          if (prevArrowBtn) prevArrowBtn.classList.toggle('sticky-preview__arrow-hidden', scrollEl.scrollLeft <= firstItem.offsetLeft + EPS);
-          if (nextArrowBtn) nextArrowBtn.classList.toggle('sticky-preview__arrow-hidden', scrollEl.scrollLeft >= lastItem.offsetLeft - EPS);
+          if (!itemOffset) return;
+          const currentIndex = Math.round(scrollEl.scrollLeft / itemOffset);
+          if (prevArrowBtn) prevArrowBtn.classList.toggle('sticky-preview__arrow-hidden', currentIndex <= 0);
+          if (nextArrowBtn) nextArrowBtn.classList.toggle('sticky-preview__arrow-hidden', currentIndex >= items.length - 1);
         };
         syncArrowVisibility();
         setInterval(syncArrowVisibility, 200);
