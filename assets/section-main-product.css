@@ -1213,12 +1213,13 @@ a.product__text {
   }
 
   .product__media-wrapper.sticky-preview--stuck media-gallery {
-    /* Hard cap, in case the aspect-ratio-driven height inside doesn't
-       actually shrink along with the width for some media types - without
-       this, the sticky scope's real height (and therefore how much has to
-       be scrolled before it releases) stays close to the full, unstuck
-       image height regardless of the narrower width. */
-    max-height: 28rem;
+    /* max-height used to be capped here too, tied to the --stuck class -
+       but --stuck now flips true on the very first scroll pixel while the
+       actual width shrink (in JS, sticky-preview.js) runs gradually over
+       150px. That mismatch left it briefly still full width but already
+       height-capped, showing a squashed image with the mirror text
+       overlapping it. Width shrinking for real should reduce height
+       naturally via the media's own aspect ratio anyway. */
     overflow: hidden;
   }
 
