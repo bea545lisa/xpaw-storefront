@@ -3,15 +3,21 @@
   margin-bottom: 2rem;
 }
 
-.geschirr-configurator__sticky-scope .product__title {
+/* The mobile sticky scope wrapping title/price/options is now built by the
+   shared window.initStickyPreview() (sticky-preview.js), which always
+   names it .sticky-preview__scope - :has() scopes this configurator's
+   tighter spacing to only when that scope is actually wrapping this
+   product's own options, so it doesn't also affect a normal product's
+   (identically classed) sticky scope. */
+.product:has(.geschirr-configurator) .sticky-preview__scope .product__title {
   margin-bottom: 0.2rem;
 }
 
-.geschirr-configurator__sticky-scope [id^="price-"] {
+.product:has(.geschirr-configurator) .sticky-preview__scope [id^="price-"] {
   margin-bottom: 0.8rem;
 }
 
-.geschirr-configurator__sticky-scope [id^="price-"] .price-item {
+.product:has(.geschirr-configurator) .sticky-preview__scope [id^="price-"] .price-item {
   font-size: 2rem;
 }
 
@@ -96,70 +102,27 @@
   z-index: 2;
 }
 
-.geschirr-configurator__price-mirror {
-  display: none;
-}
-
 @media screen and (max-width: 749px) {
+  /* position/top/z-index/background/stuck styling and the price-mirror
+     itself now come from the shared .sticky-preview/.sticky-preview--stuck
+     classes and sticky-preview__price-mirror element (sticky-preview.css,
+     sticky-preview.js) added by window.initStickyPreview() - see
+     assets/geschirr-configurator.js. Only the layout specifics unique to
+     this configurator's flex/full-bleed wrapper stay here; the preview's
+     own shrink (90% -> 54%) is now driven per scroll frame by JS instead
+     of a fixed-duration CSS transition. */
   .geschirr-configurator__preview-wrapper {
-    position: sticky;
-    top: calc(var(--header-height, 6rem) - 9px);
-    z-index: 2;
     width: 100vw;
     margin-left: calc(50% - 50vw);
     margin-bottom: 1.4rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0;
-    background: transparent;
-    transition: padding 0.75s ease, background-color 0.75s ease;
-  }
-
-  .geschirr-configurator__preview-wrapper--stuck .geschirr-configurator__price-mirror {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-    line-height: 1.15;
-    font-size: 1.25rem;
-    color: rgb(var(--color-foreground));
-    margin-top: 0.2rem;
-    text-align: center;
-  }
-
-  .geschirr-configurator__price-mirror-title {
-    font-weight: 600;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 60vw;
-  }
-
-  .geschirr-configurator__price-mirror-price {
-    color: rgba(var(--color-foreground), 0.75);
-  }
-
-  .geschirr-configurator__preview-wrapper--stuck {
-    padding: 0.4rem 0;
-    background: rgba(10, 10, 10, 0.92) !important;
-    backdrop-filter: blur(var(--header-scrolled-blur, 6px));
-    -webkit-backdrop-filter: blur(var(--header-scrolled-blur, 6px));
-    border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.12);
-    box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.4);
   }
 
   .geschirr-configurator__preview-wrapper .geschirr-configurator__preview {
     width: 90%;
     flex: none;
-    transform-origin: top center;
-    transform: scale(1);
-    transition: transform 0.75s ease, width 0.75s ease;
-  }
-
-  .geschirr-configurator__preview-wrapper--stuck .geschirr-configurator__preview {
-    width: 54%;
-    transform: none;
   }
 }
 
@@ -205,21 +168,13 @@
   filter: brightness(1.18);
 }
 
-.geschirr-configurator__price-mirror {
-  margin-bottom: 0.6rem;
-}
-
-.geschirr-configurator__price-mirror:empty {
-  display: none;
-}
-
 .geschirr-configurator__options {
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
 }
 
-.geschirr-configurator__sticky-scope .geschirr-configurator__options {
+.sticky-preview__scope .geschirr-configurator__options {
   /* Extra room at the end of the sticky scope so it lets go well past the
      last color row, instead of releasing mid-row and showing a cut-off swatch. */
   padding-bottom: 4rem;
