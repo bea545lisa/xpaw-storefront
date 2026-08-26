@@ -1201,15 +1201,18 @@ a.product__text {
     pointer-events: none;
   }
 
+  /* Width itself is set directly, per scroll frame, by sticky-preview.js
+     (shrinkTarget/shrinkFrom/shrinkTo/shrinkDistance) - tied straight to
+     scroll position instead of a CSS transition running on its own
+     wall-clock timer, which felt "too fast"/janky whenever actual scroll
+     speed didn't match the transition's fixed duration. */
   .product__media-wrapper media-gallery {
     display: block;
     width: 100%;
     margin: 0 auto;
-    transition: width 1.3s ease;
   }
 
   .product__media-wrapper.sticky-preview--stuck media-gallery {
-    width: 64%;
     /* Hard cap, in case the aspect-ratio-driven height inside doesn't
        actually shrink along with the width for some media types - without
        this, the sticky scope's real height (and therefore how much has to
