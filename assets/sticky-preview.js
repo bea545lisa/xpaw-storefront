@@ -284,11 +284,26 @@ window.initStickyPreview = function (config) {
   const sliderComponent = config.sliderComponent instanceof Element ? config.sliderComponent : null;
   function resyncSlider() {
     if (!sliderComponent || !sliderComponent.slider) return;
-    const oldOffset = sliderComponent.sliderItemOffset;
-    const slideIndex = oldOffset ? Math.round(sliderComponent.slider.scrollLeft / oldOffset) : 0;
+    // currentPage (1-indexed) is slider-component's own tracked position,
+    // already correctly accounting for its leading gutter/peek inset - more
+    // reliable than re-deriving an index from scrollLeft/offset ourselves,
+    // which doesn't account for that inset and left the re-snapped position
+    // just slightly off. Landing a few px short of the true last-slide
+    // offset was enough for isSlideVisible() (global.js) to keep judging it
+    // "not fully visible", so the next-button's disabled state never
+    // actually cleared on the last image.
+    const slideIndex = Math.max(0, (sliderComponent.currentPage || 1) - 1);
     sliderComponent.initPages?.();
-    const newOffset = sliderComponent.sliderItemOffset;
-    if (newOffset) sliderComponent.slider.scrollTo({ left: slideIndex * newOffset });
+    const targetSlide = sliderComponent.sliderItemsToShow?.[slideIndex];
+    if (targetSlide) sliderComponent.slider.scrollTo({ left: targetSlide.offsetLeft });
+    // initPages() already called update() once above, but against the
+    // scrollLeft from *before* our scrollTo just now - the real correction
+    // only arrives once the browser gets around to firing its own 'scroll'
+    // event for that scrollTo, which isn't guaranteed to happen before the
+    // next paint. Calling it again immediately keeps the disabled state
+    // (and currentPage) in sync with the position we just set, not the
+    // stale one from a moment ago.
+    sliderComponent.update?.();
   }
 
   function checkShrink() {
