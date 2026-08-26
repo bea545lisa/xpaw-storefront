@@ -42,6 +42,10 @@
       scopeThrough: scopeThroughEl,
       releaseAt: releaseAnchor,
       releaseGap: 32,
+      shrinkTarget: mediaWrapper.querySelector('media-gallery'),
+      shrinkFrom: 100,
+      shrinkTo: 64,
+      shrinkDistance: 150,
       priceMirror: {
         priceContainerSelector: '[id^="price-"]',
         title: titleH1 ? titleH1.textContent.trim() : '',

@@ -160,6 +160,31 @@ window.initStickyPreview = function (config) {
     wrapper.style.transform = pushback > 0 ? `translateY(-${pushback}px)` : '';
   }
 
+  // Optional: shrink shrinkTarget's width continuously as a direct function
+  // of scroll position (0 to shrinkDistance px), rather than via a CSS
+  // transition triggered once by the --stuck class. A CSS transition runs
+  // on a fixed wall-clock timer once started - scroll fast and it either
+  // keeps animating after you've stopped, or lags behind where you actually
+  // are, which reads as "too fast"/janky regardless of how long the
+  // transition is set to. Tying width directly to scroll position removes
+  // that mismatch entirely: there's no independent timer to be in or out of
+  // sync with.
+  const shrinkTarget =
+    config.shrinkTarget instanceof Element ? config.shrinkTarget : config.shrinkTarget ? document.querySelector(config.shrinkTarget) : null;
+  const shrinkFrom = config.shrinkFrom != null ? config.shrinkFrom : 100;
+  const shrinkTo = config.shrinkTo != null ? config.shrinkTo : 100;
+  const shrinkDistance = config.shrinkDistance || 150;
+
+  function checkShrink() {
+    if (!shrinkTarget) return;
+    if (!mobileQuery.matches) {
+      if (shrinkTarget.style.width) shrinkTarget.style.width = '';
+      return;
+    }
+    const progress = Math.min(1, Math.max(0, window.scrollY / shrinkDistance));
+    shrinkTarget.style.width = shrinkFrom + (shrinkTo - shrinkFrom) * progress + '%';
+  }
+
   // stuck and release are checked together, in one rAF tick per scroll
   // event, so all the layout reads (getBoundingClientRect/offsetHeight)
   // happen before any of the style writes (classList.toggle/style.transform)
@@ -174,6 +199,7 @@ window.initStickyPreview = function (config) {
     // the image was already pinned at the top but not yet shrinking.
     // window.scrollY > 0 starts it right on the very first scroll pixel.
     setStuck(window.scrollY > 0);
+    checkShrink();
     if (releaseAt) checkRelease();
   }
 
