@@ -44,7 +44,14 @@
     top: calc(var(--header-height, 6rem) - 9px);
     z-index: 2;
     background: transparent;
-    transition: background-color 0.75s ease, width 0.75s ease, padding 0.75s ease;
+    border-bottom: 0.1rem solid transparent;
+    box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0);
+    transition:
+      background-color 0.75s ease,
+      width 0.75s ease,
+      padding 0.75s ease,
+      border-color 0.75s ease,
+      box-shadow 0.75s ease;
   }
 
   .sticky-preview.sticky-preview--stuck {
