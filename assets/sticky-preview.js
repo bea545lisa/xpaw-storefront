@@ -220,6 +220,11 @@ window.initStickyPreview = function (config) {
   // Configurable per caller since how much height needs collapsing varies
   // (see the comment at the actual collapse calculation below).
   const collapseStartProgress = config.collapseStartProgress != null ? config.collapseStartProgress : 0.7;
+  // linearProgress value at which the opacity fade should already be fully
+  // at 0/1, rather than only reaching it at linearProgress===1 (the end of
+  // the whole shrink/collapse distance) - opacity fading across the *entire*
+  // shrinkDistance read as too slow. 1 keeps the previous behaviour.
+  const fadeEndProgress = config.fadeEndProgress != null ? config.fadeEndProgress : 1;
   // Set by initPriceMirror below (declared here so checkShrink's closure can
   // see it once it exists - checkShrink itself only ever runs later, from a
   // scroll event, by which point setup below has already run).
@@ -379,9 +384,13 @@ window.initStickyPreview = function (config) {
     // used everywhere else here - the quadratic curve is deliberately slow
     // to start and fast to finish (tuned for the shrink), which for a fade
     // read as snapping to 0 abruptly right near the end instead of a
-    // steady, gradual fade the whole way through.
+    // steady, gradual fade the whole way through. fadeProgress additionally
+    // rescales that against fadeEndProgress, so the fade can finish well
+    // before the shrink/collapse itself does, instead of stretching across
+    // the whole distance (read as too slow).
+    const fadeProgress = Math.min(1, linearProgress / fadeEndProgress);
     collapseTargets.forEach((el, i) => {
-      el.style.opacity = 1 - linearProgress;
+      el.style.opacity = 1 - fadeProgress;
       if (progress > collapseStartProgress) {
         el.style.overflow = 'hidden';
         el.style.maxHeight = collapseNaturalHeights[i] * ((1 - progress) / (1 - collapseStartProgress)) + 'px';
@@ -390,7 +399,7 @@ window.initStickyPreview = function (config) {
         el.style.maxHeight = '';
       }
     });
-    if (priceMirror) priceMirror.style.opacity = linearProgress;
+    if (priceMirror) priceMirror.style.opacity = fadeProgress;
     return smoothedLinearProgress === targetLinearProgress;
   }
 
