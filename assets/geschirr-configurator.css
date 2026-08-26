@@ -82,8 +82,18 @@
   height: 1px;
 }
 
-.geschirr-configurator__preview-wrapper {
-  position: relative;
+@media screen and (min-width: 750px) {
+  /* Desktop only - on mobile, position comes from the shared .sticky-preview
+     class instead (sticky-preview.css). Both rules set only `position` at
+     equal specificity (one class each) - unscoped, this one being the
+     later-loaded stylesheet made it win the cascade on mobile too, leaving
+     the wrapper `position: relative` while `top` still applied from the
+     losing sticky rule (CSS resolves each property independently, not per
+     whole rule) - relative positioning doesn't pin anything, it just reads
+     as a permanent gap pushed down by that top offset. */
+  .geschirr-configurator__preview-wrapper {
+    position: relative;
+  }
 }
 
 .geschirr-configurator__preview {
@@ -121,7 +131,7 @@
   }
 
   .geschirr-configurator__preview-wrapper .geschirr-configurator__preview {
-    width: 90%;
+    width: 94%;
     flex: none;
   }
 }
