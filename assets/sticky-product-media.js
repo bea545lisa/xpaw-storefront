@@ -66,15 +66,15 @@
       scopeThrough: scopeThroughEl,
       releaseAt: releaseAnchor,
       releaseGap: 32,
-      // shrinkFrom used to be 100 (full width) - explicitly setting that via
-      // JS was itself the cause of a brief "grows to 100% width" jump right
-      // as scrolling started (before that JS wrote anything, the element
-      // was already narrower - ~94% of the column - just from its own
-      // layout). Starting the shrink already at that same ~94% instead
-      // keeps it at the narrower look throughout, matching what looked
-      // better anyway.
+      // Back to 100 - the "grows to 100%" jump this was lowered to 94 to
+      // avoid was actually the *outer bar* (mediaWrapper) bleeding to full
+      // viewport width instantly, now fixed separately below
+      // (wrapperStyleInterpolations). 94% was calibrated against that old,
+      // narrower, un-bled bar - once the bar itself properly bleeds,
+      // media-gallery needs to fill 100% of it or the zoom icon/slider
+      // arrows end up sitting oddly close to a phantom inner edge.
       shrinkTarget: mediaWrapper.querySelector('media-gallery'),
-      shrinkFrom: 94,
+      shrinkFrom: 100,
       shrinkTo: 64,
       // Shorter than before (was 150) so the whole shrink+collapse settles
       // early, well before enough has been scrolled for the release
