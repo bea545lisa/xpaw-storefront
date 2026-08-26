@@ -1151,18 +1151,36 @@ a.product__text {
      sticky element's containing block (here: .sticky-preview__scope) has
      scrolled past - compact spacing alone can't get that down to "right
      after the options" while eyebrow/title/price still sit in that same
-     scope for the image-first layout. So they're hidden here once stuck -
-     the already-existing .sticky-preview__price-mirror inside the stuck bar
-     covers title+price at that point, and the scope then only effectively
-     contains image + options, releasing right after them. Gated on
-     .sticky-preview--stuck specifically (not just "inside the scope"), so
-     they still show normally during the brief moment before stuck kicks in -
-     hiding them unconditionally left that moment with neither the real
-     title/price nor the mirror visible. */
+     scope for the image-first layout. So they're collapsed away here once
+     stuck - the already-existing .sticky-preview__price-mirror inside the
+     stuck bar covers title+price at that point, and the scope then only
+     effectively contains image + options, releasing right after them.
+     Gated on .sticky-preview--stuck specifically (not just "inside the
+     scope"), so they still show normally during the brief moment before
+     stuck kicks in - hiding them unconditionally left that moment with
+     neither the real title/price nor the mirror visible.
+
+     Animated (max-height + opacity, not display:none) so they visibly
+     collapse/slide up as the sticky bar takes over, rather than vanishing
+     instantly the moment scrolling starts. */
+  .sticky-preview__scope .product__text,
+  .sticky-preview__scope .product__title,
+  .sticky-preview__scope [id^='price-'] {
+    overflow: hidden;
+    max-height: 16rem;
+    opacity: 1;
+    transform: translateY(0);
+    transition: max-height 0.4s ease, opacity 0.3s ease, transform 0.4s ease, margin 0.4s ease;
+  }
+
   .sticky-preview__scope .product__media-wrapper.sticky-preview--stuck ~ .product__text,
   .sticky-preview__scope .product__media-wrapper.sticky-preview--stuck ~ .product__title,
   .sticky-preview__scope .product__media-wrapper.sticky-preview--stuck ~ [id^='price-'] {
-    display: none;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-0.6rem);
+    margin-top: 0;
+    margin-bottom: 0;
   }
 
   .product__media-wrapper media-gallery {
