@@ -1187,6 +1187,16 @@ a.product__text {
   .sticky-preview__scope .product__media-wrapper.sticky-preview--stuck ~ .product__title,
   .sticky-preview__scope .product__media-wrapper.sticky-preview--stuck ~ [id^='price-'] {
     position: absolute;
+    /* Without these, an absolutely positioned block shrinks to fit its
+       content instead of staying full-width like it was in flow - visibly
+       changing text wrapping/size right as position: absolute takes
+       effect. left/right: 0 keeps it stretched to the same width it had a
+       moment ago, so only opacity is actually changing. top is left alone
+       so each element keeps its own "static position" fallback (where it
+       already was, vertically) - setting top:0 here would snap all three
+       (eyebrow/title/price) to the same spot instead of each staying put. */
+    left: 0;
+    right: 0;
     opacity: 0;
     pointer-events: none;
   }
