@@ -272,15 +272,23 @@ window.initStickyPreview = function (config) {
   // exactly framed a slide before no longer does after - swipe to image 2
   // while shrunk, then scroll back up (grow again), and the old pixel
   // scrollLeft now lands between two slides, showing a sliver of each.
-  // Re-snapping to the currently active slide's own (freshly laid out)
-  // offsetLeft after every resize keeps it exactly framed regardless of how
-  // much the container just changed size.
+  // Re-deriving the *slide index* from the old scrollLeft/offset before
+  // resizing, then re-applying that index against the freshly recalculated
+  // offset, keeps whichever slide is currently being viewed exactly framed
+  // regardless of how much the container just changed size. Deliberately
+  // not `.is-active` (media-gallery.js) - that class only moves on an
+  // explicit thumbnail click/variant change, not on a plain swipe, so
+  // snapping to it during a vertical scroll after swiping (without picking
+  // a thumbnail) kept yanking the view back to whatever was last explicitly
+  // selected - normally the first slide.
   const sliderComponent = config.sliderComponent instanceof Element ? config.sliderComponent : null;
   function resyncSlider() {
-    if (!sliderComponent) return;
+    if (!sliderComponent || !sliderComponent.slider) return;
+    const oldOffset = sliderComponent.sliderItemOffset;
+    const slideIndex = oldOffset ? Math.round(sliderComponent.slider.scrollLeft / oldOffset) : 0;
     sliderComponent.initPages?.();
-    const activeSlide = sliderComponent.querySelector('.is-active');
-    if (activeSlide) sliderComponent.slider?.scrollTo?.({ left: activeSlide.offsetLeft });
+    const newOffset = sliderComponent.sliderItemOffset;
+    if (newOffset) sliderComponent.slider.scrollTo({ left: slideIndex * newOffset });
   }
 
   function checkShrink() {
