@@ -403,7 +403,15 @@
       shrinkTarget: previewEl,
       shrinkFrom: 94,
       shrinkTo: 54,
-      shrinkDistance: 90,
+      // 90 (the normal-product value) was deliberately kept short there to
+      // avoid overlapping with the releaseAt push-back timing - not a
+      // concern here, this configurator never sets releaseAt at all. A
+      // taller square preview (vs. a normal product's flatter gallery)
+      // means the same 90px collapsed eyebrow/title/price so abruptly that
+      // the "Gurtfarbe" options legend right below them was nearly covered
+      // by the time it finished. More scroll distance to spread the same
+      // fade over.
+      shrinkDistance: 180,
       collapseTargets: [eyebrowEl, titleEl, priceEl],
       styleInterpolations: styleInterpolations,
       priceMirror: {
