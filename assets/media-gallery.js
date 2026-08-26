@@ -56,6 +56,16 @@ if (!customElements.get('media-gallery')) {
           if (!this.mql.matches || this.elements.thumbnails) {
             activeMedia.parentElement.scrollTo({ left: activeMedia.offsetLeft });
           }
+          // Skip the auto vertical scroll-into-view entirely inside a
+          // sticky-preview wrapper (normal products and the Geschirr
+          // configurator): that wrapper is position:sticky and constantly
+          // resized/repositioned by our own scroll-linked JS, so
+          // getBoundingClientRect() here is unreliable mid-shrink/mid-release
+          // and read this as "not in view" when it already was. Each variant
+          // click then fired another smooth-scroll on top of any still-
+          // running one, compounding into a runaway scroll that pushed the
+          // image off-screen entirely.
+          if (this.closest('.sticky-preview')) return;
           const activeMediaRect = activeMedia.getBoundingClientRect();
           // Don't scroll if the image is already in view
           if (activeMediaRect.top > -0.5) return;
