@@ -219,6 +219,29 @@ window.initStickyPreview = function (config) {
   const styleInterpolations = Array.isArray(config.styleInterpolations) ? config.styleInterpolations : [];
   let smoothedLinearProgress = 0;
 
+  // Rounds before writing, and skips the write entirely if the rounded value
+  // hasn't actually changed since the last frame. Without this, every frame
+  // wrote a fresh, barely-different sub-pixel value (e.g. 63.4821...% vs
+  // 63.4823...%) - each one still a real style write, and each one still
+  // enough to re-trigger Dawn's own slider-component ResizeObserver
+  // (initPages/update in global.js), which was visible as a continuous
+  // subtle wobble in the image the entire time scrolling, not just at the
+  // start/end. Whole pixels for px values, one decimal for %/unitless -
+  // both far below what's visually perceptible as a size change, but coarse
+  // enough that most frames now genuinely have nothing new to write.
+  const lastWrittenValues = new WeakMap();
+  function writeInterpolatedStyle(el, property, value, unit, important) {
+    const rounded = (unit === 'px' ? Math.round(value) : Math.round(value * 10) / 10) + unit;
+    let byProperty = lastWrittenValues.get(el);
+    if (!byProperty) {
+      byProperty = new Map();
+      lastWrittenValues.set(el, byProperty);
+    }
+    if (byProperty.get(property) === rounded) return;
+    byProperty.set(property, rounded);
+    el.style.setProperty(property, rounded, important ? 'important' : '');
+  }
+
   function checkShrink() {
     if (!shrinkTarget && !collapseTargets.length && !priceMirror && !styleInterpolations.length) return true;
     if (!mobileQuery.matches) {
@@ -258,12 +281,13 @@ window.initStickyPreview = function (config) {
       // first several scroll pixels, so the threshold delayed the very
       // first write - then applied a comparatively large jump all at once
       // when it finally fired, which read as a jump in exactly the way this
-      // was meant to prevent. Writing every frame instead.
+      // was meant to prevent. Writing every frame instead - but rounded (see
+      // writeInterpolatedStyle below), which already skips no-op rewrites.
       const targetWidthPct = shrinkFrom + (shrinkTo - shrinkFrom) * progress;
-      shrinkTarget.style.width = targetWidthPct + '%';
+      writeInterpolatedStyle(shrinkTarget, 'width', targetWidthPct, '%');
     }
     styleInterpolations.forEach(({ el, property, from, to, unit, important }) => {
-      el.style.setProperty(property, from + (to - from) * progress + (unit || ''), important ? 'important' : '');
+      writeInterpolatedStyle(el, property, from + (to - from) * progress, unit || '', important);
     });
     // Height/position stay untouched for almost the whole fade - only
     // opacity changes, so title/price never visibly move or resize (a
