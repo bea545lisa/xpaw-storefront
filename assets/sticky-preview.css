@@ -26,6 +26,15 @@
   .sticky-preview--stuck .sticky-preview__price-mirror {
     opacity: 1;
     transform: translateY(0);
+    /* A short delay only on the way in - .sticky-preview--stuck also
+       triggers backdrop-filter appearing (not itself transitioned, so it
+       repaints instantly) and title/price switching to position: absolute
+       (an instant reflow) in that same frame. Starting the mirror's own
+       fade a beat later keeps it from competing with that burst of work,
+       which was the jump reported only on scroll-down/entering stuck (exit
+       is lighter - no backdrop-filter to newly paint - and was already
+       smooth). */
+    transition-delay: 0.12s;
   }
 }
 
