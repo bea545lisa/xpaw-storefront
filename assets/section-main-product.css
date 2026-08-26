@@ -1160,39 +1160,35 @@ a.product__text {
      stuck kicks in - hiding them unconditionally left that moment with
      neither the real title/price nor the mirror visible.
 
-     Animated (max-height + opacity, not display:none) so they visibly
-     collapse/slide up as the sticky bar takes over, rather than vanishing
-     instantly the moment scrolling starts. */
+     A height animation (max-height) here always fights the fade - either
+     the buffer's too big and the visible collapse gets compressed into a
+     fraction of the transition (looked like a jump), or tight enough to
+     look right but then the whole thing reads as fast because there's only
+     ~0.1s of "still fully there" before it starts shrinking. Decoupled
+     instead: switching to position: absolute removes them from the
+     document flow *instantly* (so the scope's height - and therefore
+     release timing - updates in one clean reflow, not an animated one),
+     while their static position is what they keep rendering at, letting
+     opacity fade slowly there on its own timeline without disturbing
+     layout. .sticky-preview__scope needs position: relative so "static
+     position" fallback anchors to it, not to some further-out ancestor. */
+  .sticky-preview__scope {
+    position: relative;
+  }
+
   .sticky-preview__scope .product__text,
   .sticky-preview__scope .product__title,
   .sticky-preview__scope [id^='price-'] {
-    overflow: hidden;
-    /* Close to the real content height (eyebrow+title+price is normally
-       ~9rem) rather than a big safety buffer - max-height transitions
-       animate the property value itself, not the visible content, so a
-       buffer this much larger than the actual content meant the first half
-       of the transition's duration was invisible (nothing to reveal yet),
-       compressing all the actual visible collapse into the second half and
-       making it look like a sudden jump instead of a steady scroll-away.
-       Still slightly above the typical single-line-title case; a very long
-       wrapped title could clip here. */
-    max-height: 11rem;
     opacity: 1;
-    /* Same 0.75s as media-gallery's own width transition below, so title/
-       price collapsing away and the image shrinking read as one motion
-       instead of two different speeds. Opacity fades over the same
-       duration (not sooner) so it reads as being scrolled up and out
-       rather than quickly fading in place first. */
-    transition: max-height 0.75s ease, opacity 0.75s ease, margin 0.75s ease;
+    transition: opacity 0.75s ease;
   }
 
   .sticky-preview__scope .product__media-wrapper.sticky-preview--stuck ~ .product__text,
   .sticky-preview__scope .product__media-wrapper.sticky-preview--stuck ~ .product__title,
   .sticky-preview__scope .product__media-wrapper.sticky-preview--stuck ~ [id^='price-'] {
-    max-height: 0;
+    position: absolute;
     opacity: 0;
-    margin-top: 0;
-    margin-bottom: 0;
+    pointer-events: none;
   }
 
   .product__media-wrapper media-gallery {
