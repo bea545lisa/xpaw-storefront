@@ -94,7 +94,7 @@
       const scrollEl = galleryViewerSlider.slider;
       const nextArrowBtn = galleryViewerSlider.querySelector('button[name="next"]');
       const prevArrowBtn = galleryViewerSlider.querySelector('button[name="previous"]');
-      const EPS = 2;
+      const EPS = 10;
       // Comparing against scrollWidth (the first version of this fix) was
       // itself wrong, confirmed live: the "peek" gutter leaves the last
       // slide's own snap position (its offsetLeft) short of the theoretical
@@ -117,15 +117,28 @@
       };
       syncArrowVisibility();
       let arrowTicking = false;
+      const scheduleSync = () => {
+        if (arrowTicking) return;
+        arrowTicking = true;
+        requestAnimationFrame(() => {
+          syncArrowVisibility();
+          arrowTicking = false;
+        });
+      };
+      scrollEl.addEventListener('scroll', scheduleSync, { passive: true });
+      // Real touch devices don't reliably fire (or coalesce) 'scroll'
+      // events during momentum/inertial scrolling the way mouse-driven
+      // scrolling (incl. DevTools mobile emulation, which is mouse-based)
+      // does - confirmed live: this worked correctly in DevTools' mobile
+      // view but never updated on an actual phone. 'scrollend' fires once
+      // scrolling (including the mandatory-snap catch-up) has fully
+      // settled and is the more reliable signal on touch devices; a
+      // 'touchend' + short delay covers browsers that don't support it yet.
+      scrollEl.addEventListener('scrollend', scheduleSync, { passive: true });
       scrollEl.addEventListener(
-        'scroll',
+        'touchend',
         () => {
-          if (arrowTicking) return;
-          arrowTicking = true;
-          requestAnimationFrame(() => {
-            syncArrowVisibility();
-            arrowTicking = false;
-          });
+          setTimeout(syncArrowVisibility, 350);
         },
         { passive: true }
       );
