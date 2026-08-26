@@ -1180,7 +1180,7 @@ a.product__text {
   .sticky-preview__scope .product__title,
   .sticky-preview__scope [id^='price-'] {
     opacity: 1;
-    transition: opacity 0.75s ease;
+    transition: opacity 1.3s ease;
   }
 
   .sticky-preview__scope .product__media-wrapper.sticky-preview--stuck ~ .product__text,
@@ -1205,7 +1205,7 @@ a.product__text {
     display: block;
     width: 100%;
     margin: 0 auto;
-    transition: width 0.75s ease;
+    transition: width 1.3s ease;
   }
 
   .product__media-wrapper.sticky-preview--stuck media-gallery {
