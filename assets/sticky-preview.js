@@ -144,11 +144,29 @@ window.initStickyPreview = function (config) {
   // price which get hidden once stuck). Deliberately not wrapper's own live
   // getBoundingClientRect() - that already includes whatever transform was
   // applied last frame, which would feed back into itself and never settle.
-  const releaseAt =
+  let releaseAt =
     config.releaseAt instanceof Element ? config.releaseAt : config.releaseAt ? document.querySelector(config.releaseAt) : null;
   const releaseGap = config.releaseGap || 0;
 
   function checkRelease() {
+    // Shopify's own variant-change handling (product-info.js) replaces
+    // releaseAt (variant-selects) with an entirely new DOM node on every
+    // variant change - releaseAt here would otherwise keep pointing at the
+    // old, now-detached one forever. getBoundingClientRect() on a detached
+    // element returns all zeros, which made pushback shoot up to a huge
+    // value (naturalBottom - 0), flinging the image transform way off
+    // screen and, combined with the huge padding-bottom trick elsewhere,
+    // apparently confusing the page's own scroll math too. Bail out clean
+    // instead of computing anything from a detached reference.
+    if (releaseAt && !releaseAt.isConnected) {
+      const fresh = document.querySelector('variant-selects, .product-form__input:not(.product-form__quantity)');
+      if (fresh) fresh.classList.add('sticky-preview__release-anchor');
+      releaseAt = fresh;
+    }
+    if (!releaseAt) {
+      if (wrapper.style.transform) wrapper.style.transform = '';
+      return;
+    }
     if (!mobileQuery.matches) {
       if (wrapper.style.transform) wrapper.style.transform = '';
       return;
