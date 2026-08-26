@@ -341,101 +341,77 @@
     });
 
     initStickyPreview();
-    initPriceMirror();
   }
 
-  // The real price is up near the product title, out of view once you're
-  // scrolled down and the preview has stuck to the top - show a small copy
-  // there too so price changes (e.g. picking "Mit Brustring") stay visible.
-  function initPriceMirror() {
-    const priceEl = document.querySelector('.geschirr-configurator__price-mirror-price');
-    const sourceContainer = document.querySelector('[id^="price-"]');
-    if (!priceEl || !sourceContainer) return;
-
-    function sync() {
-      const current = sourceContainer.querySelector('.price-item--sale') || sourceContainer.querySelector('.price-item--regular');
-      priceEl.textContent = current ? current.textContent.trim() : '';
-    }
-
-    sync();
-    new MutationObserver(sync).observe(sourceContainer, { childList: true, subtree: true, characterData: true });
-  }
-
-  // On mobile, move the preview image to sit right above the color options
-  // and make it `position: sticky` there. Sticky is native browser behaviour:
-  // it sticks while scrolling through that shared container (image + options)
-  // and lets go by itself once the container (i.e. the options) scrolls past -
-  // no JS position/size math, so it can't drift out of sync with the header.
+  // Now shares the same scroll-linked shrink/collapse/price-mirror system
+  // built for normal products (assets/sticky-preview.js +
+  // sticky-product-media.js) instead of the configurator's own separate,
+  // simpler implementation this used to be (plain CSS-transition width
+  // shrink, no title/price fade, its own bespoke price-mirror markup) - see
+  // sticky-preview.js for why each of those pieces works the way it does.
+  // Unlike a normal product, deliberately not passing a releaseAt/
+  // releaseGap here: the whole point of this configurator's sticky preview
+  // (long, multi-fieldset options list) is that the image stays attached
+  // the entire time you're scrolling through the options, only letting go
+  // via native sticky release once the tall shared scope itself runs out -
+  // exactly what omitting releaseAt leaves in place (checkRelease() in
+  // sticky-preview.js never runs without it).
   function initStickyPreview() {
     const previewWrapper = document.querySelector('.geschirr-configurator__preview-wrapper');
     const sentinel = document.querySelector('.geschirr-configurator__preview-sentinel');
     const options = document.querySelector('.geschirr-configurator__options');
-    if (!previewWrapper || !sentinel || !options) return;
+    const infoContainer = document.querySelector('.product__info-container');
+    const titleH1 = document.querySelector('.product__title h1');
+    if (!previewWrapper || !sentinel || !options || !infoContainer || typeof window.initStickyPreview !== 'function') return;
 
-    const desktopParent = previewWrapper.parentElement;
-    const desktopNextSibling = previewWrapper.nextSibling;
-    const sentinelDesktopParent = sentinel.parentElement;
-    const sentinelDesktopNextSibling = sentinel.nextSibling;
-    const optionsDesktopParent = options.parentElement;
-    const mobileQuery = window.matchMedia('(max-width: 749px)');
-    let onMobile = null;
-
-    // A dedicated scope from the very start of the info column (title,
-    // price, ...) up to and including the options, with the image put
-    // first inside it - so the image is always the first thing shown
-    // (consistent with normal products), while everything up to the
-    // options still shares the sticky scope in its original order.
-    const scope = document.createElement('div');
-    scope.className = 'geschirr-configurator__sticky-scope';
-    const scopeSiblings = [];
-    let restoreBeforeNode = null;
+    let scopeThroughEl = null;
     {
-      let node = optionsDesktopParent.firstChild;
-      while (node) {
-        const next = node.nextSibling;
-        scopeSiblings.push(node);
-        if (node === options) {
-          restoreBeforeNode = next;
-          break;
-        }
-        node = next;
+      let node = options;
+      while (node.parentElement && node.parentElement !== infoContainer) {
+        node = node.parentElement;
+      }
+      if (node.parentElement === infoContainer) scopeThroughEl = node;
+    }
+    if (!scopeThroughEl) return;
+
+    const eyebrowEl = document.querySelector('.product__info-container .product__text');
+    const titleEl = document.querySelector('.product__info-container .product__title');
+    const priceEl = document.querySelector('.product__info-container [id^="price-"]');
+    const previewEl = previewWrapper.querySelector('.geschirr-configurator__preview');
+
+    // The wrapper already bleeds to 100vw unconditionally on mobile (see
+    // geschirr-configurator.css) rather than only once stuck like a normal
+    // product's - so unlike sticky-product-media.js, no styleInterpolations
+    // entry is needed for the wrapper's own width/margin-left here, only
+    // the zoom icon.
+    const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 10;
+    const styleInterpolations = [];
+    if (previewEl) {
+      const zoomIcon = previewEl.querySelector('.product__media-icon');
+      if (zoomIcon) {
+        styleInterpolations.push(
+          { el: zoomIcon, property: 'width', from: 3.6 * remPx, to: 2.6 * remPx, unit: 'px', important: true },
+          { el: zoomIcon, property: 'height', from: 3.6 * remPx, to: 2.6 * remPx, unit: 'px', important: true }
+        );
       }
     }
 
-    function apply() {
-      const shouldBeMobile = mobileQuery.matches;
-      if (shouldBeMobile === onMobile) return;
-      onMobile = shouldBeMobile;
-      if (shouldBeMobile) {
-        optionsDesktopParent.insertBefore(scope, scopeSiblings[0]);
-        scope.appendChild(sentinel);
-        scope.appendChild(previewWrapper);
-        scopeSiblings.forEach((node) => scope.appendChild(node));
-      } else {
-        sentinelDesktopParent.insertBefore(sentinel, sentinelDesktopNextSibling);
-        desktopParent.insertBefore(previewWrapper, desktopNextSibling);
-        scopeSiblings.forEach((node) => optionsDesktopParent.insertBefore(node, restoreBeforeNode));
-        scope.remove();
-      }
-    }
-
-    apply();
-    mobileQuery.addEventListener('change', apply);
-
-    // The sentinel sits right before the wrapper; once it scrolls out of view
-    // the wrapper has hit its sticky "top" offset and is now actually stuck -
-    // that's when we shrink it. Position itself stays 100% native `sticky`.
-    const stuckObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          previewWrapper.classList.toggle('geschirr-configurator__preview-wrapper--stuck', !entry.isIntersecting);
-        });
+    window.initStickyPreview({
+      wrapper: '.geschirr-configurator__preview-wrapper',
+      sentinel: '.geschirr-configurator__preview-sentinel',
+      scopeThrough: scopeThroughEl,
+      shrinkTarget: previewEl,
+      shrinkFrom: 90,
+      shrinkTo: 54,
+      shrinkDistance: 90,
+      collapseTargets: [eyebrowEl, titleEl, priceEl],
+      styleInterpolations: styleInterpolations,
+      priceMirror: {
+        priceContainerSelector: '[id^="price-"]',
+        title: titleH1 ? titleH1.textContent.trim() : '',
+        appendTo: previewWrapper,
       },
-      // A small rootMargin buffer so the shrink-triggered height change can't
-      // itself nudge the sentinel back across the exact toggle line.
-      { threshold: 0, rootMargin: '40px 0px 0px 0px' }
-    );
-    stuckObserver.observe(sentinel);
+    });
   }
 
   if (document.readyState === 'loading') {
