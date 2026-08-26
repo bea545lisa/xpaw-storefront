@@ -175,14 +175,57 @@ window.initStickyPreview = function (config) {
   const shrinkTo = config.shrinkTo != null ? config.shrinkTo : 100;
   const shrinkDistance = config.shrinkDistance || 150;
 
+  // Elements (e.g. eyebrow/title/price) that should collapse away in step
+  // with the same shrink, read here as their natural (full) height once up
+  // front, then interpolated between that and 0 every frame - driven by the
+  // *exact same* progress value as shrinkTarget's width, so they can never
+  // drift out of sync with it or with each other. An earlier version used
+  // position: absolute to pull them out of flow and let them fade in place,
+  // but browsers don't reliably preserve each element's own "static
+  // position" once several siblings go absolute at once - title and price
+  // ended up swapping places. Interpolating max-height instead keeps every
+  // element exactly where normal flow already puts it.
+  const collapseTargets = Array.isArray(config.collapseTargets) ? config.collapseTargets.filter(Boolean) : [];
+  const collapseNaturalHeights = collapseTargets.map((el) => el.offsetHeight);
+  // Set by initPriceMirror below (declared here so checkShrink's closure can
+  // see it once it exists - checkShrink itself only ever runs later, from a
+  // scroll event, by which point setup below has already run).
+  let priceMirror = null;
+
+  // Any other CSS properties (e.g. a slider's own negative-margin "peek"
+  // bleed) that need to move in the exact same lockstep as the shrink -
+  // {el, property, from, to, unit}. Reset instantly via a --stuck-gated CSS
+  // rule before, which - like the width itself used to be - snapped to its
+  // end value on the very first scroll pixel while the real shrink was
+  // still barely underway, reading as a sideways jump right at the start.
+  const styleInterpolations = Array.isArray(config.styleInterpolations) ? config.styleInterpolations : [];
+
   function checkShrink() {
-    if (!shrinkTarget) return;
+    if (!shrinkTarget && !collapseTargets.length && !priceMirror && !styleInterpolations.length) return;
     if (!mobileQuery.matches) {
-      if (shrinkTarget.style.width) shrinkTarget.style.width = '';
+      if (shrinkTarget && shrinkTarget.style.width) shrinkTarget.style.width = '';
+      collapseTargets.forEach((el) => {
+        el.style.maxHeight = '';
+        el.style.opacity = '';
+        el.style.overflow = '';
+      });
+      if (priceMirror) priceMirror.style.opacity = '';
+      styleInterpolations.forEach(({ el, property }) => {
+        el.style[property] = '';
+      });
       return;
     }
     const progress = Math.min(1, Math.max(0, window.scrollY / shrinkDistance));
-    shrinkTarget.style.width = shrinkFrom + (shrinkTo - shrinkFrom) * progress + '%';
+    if (shrinkTarget) shrinkTarget.style.width = shrinkFrom + (shrinkTo - shrinkFrom) * progress + '%';
+    styleInterpolations.forEach(({ el, property, from, to, unit }) => {
+      el.style[property] = from + (to - from) * progress + (unit || '');
+    });
+    collapseTargets.forEach((el, i) => {
+      el.style.overflow = 'hidden';
+      el.style.maxHeight = collapseNaturalHeights[i] * (1 - progress) + 'px';
+      el.style.opacity = 1 - progress;
+    });
+    if (priceMirror) priceMirror.style.opacity = progress;
   }
 
   // stuck and release are checked together, in one rAF tick per scroll
@@ -273,7 +316,7 @@ window.initStickyPreview = function (config) {
   }
 
   if (config.priceMirror) {
-    initPriceMirror(wrapper, config.priceMirror);
+    priceMirror = initPriceMirror(wrapper, config.priceMirror);
   }
 };
 
@@ -299,4 +342,6 @@ function initPriceMirror(wrapper, mirrorConfig) {
 
   syncPrice();
   new MutationObserver(syncPrice).observe(priceContainer, { childList: true, subtree: true, characterData: true });
+
+  return mirror;
 }
