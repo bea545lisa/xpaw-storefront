@@ -1169,8 +1169,12 @@ a.product__text {
     overflow: hidden;
     max-height: 16rem;
     opacity: 1;
-    transform: translateY(0);
-    transition: max-height 0.4s ease, opacity 0.3s ease, transform 0.4s ease, margin 0.4s ease;
+    /* Same 0.75s as media-gallery's own width transition below, so title/
+       price collapsing away and the image shrinking read as one motion
+       instead of two different speeds. Opacity fades over the same
+       duration (not sooner) so it reads as being scrolled up and out
+       rather than quickly fading in place first. */
+    transition: max-height 0.75s ease, opacity 0.75s ease, margin 0.75s ease;
   }
 
   .sticky-preview__scope .product__media-wrapper.sticky-preview--stuck ~ .product__text,
@@ -1178,7 +1182,6 @@ a.product__text {
   .sticky-preview__scope .product__media-wrapper.sticky-preview--stuck ~ [id^='price-'] {
     max-height: 0;
     opacity: 0;
-    transform: translateY(-0.6rem);
     margin-top: 0;
     margin-bottom: 0;
   }
