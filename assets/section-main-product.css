@@ -1232,16 +1232,18 @@ a.product__text {
      visible edge instead of the intended 1-1.2rem in from it. Bumped up to
      compensate. */
   .product__media-wrapper .product__media-icon {
-    left: 2.8rem;
-    top: 2rem;
+    width: 3.6rem;
+    height: 3.6rem;
+    left: 1.2rem;
+    top: 2.2rem;
   }
 
   slider-component.slider-mobile-gutter .slider-buttons .slider-button--prev {
-    left: 2.6rem;
+    left: 2rem;
   }
 
   slider-component.slider-mobile-gutter .slider-buttons .slider-button--next {
-    right: 2.6rem;
+    right: 2rem;
   }
 
   .sticky-preview__scope .sticky-preview__release-anchor {
