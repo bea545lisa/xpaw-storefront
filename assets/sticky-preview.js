@@ -240,15 +240,16 @@ window.initStickyPreview = function (config) {
     // opacity changes, so title/price never visibly move or resize (a
     // height collapse running at the same time as the fade was described as
     // "sliding into"/overlapping the mirror and the options below). Height
-    // is only actually removed right at the very end (progress > 0.92),
-    // once opacity is already down to ~0.08 or less - by then invisible
-    // enough that the one-step snap needed for correct release-scroll
-    // timing doesn't read as a jump.
+    // only starts reducing in the last 30% of the shrink (progress > 0.7,
+    // opacity already down to 0.3) rather than the last 8% - collapsing
+    // that much height over so little scroll distance read as a quick jerk
+    // right when title/price finished fading. Spread over more distance
+    // instead, still while mostly faded out.
     collapseTargets.forEach((el, i) => {
       el.style.opacity = 1 - progress;
-      if (progress > 0.92) {
+      if (progress > 0.7) {
         el.style.overflow = 'hidden';
-        el.style.maxHeight = collapseNaturalHeights[i] * (1 - progress) * 12.5 + 'px';
+        el.style.maxHeight = collapseNaturalHeights[i] * ((1 - progress) / 0.3) + 'px';
       } else {
         el.style.overflow = '';
         el.style.maxHeight = '';
