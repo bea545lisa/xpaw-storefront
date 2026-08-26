@@ -59,6 +59,17 @@
       { el: mediaWrapper, property: 'margin-left', from: 0, to: bleedMarginLeft, unit: 'px', important: true },
     ];
 
+    // Zoom icon(s) shrink in the same lockstep as everything else instead of
+    // staying a fixed 3.6rem the whole time - one exists per slide, not
+    // just the active one.
+    const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 10;
+    mediaWrapper.querySelectorAll('.product__media-icon').forEach((zoomIcon) => {
+      wrapperStyleInterpolations.push(
+        { el: zoomIcon, property: 'width', from: 3.6 * remPx, to: 2.6 * remPx, unit: 'px', important: true },
+        { el: zoomIcon, property: 'height', from: 3.6 * remPx, to: 2.6 * remPx, unit: 'px', important: true }
+      );
+    });
+
     window.initStickyPreview({
       wrapper: '.product__media-wrapper',
       sentinel: '.sticky-product-media__sentinel',
