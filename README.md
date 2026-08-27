@@ -1,6 +1,10 @@
-# RexPaw Storefront
+# XPaw Storefront
 
 Shopify Theme Portfolio-Projekt auf Basis von [Dawn](https://github.com/Shopify/dawn) — entstanden als praktische Vertiefung in Liquid, Theme-Architektur und Shopify-eigene APIs.
+
+## Live-Demo
+
+[xpaw.webwork-oberland.de](https://xpaw.webwork-oberland.de) — Passwort: `demo`
 
 ---
 
