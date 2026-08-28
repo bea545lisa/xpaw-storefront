@@ -4,6 +4,15 @@ Ermöglicht Produkten mit vielen Farbvarianten eine Live-Vorschau per Canvas-Com
 
 > Der bestehende **Geschirr-Konfigurator** (`assets/geschirr-configurator.js`, `snippets/geschirr-configurator-*.liquid`) ist davon komplett unabhängig und bleibt unverändert bestehen. Dieses generische System ist eine separate, parallele Implementierung (`assets/configurator.js`, `snippets/configurator-*.liquid`) für zukünftige Produkte.
 
+## Damit ein Produkt überhaupt als Konfigurator erkannt wird
+
+Am Produkt **zwei Metafields** setzen, sonst passiert nichts (oder das Falsche):
+
+1. **`custom.canvas_configurator`** → `true` — schaltet die Canvas-Vorschau grundsätzlich frei
+2. **`custom.canvas_engine`** → Text `generic` — ohne dieses Feld greift stattdessen der alte, Geschirr-spezifische Pfad (falsche Masken-Namen/Ebenen für jedes andere Produkt)
+
+Erst danach lohnt sich `custom.canvas_layers` & Co. weiter unten zu befüllen.
+
 ## Funktionsweise
 
 1. `product.metafields.custom.canvas_configurator` (Boolean) schaltet für ein Produkt die Canvas-Vorschau statt der normalen Bildergalerie frei.
