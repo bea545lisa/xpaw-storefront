@@ -97,6 +97,16 @@
   pointer-events: none;
 }
 
+.configurator__background {
+  /* Below the outline's own shadow silhouette and the generic CSS
+     background/::after blob above - a product-supplied background image
+     already includes its own shadow, so it fully covers/replaces those.
+     No object-fit here (meaningless on <canvas>, unlike <img>) - the image
+     is drawn to fill the canvas's own 1000x1000 buffer directly in JS, so
+     a non-square source would stretch; keep background images square. */
+  z-index: -1;
+}
+
 .configurator__outline {
   z-index: 0;
   filter: blur(9px);
