@@ -1,0 +1,13 @@
+{% comment %}
+  Generic, metafield-driven configurator options container. Rendered inside
+  the product add-to-cart form (buy-buttons), same slot geschirr-
+  configurator-options.liquid uses for the Geschirr product.
+
+  Unlike that file, no fieldsets/swatches are hand-authored here -
+  assets/configurator.js builds them entirely from the product's
+  custom.canvas_layers metafield (the same data configurator-preview.liquid
+  reads), including the hidden line-item property inputs. This element is
+  just the container it appends into.
+{% endcomment %}
+
+<div class="configurator__options" data-form-id="{{ product_form_id }}"></div>

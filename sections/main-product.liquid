@@ -10,16 +10,38 @@
   {% endif %}
 >
   {%- comment -%}
-    Whether this product uses the canvas colour configurator (geschirr-configurator.js)
-    instead of a normal photographed media gallery. Checked once here and reused via
-    is_geschirr_configurator everywhere below, rather than repeating the tag/metafield
-    check at each usage - product.tags contains 'konfigurator-geschirr' is the original,
-    still-supported way; custom.canvas_configurator (boolean product metafield) is the
-    newer, merchant-editable way that doesn't require remembering an exact tag string.
+    Whether this product uses a canvas colour configurator instead of a
+    normal photographed media gallery, and if so, which implementation:
+    - is_geschirr_configurator: assets/geschirr-configurator.js +
+      geschirr-configurator-*.liquid - the original, product-specific,
+      hand-authored implementation. Live and tuned; never touched by the
+      generic system below. Enabled via the tag 'konfigurator-geschirr'
+      (original way) or custom.canvas_configurator (newer, merchant-
+      editable boolean metafield) as long as custom.canvas_engine isn't
+      set to 'generic'.
+    - is_generic_configurator: assets/configurator.js +
+      configurator-*.liquid - the newer, fully metafield-driven
+      implementation (see CONFIGURATOR.md) for products that define their
+      own custom.canvas_layers instead of needing product-specific code.
+      Enabled the same way, but only when custom.canvas_engine is
+      explicitly 'generic'.
+    is_canvas_configurator is true for either, for the handful of checks
+    below (hide the standard variant picker, skip sticky-product-media.js/
+    the sentinel it needs) that apply regardless of which engine renders
+    the actual preview/options.
   {%- endcomment -%}
-  {%- assign is_geschirr_configurator = false -%}
+  {%- assign is_canvas_configurator = false -%}
   {%- if product.tags contains 'konfigurator-geschirr' or product.metafields.custom.canvas_configurator -%}
-    {%- assign is_geschirr_configurator = true -%}
+    {%- assign is_canvas_configurator = true -%}
+  {%- endif -%}
+  {%- assign is_generic_configurator = false -%}
+  {%- assign is_geschirr_configurator = false -%}
+  {%- if is_canvas_configurator -%}
+    {%- if product.metafields.custom.canvas_engine == 'generic' -%}
+      {%- assign is_generic_configurator = true -%}
+    {%- else -%}
+      {%- assign is_geschirr_configurator = true -%}
+    {%- endif -%}
   {%- endif -%}
 
   {{ 'section-main-product.css' | asset_url | stylesheet_tag }}
@@ -64,7 +86,7 @@
   {% endif %}
   {{ 'sticky-preview.css' | asset_url | stylesheet_tag }}
   <script src="{{ 'sticky-preview.js' | asset_url }}" defer="defer"></script>
-  {%- unless is_geschirr_configurator -%}
+  {%- unless is_canvas_configurator -%}
     <script src="{{ 'sticky-product-media.js' | asset_url }}" defer="defer"></script>
   {%- endunless -%}
   {%- if request.design_mode -%}
@@ -94,11 +116,13 @@
   <product-component view-event-payload="{{ product | standard_event_data: 'view', context: 'page' | escape }}">
     <div class="page-width">
       <div class="product product--{{ section.settings.media_size }} product--{{ section.settings.media_position }} product--{{ section.settings.gallery_layout }} product--mobile-{{ section.settings.mobile_thumbnails }} grid grid--1-col {% if product.media.size > 0 %}grid--2-col-tablet{% else %}product--no-media{% endif %}">
-        {%- unless is_geschirr_configurator -%}
+        {%- unless is_canvas_configurator -%}
           <div class="sticky-product-media__sentinel"></div>
         {%- endunless -%}
         <div class="grid__item product__media-wrapper">
-          {%- if is_geschirr_configurator -%}
+          {%- if is_generic_configurator -%}
+            {%- render 'configurator-preview' -%}
+          {%- elsif is_geschirr_configurator -%}
             {%- render 'geschirr-configurator-preview' -%}
           {%- else -%}
             {% render 'product-media-gallery', variant_images: variant_images %}
@@ -110,7 +134,7 @@
             class="product__info-container{% if section.settings.enable_sticky_info %} product__column-sticky{% endif %}"
           >
             {%- assign product_form_id = 'product-form-' | append: section.id -%}
-            {%- if is_geschirr_configurator -%}
+            {%- if is_canvas_configurator -%}
               {%- assign variant_picker_block = section.blocks | where: 'type', 'variant_picker' | first -%}
             {%- endif -%}
 
@@ -388,8 +412,12 @@
                     </details>
                   </div>
                 {%- when 'quantity_selector' -%}
-                  {%- if is_geschirr_configurator -%}
-                    {%- render 'geschirr-configurator-options', product_form_id: product_form_id -%}
+                  {%- if is_canvas_configurator -%}
+                    {%- if is_generic_configurator -%}
+                      {%- render 'configurator-options', product_form_id: product_form_id -%}
+                    {%- else -%}
+                      {%- render 'geschirr-configurator-options', product_form_id: product_form_id -%}
+                    {%- endif -%}
                     {%- if variant_picker_block -%}
                       {% render 'product-variant-picker',
                         product: product,
@@ -655,7 +683,7 @@
                     surface: 'product_page'
                   -%}
                 {%- when 'variant_picker' -%}
-                  {%- unless is_geschirr_configurator -%}
+                  {%- unless is_canvas_configurator -%}
                     {% render 'product-variant-picker',
                       product: product,
                       block: block,
