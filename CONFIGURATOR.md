@@ -24,14 +24,22 @@ Erst danach lohnt sich `custom.canvas_layers` & Co. weiter unten zu befüllen.
 
 ## Wo müssen die Bilder hochgeladen werden?
 
-**Nicht** in die Theme-Assets (das würde einen Code-Deploy pro Produkt erfordern, so wie es beim alten Geschirr-Konfigurator noch gemacht wird — siehe `assets/geschirr-mask-*.png`). Stattdessen:
+**Nicht** in die Theme-Assets (das würde einen Code-Deploy pro Produkt erfordern, so wie es beim alten Geschirr-Konfigurator noch gemacht wird — siehe `assets/geschirr-mask-*.png`). Zwei Wege:
 
+**Direkt in rexpaw-admin (empfohlen):** Produktseite → Metafields-Karte → "Wie richte ich Konfigurator ein?" aufklappen → dort bei Schritt 2 Datei auswählen, Namen anpassen, hochladen. Landet als eigenständige Shopify-Datei (nicht in der Produkt-Bildergalerie), URL zum Kopieren erscheint direkt danach. Lädt die Originaldatei unverändert hoch, keine automatische Verkleinerung/Kompression (wichtig für scharfe Maskenkanten).
+
+**Alternativ direkt in Shopify:**
 1. Shopify-Admin → **Einstellungen → Dateien** (oder direkt beim Produkt über "Datei hochladen")
-2. Bild hochladen (PNG mit Transparenz für Masken/Hintergrund empfohlen)
+2. Bild hochladen
 3. Die resultierende URL kopieren (in der Dateiliste auf die Datei klicken, dort die URL kopieren)
-4. Diese URL in das jeweilige Feld der `canvas_layers`-JSON eintragen (siehe unten) bzw. bei `custom.canvas_shading` / `custom.canvas_background`
 
-Masken-Bilder sollten quadratisch sein (Referenzgröße im Code: 1000×1000px) und **Alpha-Transparenz** an den Stellen haben, die NICHT zur jeweiligen Ebene gehören — die Maske bestimmt per `destination-in`-Compositing, welcher Bereich der Füllfarbe sichtbar bleibt.
+Danach die URL in das jeweilige Feld der `canvas_layers`-JSON eintragen (siehe unten) bzw. bei `custom.canvas_shading` / `custom.canvas_background`.
+
+**Format je nach Zweck:**
+- **Masken & Shading-Overlay** → **PNG** mit Alpha-Transparenz. Bei Masken: transparent an allen Stellen, die NICHT zur jeweiligen Ebene gehören — die Maske bestimmt per `destination-in`-Compositing, welcher Bereich der Füllfarbe sichtbar bleibt. JPG hat keine Transparenz und funktioniert hier nicht.
+- **Hintergrundgrafik** (`custom.canvas_background`) → **JPG** ist hier die bessere Wahl. Die unterste Ebene ist ohnehin komplett deckend (kein Alpha nötig), JPG komprimiert foto-artige Verläufe/Schatten deutlich kleiner als PNG, ohne sichtbaren Qualitätsverlust.
+
+Masken-Bilder sollten quadratisch sein (Referenzgröße im Code: 1000×1000px).
 
 **Namenskonvention** (nicht technisch erzwungen — Shopify Files hat keine echten Unterordner, nur eine durchsuchbare Liste, die produktübergreifend schnell unübersichtlich wird): `canvas-<produkt-handle>-<zweck>.png`, z. B. für einen Napf:
 
