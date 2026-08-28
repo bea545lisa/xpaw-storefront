@@ -1,0 +1,184 @@
+/* Generic, metafield-driven canvas colour configurator - styling
+   counterpart to assets/configurator.js. Class names mirror
+   geschirr-configurator.css's structure (that file stays untouched, this is
+   a parallel implementation), just without the "geschirr-" prefix and
+   without the fixed swatch markup - configurator.js builds the fieldsets/
+   swatches at runtime, this only styles whatever it produces. */
+
+.configurator {
+  display: block;
+  margin-bottom: 2rem;
+}
+
+.product:has(.configurator__options) .sticky-preview__scope .product__title {
+  margin-bottom: 0.2rem;
+}
+
+.product:has(.configurator__options) .sticky-preview__scope [id^="price-"] {
+  margin-bottom: 0.8rem;
+}
+
+.product:has(.configurator__options) .sticky-preview__scope [id^="price-"] .price-item {
+  font-size: 2rem;
+}
+
+.configurator__preview-sentinel {
+  display: block !important;
+  height: 1px;
+}
+
+@media screen and (min-width: 750px) {
+  /* Desktop only - on mobile, position comes from the shared .sticky-preview
+     class instead (sticky-preview.css), same reasoning as
+     geschirr-configurator.css. */
+  .configurator__preview-wrapper {
+    position: relative;
+  }
+}
+
+.configurator__preview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  border-radius: 0.6rem;
+  box-shadow: 0 0.4rem 1.2rem rgba(var(--color-shadow), 0.25);
+  background: #ffffff;
+  overflow: hidden;
+  cursor: zoom-in;
+}
+
+.configurator__preview .product__media-icon {
+  z-index: 2;
+}
+
+@media screen and (max-width: 749px) {
+  .configurator__preview-wrapper {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-bottom: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .configurator__preview-wrapper .configurator__preview {
+    width: 94%;
+    flex: none;
+  }
+
+  .configurator__preview-wrapper .sticky-preview__price-mirror {
+    margin-top: 0.8rem;
+  }
+}
+
+[data-theme="dark"] .configurator__preview {
+  background: radial-gradient(ellipse at center, #3a3a3a 0%, #202020 70%, #121212 100%);
+}
+
+.configurator__preview::after {
+  content: '';
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 5%;
+  height: 8%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 72%);
+  filter: blur(6px);
+  z-index: 0;
+}
+
+.configurator__layer-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.configurator__outline {
+  z-index: 0;
+  filter: blur(9px);
+}
+
+.configurator__shading {
+  mix-blend-mode: multiply;
+  object-fit: contain;
+  filter: brightness(1.18);
+}
+
+.configurator__options {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.sticky-preview__scope .configurator__options {
+  padding-bottom: 4rem;
+}
+
+.configurator__options fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.configurator__options legend {
+  font-size: 1.4rem;
+  color: rgb(var(--color-foreground));
+  margin-bottom: 0.6rem;
+  padding: 0;
+}
+
+.configurator__value {
+  color: rgba(var(--color-foreground), 0.75);
+  font-weight: normal;
+}
+
+.configurator__swatch {
+  --swatch-color: transparent;
+  --swatch-image: none;
+  position: relative;
+  display: inline-flex;
+  width: 4.25rem;
+  height: 4.25rem;
+  margin: 0 0.5rem 0.5rem 0;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: var(--swatch-color);
+  background-image: var(--swatch-image);
+  background-size: cover;
+  box-shadow: 0 0 0 0.1rem rgba(var(--color-foreground), 0.2);
+  transition: box-shadow 0.1s ease;
+}
+
+.configurator__swatch--metallic {
+  background-image:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.75) 0%,
+      rgba(255, 255, 255, 0.15) 30%,
+      rgba(255, 255, 255, 0) 55%,
+      rgba(0, 0, 0, 0.25) 100%
+    );
+}
+
+.configurator__swatch input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.configurator__swatch:has(input:checked) {
+  box-shadow:
+    0 0 0 0.2rem rgb(var(--color-background)),
+    0 0 0 0.35rem rgba(var(--color-foreground), 0.85);
+}
+
+.configurator__swatch:has(input:focus-visible) {
+  outline: 0.2rem solid rgba(var(--color-foreground), 0.5);
+  outline-offset: 0.2rem;
+}

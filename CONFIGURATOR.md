@@ -1,0 +1,88 @@
+# Generischer Canvas-Farbkonfigurator
+
+Ermöglicht Produkten mit vielen Farbvarianten eine Live-Vorschau per Canvas-Compositing, statt für jede Farbkombination ein eigenes Foto zu benötigen. Komplett datengetrieben über Produkt-Metafields — für ein neues Produkt ist **kein Code nötig**, nur Metafield-Werte im Shopify-Admin.
+
+> Der bestehende **Geschirr-Konfigurator** (`assets/geschirr-configurator.js`, `snippets/geschirr-configurator-*.liquid`) ist davon komplett unabhängig und bleibt unverändert bestehen. Dieses generische System ist eine separate, parallele Implementierung (`assets/configurator.js`, `snippets/configurator-*.liquid`) für zukünftige Produkte.
+
+## Funktionsweise
+
+1. `product.metafields.custom.canvas_configurator` (Boolean) schaltet für ein Produkt die Canvas-Vorschau statt der normalen Bildergalerie frei.
+2. `product.metafields.custom.canvas_layers` (JSON) beschreibt **alle** Ebenen, ihre Farboptionen und wie sie sich zueinander verhalten (Zeichenreihenfolge, Umriss, Shading-Aussparung, Metallic-Effekt).
+3. `snippets/configurator-preview.liquid` reicht diese Config als JSON an `assets/configurator.js` weiter.
+4. `assets/configurator.js` baut daraus zur Laufzeit: die `<canvas>`-Ebenen, lädt die Masken-Bilder, und erzeugt die Farbauswahl-Fieldsets (Swatches) inkl. der versteckten Cart-Line-Item-Properties — alles automatisch aus der Config, ohne Produkt-spezifisches HTML.
+5. Beim Ändern einer Farbe malt `configurator.js` nur die betroffene Ebene neu (per `destination-in`-Maskierung), setzt die Cart-Property und aktualisiert die Legend-Anzeige.
+6. Dieselbe scroll-gebundene Sticky-Preview wie bei normalen Produkten (`assets/sticky-preview.js`) ist eingebaut — das Vorschaubild bleibt beim Scrollen durch die Optionen sichtbar.
+
+## Wo müssen die Bilder hochgeladen werden?
+
+**Nicht** in die Theme-Assets (das würde einen Code-Deploy pro Produkt erfordern). Stattdessen:
+
+1. Shopify-Admin → **Einstellungen → Dateien** (oder direkt beim Produkt über "Datei hochladen")
+2. Bild hochladen (PNG mit Transparenz für Masken empfohlen)
+3. Die resultierende URL kopieren (Rechtsklick auf die Datei → "Link kopieren", oder in der Dateiliste die URL neben dem Dateinamen)
+4. Diese URL in das jeweilige Feld der `canvas_layers`-JSON eintragen (siehe unten) bzw. bei `custom.canvas_shading`
+
+Masken-Bilder sollten quadratisch sein (Referenzgröße im Code: 1000×1000px) und **Alpha-Transparenz** an den Stellen haben, die NICHT zur jeweiligen Ebene gehören — die Maske bestimmt per `destination-in`-Compositing, welcher Bereich der Füllfarbe sichtbar bleibt.
+
+## Metafield-Übersicht
+
+| Metafield | Owner | Typ | Zweck |
+|---|---|---|---|
+| `custom.canvas_configurator` | Produkt | Boolean | Schaltet die Canvas-Vorschau für dieses Produkt frei |
+| `custom.canvas_layers` | Produkt | JSON | Die komplette Ebenen-/Farb-Konfiguration (siehe Schema unten) |
+| `custom.canvas_shading` | Produkt | Einzeiliger Text | URL zu einem optionalen Shading-/Struktur-Overlay-Bild (Licht-/Materialwirkung über allen Ebenen) |
+| `custom.canvas_outline_scale` | Produkt | Dezimalzahl | Optionale Skalierung des weichen Umriss-Schattens (Standard: `1.035`, meist nicht nötig anzupassen) |
+| `custom.use_canvas` | Variante | Boolean | Pro Variante: Canvas-Vorschau nutzen statt eines hochgeladenen Bilds (aktuell nur vorbereitet, noch nicht ausgewertet) |
+
+## Schema von `custom.canvas_layers`
+
+Ein Array, ein Eintrag pro Ebene:
+
+```json
+[
+  {
+    "key": "gurt",
+    "property": "Gurtband Farbe",
+    "mask": "https://cdn.shopify.com/.../mask-gurt.png",
+    "outline": true,
+    "shadingCutout": false,
+    "metallic": false,
+    "options": [
+      { "name": "Weiss", "hex": "#FFFFFF", "title": "Weiß" },
+      { "name": "Pink", "hex": "#F06EB0", "default": true },
+      { "name": "Camo Grau", "pattern": "https://cdn.shopify.com/.../muster-camo-grau.jpg", "scale": 0.5 }
+    ]
+  }
+]
+```
+
+**Pro Ebene:**
+- `key` (Pflicht) — interne ID, muss eindeutig sein, wird als `data-layer`-Attribut verwendet
+- `property` (optional) — Anzeigename/Legend-Text. **Weglassen**, wenn die Ebene nicht vom Kunden wählbar sein soll (z. B. ein fixes Label/Logo), dann wird kein Fieldset dafür erzeugt, die Ebene aber trotzdem gerendert
+- `mask` (Pflicht, falls die Ebene sichtbar sein soll) — URL zum Masken-Bild (siehe oben)
+- `outline` (optional, Standard `false`) — ob diese Ebene zum weichen Umriss-Schatten beiträgt
+- `shadingCutout` (optional, Standard `false`) — ob diese Ebene aus dem Shading-Overlay ausgespart wird (z. B. für metallische/glänzende Teile, die kein zusätzliches Multiply-Shading vertragen)
+- `metallic` (optional, Standard `false`) — ob die Füllung als metallischer Ring-Glanz-Effekt statt flacher Farbe gerendert wird (feste Ring-Positionen im Code, für andere Formen ggf. nicht passend)
+
+**Pro Option** (Farbwahl innerhalb einer Ebene):
+- `name` (Pflicht) — interner Wert, erscheint auch als Cart-Property-Wert
+- `hex` **oder** `pattern` (genau eins von beiden) — Flachfarbe als Hex-Code, oder URL zu einem Muster-Bild (wird als wiederholtes Pattern gefüllt)
+- `scale` (optional, nur bei `pattern`) — Skalierungsfaktor für die Musterkachel
+- `title` (optional) — abweichender Anzeigetext für Tooltip/Screenreader, falls `name` nicht sprechend genug ist
+- `default` (optional) — genau eine Option pro Ebene sollte das haben, sonst wird die erste in der Liste verwendet
+
+Die Zeichenreihenfolge der Ebenen (unten drüber) entspricht der Reihenfolge im Array.
+
+## Neues Produkt einrichten — Checkliste
+
+1. Masken-Bilder (eins pro Ebene) und optional ein Shading-Overlay in **Einstellungen → Dateien** hochladen, URLs notieren
+2. Am Produkt: `custom.canvas_configurator` auf `true` setzen
+3. Am Produkt: `custom.canvas_layers` mit der JSON-Konfiguration befüllen (siehe Schema oben)
+4. Optional: `custom.canvas_shading` (URL) und `custom.canvas_outline_scale` setzen
+5. Live-Vorschau auf der Produktseite prüfen — bei fehlerhafter/fehlender `canvas_layers`-Konfiguration bleibt die Vorschau einfach leer, es gibt keinen Fehler auf der Seite
+
+## Bekannte Grenzen
+
+- Die Positionen für den Metallic-Ring-Glanz-Effekt (`metallic: true`) sind im Code fest hinterlegt (`RING_SPOTS` in `assets/configurator.js`) — kalibriert für eine geschirr-ähnliche Silhouette. Ein Produkt mit stark abweichender Form bräuchte hierfür eine Code-Anpassung.
+- `custom.use_canvas` (Varianten-Flag) ist als Metafield-Definition angelegt, wird aber aktuell noch nicht ausgewertet — die Weiche "Canvas vs. hochgeladenes Bild pro Variante" ist vorbereitet, aber noch nicht verdrahtet.
+- Der Export-Button (PNG-Download, beim Geschirr-Konfigurator vorhanden) ist in der generischen Version noch nicht angebunden — `window.configuratorBuildComposite()` liefert das fertige Composite-Canvas, eine UI dafür fehlt noch.

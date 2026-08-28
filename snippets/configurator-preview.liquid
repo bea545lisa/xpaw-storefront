@@ -1,0 +1,36 @@
+{% comment %}
+  Generic, metafield-driven canvas colour configurator preview. Placed in
+  the media column of the product page, same slot geschirr-configurator-
+  preview.liquid uses for the Geschirr product - but everything here comes
+  from custom.canvas_layers / custom.canvas_shading / custom.canvas_outline_scale
+  product metafields instead of product-specific markup/JS. Pairs with
+  'configurator-options' (rendered in buy-buttons) via assets/configurator.js,
+  which builds the canvas layers and the swatch fieldsets entirely from this
+  same config - no code changes needed for a new product, only metafield data.
+
+  Renders the wrapper either way; assets/configurator.js quietly does
+  nothing if custom.canvas_layers isn't set yet (e.g. the flag is on but the
+  layers haven't been configured), rather than half-rendering.
+{% endcomment %}
+
+<div class="configurator__preview-sentinel"></div>
+<div class="configurator__preview-wrapper">
+  <div class="configurator__preview">
+    <span class="product__media-icon" aria-hidden="true">
+      <span class="svg-wrapper">
+        {{- 'icon-zoom.svg' | inline_asset_content -}}
+      </span>
+    </span>
+  </div>
+</div>
+
+<script type="application/json" class="configurator__config">
+  {
+    "layers": {{ product.metafields.custom.canvas_layers.value | json }},
+    "shading": {{ product.metafields.custom.canvas_shading.value | json }},
+    "outlineScale": {{ product.metafields.custom.canvas_outline_scale.value | default: 1.035 }}
+  }
+</script>
+
+{{ 'configurator.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'configurator.js' | asset_url }}" defer="defer"></script>
