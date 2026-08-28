@@ -28,7 +28,8 @@
   {
     "layers": {{ product.metafields.custom.canvas_layers.value | json }},
     "shading": {{ product.metafields.custom.canvas_shading.value | json }},
-    "outlineScale": {{ product.metafields.custom.canvas_outline_scale.value | default: 1.035 }}
+    "outlineScale": {{ product.metafields.custom.canvas_outline_scale.value | default: 1.035 }},
+    "background": {{ product.metafields.custom.canvas_background.value | json }}
   }
 </script>
 

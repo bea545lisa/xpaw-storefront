@@ -122,7 +122,22 @@
     const shadingCutoutLayers = config.layers.filter((layer) => layer.shadingCutout).map((layer) => layer.key);
     const metallicLayers = new Set(config.layers.filter((layer) => layer.metallic).map((layer) => layer.key));
 
-    // --- Build the canvas stack (outline, one per layer, shading) ---
+    // --- Build the canvas stack (background, outline, one per layer, shading) ---
+    // Background is the bottom-most, plain (un-masked, un-coloured) layer -
+    // a product-supplied graphic (e.g. a ground/table photo with its own
+    // baked-in shadow), not the generic CSS gradient + blurred ::after blob
+    // configurator.css already provides for products that don't need
+    // custom artwork. Optional; config.background is null when unset.
+    const backgroundImages = {};
+    let backgroundCanvas = null;
+    if (config.background && (config.background.light || config.background.dark)) {
+      backgroundCanvas = document.createElement('canvas');
+      backgroundCanvas.className = 'configurator__layer-canvas configurator__background';
+      backgroundCanvas.width = 1000;
+      backgroundCanvas.height = 1000;
+      previewEl.insertBefore(backgroundCanvas, previewEl.firstChild);
+    }
+
     const outlineCanvas = document.createElement('canvas');
     outlineCanvas.className = 'configurator__layer-canvas configurator__outline';
     outlineCanvas.width = 1000;
@@ -132,6 +147,23 @@
     const canvases = {};
     const maskImages = {};
     const loadPromises = [];
+
+    if (backgroundCanvas) {
+      if (config.background.light) {
+        loadPromises.push(
+          loadImage(config.background.light).then((img) => {
+            backgroundImages.light = img;
+          })
+        );
+      }
+      if (config.background.dark) {
+        loadPromises.push(
+          loadImage(config.background.dark).then((img) => {
+            backgroundImages.dark = img;
+          })
+        );
+      }
+    }
 
     config.layers.forEach((layer) => {
       const canvas = document.createElement('canvas');
@@ -201,6 +233,15 @@
       } else if (option.hex) {
         paintLayer(layer, option.hex, false);
       }
+    }
+
+    function paintBackground() {
+      if (!backgroundCanvas) return;
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const img = (isDark && backgroundImages.dark) || backgroundImages.light || backgroundImages.dark;
+      const ctx = backgroundCanvas.getContext('2d');
+      ctx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
+      if (img) ctx.drawImage(img, 0, 0, backgroundCanvas.width, backgroundCanvas.height);
     }
 
     function paintOutline() {
@@ -338,6 +379,7 @@
 
     // --- Initial paint ---
     Promise.all(loadPromises).then(() => {
+      paintBackground();
       paintShading();
       paintOutline();
       config.layers.forEach((layer) => {
@@ -346,6 +388,17 @@
         applyOption(layer.key, defaultOption);
       });
     });
+
+    // The light/dark toggle (assets/theme-toggle.js) just flips
+    // documentElement's data-theme attribute live, no reload - watch it so
+    // the background image (a real <canvas> draw, not CSS) stays in sync
+    // instead of freezing on whichever theme was active on page load.
+    if (backgroundCanvas) {
+      new MutationObserver(paintBackground).observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme'],
+      });
+    }
 
     // --- Export composite (matches geschirr-configurator.js's own
     //     buildCompositeCanvas, minus the studio/transparent background
@@ -359,8 +412,12 @@
       const octx = out.getContext('2d');
 
       if (!transparent) {
-        octx.fillStyle = '#ffffff';
-        octx.fillRect(0, 0, size, size);
+        if (backgroundCanvas) {
+          octx.drawImage(backgroundCanvas, 0, 0, size, size);
+        } else {
+          octx.fillStyle = '#ffffff';
+          octx.fillRect(0, 0, size, size);
+        }
         octx.filter = 'blur(9px)';
         octx.drawImage(outlineCanvas, 0, 0, size, size);
         octx.filter = 'none';

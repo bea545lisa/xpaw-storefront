@@ -15,14 +15,24 @@ Ermöglicht Produkten mit vielen Farbvarianten eine Live-Vorschau per Canvas-Com
 
 ## Wo müssen die Bilder hochgeladen werden?
 
-**Nicht** in die Theme-Assets (das würde einen Code-Deploy pro Produkt erfordern). Stattdessen:
+**Nicht** in die Theme-Assets (das würde einen Code-Deploy pro Produkt erfordern, so wie es beim alten Geschirr-Konfigurator noch gemacht wird — siehe `assets/geschirr-mask-*.png`). Stattdessen:
 
 1. Shopify-Admin → **Einstellungen → Dateien** (oder direkt beim Produkt über "Datei hochladen")
-2. Bild hochladen (PNG mit Transparenz für Masken empfohlen)
-3. Die resultierende URL kopieren (Rechtsklick auf die Datei → "Link kopieren", oder in der Dateiliste die URL neben dem Dateinamen)
-4. Diese URL in das jeweilige Feld der `canvas_layers`-JSON eintragen (siehe unten) bzw. bei `custom.canvas_shading`
+2. Bild hochladen (PNG mit Transparenz für Masken/Hintergrund empfohlen)
+3. Die resultierende URL kopieren (in der Dateiliste auf die Datei klicken, dort die URL kopieren)
+4. Diese URL in das jeweilige Feld der `canvas_layers`-JSON eintragen (siehe unten) bzw. bei `custom.canvas_shading` / `custom.canvas_background`
 
 Masken-Bilder sollten quadratisch sein (Referenzgröße im Code: 1000×1000px) und **Alpha-Transparenz** an den Stellen haben, die NICHT zur jeweiligen Ebene gehören — die Maske bestimmt per `destination-in`-Compositing, welcher Bereich der Füllfarbe sichtbar bleibt.
+
+**Namenskonvention** (nicht technisch erzwungen — Shopify Files hat keine echten Unterordner, nur eine durchsuchbare Liste, die produktübergreifend schnell unübersichtlich wird): `canvas-<produkt-handle>-<zweck>.png`, z. B. für einen Napf:
+
+- `canvas-napf-hintergrund-hell.png` / `canvas-napf-hintergrund-dunkel.png` — für `custom.canvas_background`
+- `canvas-napf-mask-koerper.png` — Maske pro Ebene, ein Bild je `key` aus `canvas_layers`
+- `canvas-napf-shading.png` — für `custom.canvas_shading`
+
+Der Dateiname selbst hat keine Bedeutung für den Code (nur die URL zählt) — das `canvas-`-Präfix macht alle Dateien dieses Systems in der Shopify-Dateiliste per Suche/Sortierung auf einen Blick auffindbar, das Produkt-Handle danach trennt sie zusätzlich pro Produkt.
+
+Masken-Bilder: Form **voll deckend** (Alpha 100%, Farbe selbst egal — Weiß ist nur Konvention, gut sichtbar beim Bearbeiten), außerhalb der Form **komplett transparent** (Alpha 0). Genutzt wird nur der Alpha-Kanal (`destination-in`-Compositing).
 
 ## Metafield-Übersicht
 
@@ -32,6 +42,7 @@ Masken-Bilder sollten quadratisch sein (Referenzgröße im Code: 1000×1000px) u
 | `custom.canvas_layers` | Produkt | JSON | Die komplette Ebenen-/Farb-Konfiguration (siehe Schema unten) |
 | `custom.canvas_shading` | Produkt | Einzeiliger Text | URL zu einem optionalen Shading-/Struktur-Overlay-Bild (Licht-/Materialwirkung über allen Ebenen) |
 | `custom.canvas_outline_scale` | Produkt | Dezimalzahl | Optionale Skalierung des weichen Umriss-Schattens (Standard: `1.035`, meist nicht nötig anzupassen) |
+| `custom.canvas_background` | Produkt | JSON | Optionale eigene Hintergrundgrafik (z. B. Boden-/Tischfläche mit Schatten) als unterste, nicht einfärbbare Ebene. Format `{"light":"URL","dark":"URL"}`, wechselt automatisch mit dem Hell/Dunkel-Toggle. **Darf das eigentliche Produkt nicht enthalten**, wenn dessen Farbe wählbar sein soll — das gehört in eine separate Maske unter `canvas_layers` |
 | `custom.use_canvas` | Variante | Boolean | Pro Variante: Canvas-Vorschau nutzen statt eines hochgeladenen Bilds (aktuell nur vorbereitet, noch nicht ausgewertet) |
 
 ## Schema von `custom.canvas_layers`
@@ -75,10 +86,10 @@ Die Zeichenreihenfolge der Ebenen (unten drüber) entspricht der Reihenfolge im 
 
 ## Neues Produkt einrichten — Checkliste
 
-1. Masken-Bilder (eins pro Ebene) und optional ein Shading-Overlay in **Einstellungen → Dateien** hochladen, URLs notieren
-2. Am Produkt: `custom.canvas_configurator` auf `true` setzen
+1. Masken-Bilder (eins pro Ebene, nur die jeweilige Silhouette, Rest transparent) und optional ein Shading-Overlay sowie Hintergrundgrafiken (hell/dunkel, **ohne** das Produkt selbst drauf) in **Einstellungen → Dateien** hochladen, URLs notieren
+2. Am Produkt: `custom.canvas_configurator` auf `true` setzen, `custom.canvas_engine` auf `generic` setzen (sonst greift der Geschirr-spezifische Pfad)
 3. Am Produkt: `custom.canvas_layers` mit der JSON-Konfiguration befüllen (siehe Schema oben)
-4. Optional: `custom.canvas_shading` (URL) und `custom.canvas_outline_scale` setzen
+4. Optional: `custom.canvas_shading`, `custom.canvas_background` und `custom.canvas_outline_scale` setzen
 5. Live-Vorschau auf der Produktseite prüfen — bei fehlerhafter/fehlender `canvas_layers`-Konfiguration bleibt die Vorschau einfach leer, es gibt keinen Fehler auf der Seite
 
 ## Bekannte Grenzen
