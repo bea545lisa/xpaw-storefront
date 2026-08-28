@@ -9,6 +9,19 @@
     data-zoom-on-hover
   {% endif %}
 >
+  {%- comment -%}
+    Whether this product uses the canvas colour configurator (geschirr-configurator.js)
+    instead of a normal photographed media gallery. Checked once here and reused via
+    is_geschirr_configurator everywhere below, rather than repeating the tag/metafield
+    check at each usage - product.tags contains 'konfigurator-geschirr' is the original,
+    still-supported way; custom.canvas_configurator (boolean product metafield) is the
+    newer, merchant-editable way that doesn't require remembering an exact tag string.
+  {%- endcomment -%}
+  {%- assign is_geschirr_configurator = false -%}
+  {%- if product.tags contains 'konfigurator-geschirr' or product.metafields.custom.canvas_configurator -%}
+    {%- assign is_geschirr_configurator = true -%}
+  {%- endif -%}
+
   {{ 'section-main-product.css' | asset_url | stylesheet_tag }}
   {{ 'component-accordion.css' | asset_url | stylesheet_tag }}
   {{ 'component-price.css' | asset_url | stylesheet_tag }}
@@ -51,7 +64,7 @@
   {% endif %}
   {{ 'sticky-preview.css' | asset_url | stylesheet_tag }}
   <script src="{{ 'sticky-preview.js' | asset_url }}" defer="defer"></script>
-  {%- unless product.tags contains 'konfigurator-geschirr' -%}
+  {%- unless is_geschirr_configurator -%}
     <script src="{{ 'sticky-product-media.js' | asset_url }}" defer="defer"></script>
   {%- endunless -%}
   {%- if request.design_mode -%}
@@ -81,11 +94,11 @@
   <product-component view-event-payload="{{ product | standard_event_data: 'view', context: 'page' | escape }}">
     <div class="page-width">
       <div class="product product--{{ section.settings.media_size }} product--{{ section.settings.media_position }} product--{{ section.settings.gallery_layout }} product--mobile-{{ section.settings.mobile_thumbnails }} grid grid--1-col {% if product.media.size > 0 %}grid--2-col-tablet{% else %}product--no-media{% endif %}">
-        {%- unless product.tags contains 'konfigurator-geschirr' -%}
+        {%- unless is_geschirr_configurator -%}
           <div class="sticky-product-media__sentinel"></div>
         {%- endunless -%}
         <div class="grid__item product__media-wrapper">
-          {%- if product.tags contains 'konfigurator-geschirr' -%}
+          {%- if is_geschirr_configurator -%}
             {%- render 'geschirr-configurator-preview' -%}
           {%- else -%}
             {% render 'product-media-gallery', variant_images: variant_images %}
@@ -97,9 +110,7 @@
             class="product__info-container{% if section.settings.enable_sticky_info %} product__column-sticky{% endif %}"
           >
             {%- assign product_form_id = 'product-form-' | append: section.id -%}
-            {%- assign is_geschirr_configurator = false -%}
-            {%- if product.tags contains 'konfigurator-geschirr' -%}
-              {%- assign is_geschirr_configurator = true -%}
+            {%- if is_geschirr_configurator -%}
               {%- assign variant_picker_block = section.blocks | where: 'type', 'variant_picker' | first -%}
             {%- endif -%}
 
