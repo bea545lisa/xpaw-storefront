@@ -523,6 +523,36 @@
         } else {
           img.addEventListener('load', centerScroll, { once: true });
         }
+
+        // Auf Mobile bewegt Wischen (native Touch-Scroll) das Bild - auf
+        // Desktop ist "mit dem Mausrad/Trackpad scrollen" fuer ein
+        // Zoom-Overlay nicht selbsterklaerend, ein Ziehen mit gedrueckter
+        // Maustaste wird eher erwartet. Klassisches Drag-to-Pan per Maus
+        // obendrauf, ohne die native Scrollbarkeit zu ersetzen.
+        let dragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let dragScrollLeft = 0;
+        let dragScrollTop = 0;
+        img.addEventListener('mousedown', (event) => {
+          dragging = true;
+          dragStartX = event.clientX;
+          dragStartY = event.clientY;
+          dragScrollLeft = overlay.scrollLeft;
+          dragScrollTop = overlay.scrollTop;
+          img.style.cursor = 'grabbing';
+          event.preventDefault();
+        });
+        window.addEventListener('mousemove', (event) => {
+          if (!dragging) return;
+          overlay.scrollLeft = dragScrollLeft - (event.clientX - dragStartX);
+          overlay.scrollTop = dragScrollTop - (event.clientY - dragStartY);
+        });
+        window.addEventListener('mouseup', () => {
+          if (!dragging) return;
+          dragging = false;
+          img.style.cursor = '';
+        });
       });
     }
   }

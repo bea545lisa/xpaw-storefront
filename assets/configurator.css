@@ -30,7 +30,7 @@
   width: 280vw;
   max-width: none;
   height: auto;
-  cursor: default;
+  cursor: grab;
   border-radius: 0.6rem;
 }
 
