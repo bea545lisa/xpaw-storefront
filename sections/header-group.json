@@ -43,7 +43,7 @@
         "mobile_logo_position": "center",
         "menu": "main-menu",
         "menu_type_desktop": "dropdown",
-        "sticky_header_type": "on-scroll-up",
+        "sticky_header_type": "always",
         "transparent_header": true,
         "scrolled_style": "light",
         "scrolled_blur": 6,

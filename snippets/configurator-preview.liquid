@@ -11,17 +11,178 @@
   Renders the wrapper either way; assets/configurator.js quietly does
   nothing if custom.canvas_layers isn't set yet (e.g. the flag is on but the
   layers haven't been configured), rather than half-rendering.
+
+  The canvas lives as the first slide of a native Dawn media-gallery/
+  slider-component, with the product's own (non-variant) images as further
+  slides ("Ambientebilder") - reuses the theme's existing slider JS/CSS as-is
+  (media-gallery.js keys off id prefixes GalleryViewer-/GalleryThumbnails-/
+  GalleryStatus-, slider-component off generic .slider/.slider__slide
+  classes), so no changes needed there. assets/configurator.js reads
+  data-configurator-media-id off .configurator__preview-wrapper and calls
+  the gallery's own setActiveMedia() after a colour change, so picking an
+  option always jumps back to the canvas slide even if an ambient photo was
+  showing.
+
+  Accepts:
+  - variant_images: {Array} src of images attached to a variant (excluded
+    here - a configurator product's variant photos would just duplicate what
+    the canvas already shows, and mixing them in would leave a color's own
+    real photo sitting among otherwise-generic ambient shots)
 {% endcomment %}
 
+{%- liquid
+  assign ambient_media = product.media
+  if variant_images.size > 0
+    assign ambient_media = ambient_media | where: 'attached_to_variant?', false
+  endif
+  # Das Cover-/Titelbild (Kollektionsseiten, Warenkorb, Suche) zeigt meist nur
+  # eine feste Farbe - im interaktiven Konfigurator mit frei waehlbarer Farbe
+  # wirkt das als erste Ambientebild-Folie inkonsistent, deshalb hier raus.
+  if product.featured_media
+    assign ambient_media = ambient_media | reject: 'id', product.featured_media.id
+  endif
+  assign ambient_count = ambient_media.size | plus: 1
+-%}
+
 <div class="configurator__preview-sentinel"></div>
-<div class="configurator__preview-wrapper">
-  <div class="configurator__preview">
-    <span class="product__media-icon" aria-hidden="true">
-      <span class="svg-wrapper">
-        {{- 'icon-zoom.svg' | inline_asset_content -}}
-      </span>
-    </span>
-  </div>
+<div class="configurator__preview-wrapper" data-configurator-media-id="{{ section.id }}-configurator">
+  <media-gallery
+    id="ConfiguratorMediaGallery-{{ section.id }}"
+    role="region"
+    aria-label="{{ 'products.product.media.gallery_viewer' | t }}"
+    data-desktop-layout="{{ section.settings.gallery_layout | default: 'thumbnail_slider' }}"
+  >
+    <div id="GalleryStatus-{{ section.id }}-configurator" class="visually-hidden" role="status"></div>
+    <slider-component id="GalleryViewer-{{ section.id }}-configurator" class="slider-mobile-gutter">
+      <ul
+        id="Slider-Gallery-{{ section.id }}-configurator"
+        class="product__media-list contains-media grid list-unstyled slider slider--mobile"
+        role="list"
+      >
+        <li
+          id="Slide-{{ section.id }}-configurator"
+          class="product__media-item grid__item slider__slide is-active"
+          data-media-id="{{ section.id }}-configurator"
+        >
+          <div class="configurator__preview">
+            <span class="product__media-icon" aria-hidden="true">
+              <span class="svg-wrapper">
+                {{- 'icon-zoom.svg' | inline_asset_content -}}
+              </span>
+            </span>
+          </div>
+        </li>
+        {%- for media in ambient_media -%}
+          {%- assign media_position = forloop.index | plus: 1 -%}
+          <li
+            id="Slide-{{ section.id }}-{{ media.id }}"
+            class="product__media-item grid__item slider__slide{% if media.media_type != 'image' %} product__media-item--full{% endif %}"
+            data-media-id="{{ section.id }}-{{ media.id }}"
+          >
+            {%- render 'product-thumbnail',
+              media: media,
+              media_count: ambient_count,
+              position: media_position,
+              desktop_layout: 'stacked',
+              mobile_layout: 'columns',
+              modal_id: section.id,
+              xr_button: true,
+              media_width: 1.0,
+              media_fit: 'contain',
+              lazy_load: true
+            -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+      {%- if ambient_media.size > 0 -%}
+        <div class="slider-buttons quick-add-hidden">
+          <button type="button" class="slider-button slider-button--prev" name="previous" aria-label="{{ 'general.slider.previous_slide' | t }}">
+            <span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+          </button>
+          <div class="slider-counter caption">
+            <span class="slider-counter--current">1</span>
+            <span aria-hidden="true"> / </span>
+            <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
+            <span class="slider-counter--total">{{ ambient_count }}</span>
+          </div>
+          <button type="button" class="slider-button slider-button--next" name="next" aria-label="{{ 'general.slider.next_slide' | t }}">
+            <span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+          </button>
+        </div>
+      {%- endif -%}
+    </slider-component>
+    {%- if ambient_media.size > 0 -%}
+      <slider-component
+        id="GalleryThumbnails-{{ section.id }}-configurator"
+        class="thumbnail-slider slider-mobile-gutter quick-add-hidden{% if ambient_count <= 3 %} thumbnail-slider--no-slide{% endif %}{% if section.settings.mobile_thumbnails != 'show' %} small-hide{% endif %}"
+      >
+        <button
+          type="button"
+          class="slider-button slider-button--prev{% if ambient_count <= 3 %} small-hide{% endif %}{% if ambient_count <= 4 %} medium-hide large-up-hide{% endif %}"
+          name="previous"
+          aria-label="{{ 'general.slider.previous_slide' | t }}"
+          aria-controls="GalleryThumbnails-{{ section.id }}-configurator"
+          data-step="3"
+        >
+          <span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+        </button>
+        <ul
+          id="Slider-Thumbnails-{{ section.id }}-configurator"
+          class="thumbnail-list list-unstyled slider slider--mobile"
+        >
+          <li
+            id="Slide-Thumbnails-{{ section.id }}-configurator-0"
+            class="thumbnail-list__item slider__slide"
+            data-target="{{ section.id }}-configurator"
+            data-media-position="1"
+          >
+            <button
+              class="thumbnail global-media-settings global-media-settings--no-shadow"
+              aria-label="{{ 'products.product.media.load_image' | t: index: 1 }}"
+              aria-current="true"
+              aria-controls="GalleryViewer-{{ section.id }}-configurator"
+            >
+              <span class="svg-wrapper">{{- 'icon-zoom.svg' | inline_asset_content -}}</span>
+            </button>
+          </li>
+          {%- for media in ambient_media -%}
+            {%- assign media_position = forloop.index | plus: 1 -%}
+            <li
+              id="Slide-Thumbnails-{{ section.id }}-configurator-{{ forloop.index }}"
+              class="thumbnail-list__item slider__slide"
+              data-target="{{ section.id }}-{{ media.id }}"
+              data-media-position="{{ media_position }}"
+            >
+              {%- capture thumbnail_id -%}Thumbnail-{{ section.id }}-configurator-{{ forloop.index }}{%- endcapture -%}
+              <button
+                class="thumbnail global-media-settings global-media-settings--no-shadow"
+                aria-label="{{ 'products.product.media.load_image' | t: index: media_position }}"
+                aria-controls="GalleryViewer-{{ section.id }}-configurator"
+                aria-describedby="{{ thumbnail_id }}"
+              >
+                {{
+                  media.preview_image
+                  | image_url: width: 208
+                  | image_tag: loading: 'lazy', widths: '54, 74, 104, 162, 208', id: thumbnail_id, alt: media.alt
+                  | escape
+                }}
+              </button>
+            </li>
+          {%- endfor -%}
+        </ul>
+        <button
+          type="button"
+          class="slider-button slider-button--next{% if ambient_count <= 3 %} small-hide{% endif %}{% if ambient_count <= 4 %} medium-hide large-up-hide{% endif %}"
+          name="next"
+          aria-label="{{ 'general.slider.next_slide' | t }}"
+          aria-controls="GalleryThumbnails-{{ section.id }}-configurator"
+          data-step="3"
+        >
+          <span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+        </button>
+      </slider-component>
+    {%- endif -%}
+  </media-gallery>
 </div>
 
 <script type="application/json" class="configurator__config">

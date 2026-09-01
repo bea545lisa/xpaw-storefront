@@ -5,6 +5,61 @@
    without the fixed swatch markup - configurator.js builds the fieldsets/
    swatches at runtime, this only styles whatever it produces. */
 
+.configurator__zoom-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow: auto;
+  background: rgba(0, 0, 0, 0.85);
+  cursor: zoom-out;
+  /* Vorschaubild ist auf Mobile ohnehin schon fast bildschirmbreit - "gleich
+     groß nochmal in einem Overlay zeigen" wirkt dann nicht wie ein Zoom.
+     Bild deutlich groesser als der Bildschirm anzeigen und per normalem
+     Scrollen (Wischen) reinzoomen lassen, statt es nur einzupassen.
+     Kein display:flex + align/justify-center hier: das verhindert
+     zusammen mit overflow:auto browserseitig das Scrollen in eine der
+     beiden Richtungen (Startposition/Bildmitte wird stattdessen per JS
+     ueber scrollLeft/scrollTop gesetzt, siehe configurator.js).
+     Kein padding: das erzeugt am Scroll-Ende (z.B. oben/rechts sobald
+     der Bildrand erreicht ist) einen sichtbaren Rand statt dass das
+     Bild randlos mit dem Viewport abschliesst. */
+}
+
+.configurator__zoom-image {
+  display: block;
+  width: 280vw;
+  max-width: none;
+  height: auto;
+  cursor: grab;
+  border-radius: 0.6rem;
+}
+
+@media screen and (min-width: 750px) {
+  .configurator__zoom-image {
+    width: 120vw;
+  }
+}
+
+.configurator__zoom-close {
+  position: fixed;
+  top: 1.6rem;
+  right: 1.6rem;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  /* Undurchsichtiges Weiss statt teiltransparent - bei hellem Bildinhalt
+     direkt unter dem Button (z.B. weisser Produkthintergrund) war der Button
+     mit rgba(255,255,255,0.9) + schwachem Rand fast unsichtbar. Deckendes
+     Weiss + kraeftigerer Rand/Schatten bleibt auf jedem Untergrund lesbar. */
+  border: 0.15rem solid rgba(0, 0, 0, 0.3);
+  background: #ffffff;
+  color: #121212;
+  font-size: 2.4rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 0.1rem 0.6rem rgba(0, 0, 0, 0.5);
+}
+
 .configurator {
   display: block;
   margin-bottom: 2rem;
@@ -52,6 +107,55 @@
   z-index: 2;
 }
 
+/* .configurator__preview sitzt jetzt tief verschachtelt in
+   media-gallery > slider-component > ul > li (fuer den Ambientebilder-
+   Slider, siehe configurator-preview.liquid) statt direkt in
+   .configurator__preview-wrapper wie urspruenglich. Das media-gallery-Layout
+   selbst (display/width/margin/overflow) ist NICHT hier dupliziert - siehe
+   stattdessen die gemeinsame Regel ".product__media-wrapper media-gallery,
+   .configurator__preview-wrapper media-gallery" in section-main-product.css,
+   die jetzt beide Wrapper-Klassen bedient. slider-component selbst hat dort
+   keine eigene Regel und bekommt sein display/width normalerweise aus einer
+   anderen, generischeren Stelle - fuer den Konfigurator explizit noetig,
+   da sie hier sonst als unbekanntes Custom Element ohne eigenes display
+   auf Inhaltsgroesse kollabiert (kein Duplikat, kein Aequivalent bisher
+   vorhanden). */
+.configurator__preview-wrapper slider-component {
+  display: block;
+  width: 100%;
+}
+
+/* Das geteilte Slider-Gutter-CSS gibt der ersten Folie ein einseitiges
+   padding-left (Scroll-Gutter, damit bei mehreren Bildern die naechste
+   Folie am Rand "anschnibbelt") - fuer unsere Canvas-Folie, die den
+   gesamten sichtbaren Rahmen ausfuellen soll (kein Peek-Effekt gewuenscht),
+   verschiebt das den Bildinhalt sichtbar aus der Mitte. Auf einen kleinen,
+   symmetrischen Rand zuruecksetzen. */
+.configurator__preview-wrapper .product__media-item {
+  padding-left: 1.2rem;
+  padding-right: 1.2rem;
+}
+
+/* Pfeile naeher an den Rand als die Theme-Standardwerte (1rem/2rem) - nur
+   fuer den Konfigurator, nicht global fuer alle Produktgalerien. */
+.configurator__preview-wrapper slider-component.slider-mobile-gutter .slider-buttons .slider-button--prev {
+  left: 0.5rem;
+}
+
+.configurator__preview-wrapper slider-component.slider-mobile-gutter .slider-buttons .slider-button--next {
+  right: 0.5rem;
+}
+
+@media screen and (min-width: 750px) {
+  .configurator__preview-wrapper slider-component.slider-mobile-gutter .slider-buttons .slider-button--prev {
+    left: 1rem;
+  }
+
+  .configurator__preview-wrapper slider-component.slider-mobile-gutter .slider-buttons .slider-button--next {
+    right: 1rem;
+  }
+}
+
 @media screen and (max-width: 749px) {
   .configurator__preview-wrapper {
     width: 100vw;
@@ -62,7 +166,7 @@
     align-items: center;
   }
 
-  .configurator__preview-wrapper .configurator__preview {
+  .configurator__preview-wrapper media-gallery {
     width: 94%;
     flex: none;
   }
@@ -76,7 +180,11 @@
   background: radial-gradient(ellipse at center, #3a3a3a 0%, #202020 70%, #121212 100%);
 }
 
-.configurator__preview::after {
+/* Nur als Fallback, wenn KEIN eigenes canvas_background-Bild gesetzt ist -
+   sonst bringt das Produktfoto seinen eigenen Schatten schon mit, und dieser
+   generische Blob wuerde als zusaetzlicher, falsch positionierter Schatten
+   durchscheinen (er kennt die tatsaechliche Bildposition/-groesse nicht). */
+.configurator__preview:not(:has(.configurator__background))::after {
   content: '';
   position: absolute;
   left: 12%;
@@ -98,13 +206,16 @@
 }
 
 .configurator__background {
-  /* Below the outline's own shadow silhouette and the generic CSS
-     background/::after blob above - a product-supplied background image
-     already includes its own shadow, so it fully covers/replaces those.
-     No object-fit here (meaningless on <canvas>, unlike <img>) - the image
-     is drawn to fill the canvas's own 1000x1000 buffer directly in JS, so
-     a non-square source would stretch; keep background images square. */
-  z-index: -1;
+  /* z-index 0, NICHT -1: .configurator__preview hat selbst eine deckende
+     background-color/gradient (siehe oben) - ein Kind mit negativem
+     z-index landet dann hinter dieser eigenen Hintergrundfarbe des Elternteils
+     und wird komplett unsichtbar, egal was reingezeichnet wurde. 0 haelt es
+     unterhalb von Outline/Layer-Canvas (deren z-index 0/1 ist), aber ueber
+     der Preview-Hintergrundfarbe. No object-fit here (meaningless on
+     <canvas>, unlike <img>) - the image is drawn to fill the canvas's own
+     1000x1000 buffer directly in JS, so a non-square source would stretch;
+     keep background images square. */
+  z-index: 0;
 }
 
 .configurator__outline {
@@ -125,7 +236,7 @@
 }
 
 .sticky-preview__scope .configurator__options {
-  padding-bottom: 4rem;
+  padding-bottom: 1rem;
 }
 
 .configurator__options fieldset {
