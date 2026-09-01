@@ -369,6 +369,7 @@
       if (!option) return;
 
       applyOption(layer, option);
+      jumpToCanvasSlide();
 
       const hidden = hiddenPropertyInputs[layer];
       if (hidden) hidden.value = option.name;
@@ -377,8 +378,30 @@
       if (valueLabel) valueLabel.textContent = option.name;
     });
 
+    // Falls der Canvas Teil eines gemeinsamen Slider mit Ambientebildern ist
+    // (siehe configurator-preview.liquid): bei Farbwechsel zur Canvas-Folie
+    // zurueckspringen, auch wenn gerade ein Ambientebild gezeigt wird. Ohne
+    // Ambientebilder existiert zwar trotzdem ein media-gallery-Element, aber
+    // setActiveMedia aktiviert dann nur die eh schon aktive Folie erneut -
+    // unschaedlich.
+    function jumpToCanvasSlide() {
+      const wrapper = document.querySelector('.configurator__preview-wrapper');
+      const mediaId = wrapper && wrapper.dataset.configuratorMediaId;
+      const gallery = wrapper && wrapper.querySelector('media-gallery');
+      if (mediaId && gallery && typeof gallery.setActiveMedia === 'function') {
+        gallery.setActiveMedia(mediaId, false);
+      }
+    }
+
     // --- Initial paint ---
-    Promise.all(loadPromises).then(() => {
+    // Promise.allSettled statt Promise.all: ein einzelnes fehlendes Bild
+    // (404, Tippfehler in der URL, CORS) soll nicht die komplette Vorschau
+    // leer lassen - was erfolgreich geladen hat (z.B. Hintergrund/Shading),
+    // soll trotzdem gemalt werden, auch wenn z.B. eine Maske fehlschlaegt.
+    Promise.allSettled(loadPromises).then((results) => {
+      results.forEach((result) => {
+        if (result.status === 'rejected') console.warn('Konfigurator: Bild konnte nicht geladen werden', result.reason);
+      });
       paintBackground();
       paintShading();
       paintOutline();
@@ -441,6 +464,67 @@
     // configurator.js's download menu) can call it without this file
     // needing to know about that UI - only one configurator per page.
     window.configuratorBuildComposite = buildCompositeCanvas;
+
+    // --- Zoom: assets/magnify.js's geteiltes Hover-Pan-Overlay (background-
+    // size/-position, wie der Geschirr-Konfigurator es nutzt) ist fuer
+    // normale, meist hochformatige Fotos gebaut - mit unserem quadratischen
+    // 1000x1000-Composite kam es zu einem verschobenen/verschiebbaren
+    // Ausschnitt statt eines sauberen Vollbilds. Eigenes, einfaches Overlay
+    // ohne Pan-Mechanik: zeigt das komplette Bild groesstmoeglich zentriert.
+    if (previewEl) {
+      previewEl.addEventListener('click', () => {
+        const composite = buildCompositeCanvas(false);
+        const overlay = document.createElement('div');
+        overlay.className = 'configurator__zoom-overlay';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+
+        const img = document.createElement('img');
+        img.className = 'configurator__zoom-image';
+        img.src = composite.toDataURL('image/png');
+        img.alt = '';
+
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'configurator__zoom-close';
+        closeBtn.setAttribute('aria-label', 'Schließen');
+        closeBtn.textContent = '×';
+
+        function close() {
+          overlay.remove();
+          document.removeEventListener('keydown', onKeydown);
+        }
+        function onKeydown(event) {
+          if (event.key === 'Escape') close();
+        }
+
+        overlay.addEventListener('click', (event) => {
+          if (event.target === overlay) close();
+        });
+        closeBtn.addEventListener('click', close);
+        document.addEventListener('keydown', onKeydown);
+
+        overlay.appendChild(img);
+        overlay.appendChild(closeBtn);
+        document.body.appendChild(overlay);
+
+        // Overlay zentriert per Scroll-Position statt per Flexbox-
+        // align/justify-center: Flex-Centering zusammen mit overflow:auto
+        // lässt browserübergreifend nur in eine Richtung scrollen (bekannter
+        // CSS-Bug - das war der "nur nach rechts schiebbar"-Effekt). Statt
+        // dessen normal scrollbarer Block, Startposition per JS auf die
+        // Bildmitte setzen.
+        function centerScroll() {
+          overlay.scrollLeft = (img.offsetWidth - overlay.clientWidth) / 2;
+          overlay.scrollTop = (img.offsetHeight - overlay.clientHeight) / 2;
+        }
+        if (img.complete) {
+          centerScroll();
+        } else {
+          img.addEventListener('load', centerScroll, { once: true });
+        }
+      });
+    }
   }
 
   // Same scroll-linked sticky preview as normal products/the Geschirr
@@ -485,14 +569,39 @@
       }
     }
 
+    // shrinkTarget bekommt sein width:X% relativ zum eigenen direkten
+    // Elternelement gesetzt (siehe sticky-preview.js). previewEl
+    // (.configurator__preview) sitzt jetzt tief im Ambientebilder-Slider
+    // verschachtelt (media-gallery > slider-component > ul > li) - wuerde
+    // man DAS schrumpfen, bliebe die volle-Breite media-gallery drumherum
+    // stehen und man saehe eine zu grosse dunkle Box um das kleinere Bild
+    // (Elternelement der Prozentrechnung ist ja nur das <li>, nicht der
+    // ganze sichtbare Rahmen). media-gallery selbst ist dagegen direktes
+    // Kind von .configurator__preview-wrapper - genau wie previewEl es
+    // urspruenglich (vor dem Slider-Umbau) war - daher hier als eigentliches
+    // Schrumpf-Ziel verwenden.
+    const shrinkTarget = document.querySelector('.configurator__preview-wrapper media-gallery') || previewEl;
+    // sliderComponent (siehe sticky-product-media.js) wuerde hier zwar die
+    // <li>-Breite waehrend des Schrumpfens synchron halten (sonst bleibt sie
+    // "veraltet" stehen), ruft dafuer aber bei praktisch jedem Scroll-Frame
+    // slider.scrollTo() auf - das kollidiert mit der Sticky-Header-Logik
+    // (dispatcht 'preventHeaderReveal' zu haeufig/dauerhaft statt nur einmal
+    // bei einem echten Farbwechsel-Klick) und liess die Navbar beim Scrollen
+    // komplett verschwinden. Deliberately left out - der Ebenen-Sync-Bug
+    // (Canvas-Inhalt "haengt" kurz hinter dem Schrumpfen der Rahmenbreite
+    // hinterher) ist das kleinere Problem als eine kaputte Navbar auf der
+    // ganzen Seite. War vorher trotz dieses Kommentars noch im config-Objekt
+    // unten gesetzt (Kommentar und Code liefen auseinander) - das war die
+    // tatsaechliche Ursache der verschwindenden Navbar, jetzt wirklich raus.
+
     window.initStickyPreview({
       wrapper: '.configurator__preview-wrapper',
       sentinel: '.configurator__preview-sentinel',
       scopeThrough: scopeThroughEl,
-      shrinkTarget: previewEl,
+      shrinkTarget: shrinkTarget,
       shrinkFrom: 94,
       shrinkTo: 54,
-      shrinkDistance: 180,
+      shrinkDistance: 90,
       collapseStartProgress: 0.3,
       fadeEndProgress: 0.4,
       collapseTargets: [eyebrowEl, titleEl, priceEl],

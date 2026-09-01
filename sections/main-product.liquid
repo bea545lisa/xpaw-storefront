@@ -121,7 +121,15 @@
         {%- endunless -%}
         <div class="grid__item product__media-wrapper">
           {%- if is_generic_configurator -%}
-            {%- render 'configurator-preview' -%}
+            {%- comment -%}
+              Ambientebilder (normale, nicht variantengebundene Produktfotos)
+              werden als weitere Folien direkt in denselben nativen Slider wie
+              der Konfigurator-Canvas gerendert (siehe configurator-preview.liquid) -
+              dadurch funktionieren Pfeile/Thumbnails/Zaehler wie gewohnt, und
+              ein Farbwechsel kann per media-gallery.setActiveMedia() zur
+              Canvas-Folie zurueckspringen.
+            {%- endcomment -%}
+            {%- render 'configurator-preview', variant_images: variant_images -%}
           {%- elsif is_geschirr_configurator -%}
             {%- render 'geschirr-configurator-preview' -%}
           {%- else -%}
@@ -355,7 +363,7 @@
                     </div>
                   {%- endif -%}
                 {%- when 'custom_metafields' -%}
-                  {%- assign cm_exclude = 'nachhaltigkeit,eigenschaften,option_abbreviations,option_swatches,field_labels' | split: ',' -%}
+                  {%- assign cm_exclude = 'nachhaltigkeit,eigenschaften,option_abbreviations,option_swatches,field_labels,canvas_configurator,canvas_layers,canvas_engine,canvas_shading,canvas_background,canvas_outline_scale,use_canvas' | split: ',' -%}
                   {%- comment -%}
                     Shop-Labels werden in der Admin-App (Metafields-Seite) gepflegt und landen als
                     JSON im Shop-Metafield custom.field_labels — keine Liquid-Änderung pro Feld nötig.

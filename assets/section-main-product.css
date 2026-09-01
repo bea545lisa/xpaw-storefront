@@ -1194,7 +1194,12 @@ a.product__text {
      scroll position instead of a CSS transition running on its own
      wall-clock timer, which felt "too fast"/janky whenever actual scroll
      speed didn't match the transition's fixed duration. */
-  .product__media-wrapper media-gallery {
+  /* .configurator__preview-wrapper (assets/configurator.js/.css) reuses this
+     same rule for its own media-gallery-based Ambientebilder-Slider instead
+     of duplicating it - same shrink/gutter-clipping reasoning applies there
+     too. */
+  .product__media-wrapper media-gallery,
+  .configurator__preview-wrapper media-gallery {
     display: block;
     width: 100%;
     margin: 0 auto;
@@ -1239,7 +1244,8 @@ a.product__text {
      the visible edge, end up sitting almost flush against the actual
      visible edge instead of the intended 1-1.2rem in from it. Bumped up to
      compensate. */
-  .product__media-wrapper .product__media-icon {
+  .product__media-wrapper .product__media-icon,
+  .configurator__preview-wrapper .product__media-icon {
     width: 3.6rem;
     height: 3.6rem;
     left: 2.2rem;
@@ -1298,13 +1304,14 @@ a.product__text {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
+  border: 0.1rem solid rgba(0, 0, 0, 0.15);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.9);
+  color: #121212;
   font-size: 2.4rem;
   line-height: 1;
   cursor: pointer;
+  box-shadow: 0 0.1rem 0.6rem rgba(0, 0, 0, 0.5);
 }
 
 .image-magnify-full-size__frame {

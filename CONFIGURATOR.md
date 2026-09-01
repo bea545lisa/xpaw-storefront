@@ -51,6 +51,18 @@ Der Dateiname selbst hat keine Bedeutung für den Code (nur die URL zählt) — 
 
 Masken-Bilder: Form **voll deckend** (Alpha 100%, Farbe selbst egal — Weiß ist nur Konvention, gut sichtbar beim Bearbeiten), außerhalb der Form **komplett transparent** (Alpha 0). Genutzt wird nur der Alpha-Kanal (`destination-in`-Compositing).
 
+### Shading-Overlay erstellen (Photoshop)
+
+`custom.canvas_shading` wird im Code per **Multiply**-Blendmodus (plus leichter Aufhellung, `brightness(1.18)`) über alle Ebenen gelegt. Multiply kann nur **abdunkeln**, nie aufhellen — deshalb ist die Grundregel: **Weiß = keine Wirkung, Grau/Schwarz = Schatten**.
+
+Genau wie beim bestehenden Geschirr-Konfigurator (`assets/geschirr-shading.png`) wird das **nicht von Hand gemalt**, sondern aus einem echten Produktfoto abgeleitet — die natürliche Fotostruktur (Nähte, Falten, Kanten, Schattenwurf) liefert automatisch ein realistischeres Ergebnis als gemalte Schatten:
+
+1. **Produktfoto** verwenden (neutral/diffus beleuchtet ist besser als ein Foto mit hartem Blitzlicht/Reflexionen).
+2. Bild → Korrekturen → **Entsättigen** (oder eine Schwarzweiß-Anpassungsebene) — die Farbe raus, nur die Helligkeitsstruktur bleibt übrig.
+3. Mit **Gradationskurven** bzw. **Tonwertkorrektur** die Mitteltöne/Lichter Richtung Weiß anheben, bis die Fläche insgesamt fast weiß ist und nur die tatsächlichen Schatten aus dem Foto (Nähte, Falten, Kanten, Unterseiten) als sichtbares Grau/Dunkel übrig bleiben.
+4. Mit der ohnehin vorhandenen **Produkt-Maske** freistellen (Auswahl aus der Maske laden, Ebenenmaske anwenden), sodass außerhalb der Produktform Transparenz entsteht.
+5. Als **PNG mit Transparenz** exportieren: außerhalb der Produktform muss es transparent sein, sonst wird beim Multiply auch der Hintergrund mit abgedunkelt.
+
 ## Metafield-Übersicht
 
 | Metafield | Owner | Typ | Zweck |
@@ -108,6 +120,25 @@ Die Zeichenreihenfolge der Ebenen (unten drüber) entspricht der Reihenfolge im 
 3. Am Produkt: `custom.canvas_layers` mit der JSON-Konfiguration befüllen (siehe Schema oben)
 4. Optional: `custom.canvas_shading`, `custom.canvas_background` und `custom.canvas_outline_scale` setzen
 5. Live-Vorschau auf der Produktseite prüfen — bei fehlerhafter/fehlender `canvas_layers`-Konfiguration bleibt die Vorschau einfach leer, es gibt keinen Fehler auf der Seite
+
+## Geplant: Lagerware mit Artikelnummer (`canvas_engine: "generic-stocked"`)
+
+**Noch nicht umgesetzt** — Plan, festgehalten am 30.08.2026 für eine spätere Session.
+
+**Problem heute:** `custom.canvas_engine: "generic"` malt Farben rein kosmetisch — die Radiobuttons kommen komplett aus `canvas_layers`, unabhängig von Shopify-Varianten. Passt für made-to-order-Produkte (wie den Geschirr-Konfigurator: viele Kombinationen, keine eigene Artikelnummer pro Kombi), aber nicht für Lagerware mit begrenzter Farbanzahl, bei der jede Farbe eine eigene Artikelnummer/eigenen Lagerbestand braucht (z. B. Napf).
+
+**Zwei Konfigurator-Betriebsarten, ein Codepfad:**
+- `custom.canvas_engine: "generic"` (heutiges Verhalten, unverändert) — made-to-order, keine Varianten-Kopplung, viele Kombinationen möglich, kein SKU pro Kombination.
+- `custom.canvas_engine: "generic-stocked"` (neu) — Farbe ist eine echte Shopify-Produktoption mit eigener Variante/SKU/Lagerbestand. Gleiche `canvas_layers`-JSON-Struktur, gleiche Mal-Logik — nur die *Quelle* der aktuellen Auswahl ändert sich.
+
+**Umsetzungsidee:**
+1. Merchant legt die Farbe als normale Shopify-Produktoption an (z. B. Option "Farbe" mit Werten "Hellblau", "Rosa", "Grün"), pro Wert eine Variante mit eigenem SKU/Lager.
+2. In `canvas_layers` bekommt die entsprechende Ebene pro Option ein `name`, das **exakt** dem Shopify-Options-Wert entspricht (z. B. `"name": "Hellblau"`).
+3. Im `generic-stocked`-Modus baut `configurator.js` **keine eigenen Radiobuttons** für diese Ebene, sondern hört auf den nativen `variant-selects`-Change (den Dawn bereits für die echte Variantenwahl rendert).
+4. Bei jedem Variantenwechsel: gewählten Options-Wert nehmen, in `canvas_layers` die Option mit passendem `name` suchen, Ebene wie gehabt neu malen (`paintLayer`/`applyOption`, unverändert).
+5. Preis/SKU/Lageranzeige laufen dadurch automatisch über den normalen Shopify-Variantenmechanismus — keine Sonderlogik nötig, nur die Verknüpfung "Options-Wert → passende `canvas_layers`-Option" ist neu.
+
+**Was unverändert bleibt:** `geschirr-configurator.js` (alter, handgebauter Konfigurator) braucht diese Unterscheidung nie und bleibt komplett unangetastet — made-to-order ist dort der einzige Anwendungsfall.
 
 ## Bekannte Grenzen
 

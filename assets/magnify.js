@@ -38,13 +38,34 @@ function openZoomOverlaySrc(src, zoomRatio) {
   const frame = document.createElement('div');
   frame.className = 'image-magnify-full-size__frame';
   frame.style.backgroundImage = `url('${src}')`;
-  // Pixel size based on the window's own dimensions (known synchronously,
+  // Placeholder size until the natural image dimensions are known (below) -
+  // width-only based on the window's own dimensions (known synchronously,
   // right now) rather than a percentage of the frame's own box - a percentage
   // depends on the frame having already been laid out, which on the very
   // first open of the whole page wasn't reliably true yet and showed
   // unzoomed until closed and reopened.
   frame.style.backgroundSize = `${Math.round(window.innerWidth * zoomRatio)}px auto`;
   frame.style.backgroundPosition = '50% 50%';
+
+  // width-only sizing above covers the frame horizontally, but for a photo
+  // whose aspect ratio is wider than the viewport's, the auto-height comes
+  // out shorter than the frame - leaving the dark backdrop visible as a
+  // border above/below once panned to the top/bottom edge. Once the real
+  // image dimensions are known, size it like background-size: cover (scaled
+  // up further by zoomRatio) so it always fully fills the frame in both
+  // directions, in every direction, no matter the photo's aspect ratio.
+  const preload = new Image();
+  preload.onload = () => {
+    if (!preload.naturalWidth || !preload.naturalHeight) return;
+    const coverScale = Math.max(
+      window.innerWidth / preload.naturalWidth,
+      window.innerHeight / preload.naturalHeight
+    );
+    const width = preload.naturalWidth * coverScale * zoomRatio;
+    const height = preload.naturalHeight * coverScale * zoomRatio;
+    frame.style.backgroundSize = `${Math.round(width)}px ${Math.round(height)}px`;
+  };
+  preload.src = src;
   // A zero-width space keeps this div from matching the theme's global
   // `div:empty { display: none }` rule (an empty background-image div still
   // counts as "empty" for that selector, which was collapsing it to 0x0).
@@ -69,8 +90,14 @@ function openZoomOverlaySrc(src, zoomRatio) {
 
   function setPosition(clientX, clientY) {
     const rect = frame.getBoundingClientRect();
-    const xPercent = ((clientX - rect.left) / rect.width) * 100;
-    const yPercent = ((clientY - rect.top) / rect.height) * 100;
+    // Ungeklemmt konnte ein schneller Wisch/Zug ueber den Rahmenrand hinaus
+    // (z.B. Touch-Overscroll) xPercent/yPercent unter 0 oder ueber 100
+    // treiben - background-position akzeptiert das klaglos und schiebt das
+    // Bild dann sichtbar ueber den Rahmenrand hinaus, sodass der dunkle
+    // Hintergrund als Rand am Bildende durchscheint. Auf 0-100 begrenzen,
+    // damit das Bild dort stehen bleibt, wo es endet.
+    const xPercent = Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100));
+    const yPercent = Math.min(100, Math.max(0, ((clientY - rect.top) / rect.height) * 100));
     frame.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
   }
 
