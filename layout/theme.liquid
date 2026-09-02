@@ -15,10 +15,14 @@
       })();
     </script>
 
+    {%- comment -%}
+      Echtes .ico als Theme-Asset statt nur PNG (Shopifys Favicon-Feld
+      erlaubt nur PNG-Uploads) - manche Browser (u.a. Firefox auf iPad)
+      zeigen ohne .ico gar kein Favicon an.
+    {%- endcomment -%}
+    <link rel="icon" href="{{ 'favicon.ico' | asset_url }}" sizes="any">
     {%- if settings.favicon != blank -%}
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
-      {#- Zusätzlich fürs iOS-Homescreen-Icon (anderes rel, beeinflusst den
-         normalen Browser-Tab-Favicon oben nicht). -#}
       <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
     {%- endif -%}
 
