@@ -112,15 +112,6 @@
                 >
                 {% comment %}theme-check-enable ImgLazyLoading{% endcomment %}
 
-                {%- if card_dark_media -%}
-                  <div
-                    class="card__media-image--dark"
-                    style="background-image: url({{ card_dark_media | image_url: width: 533 }});"
-                    role="img"
-                    aria-label="{{ card_product.featured_media.alt | escape }}"
-                  ></div>
-                {%- endif -%}
-
                 {%- if card_product.media[1] != null and show_secondary_image -%}
                   <img
                     srcset="
@@ -140,6 +131,25 @@
                     width="{{ card_product.media[1].width }}"
                     height="{{ card_product.media[1].height }}"
                   >
+                {%- endif -%}
+
+                {%- if card_dark_media -%}
+                  {%- comment -%}
+                    Muss NACH beiden <img>-Tags stehen, nicht dazwischen -
+                    sonst bricht der CSS-Selektor "img + img" (base.css), der
+                    das zweite/Hover-Bild standardmaessig unsichtbar macht.
+                    Ein dazwischenliegendes Div zerstoert die direkte
+                    Geschwister-Adjazenz, wodurch das zweite Bild dauerhaft
+                    mit voller Deckkraft ueber dem ersten lag (im Light-Mode
+                    sichtbar als "falsches Bild" auf allen Produktkacheln mit
+                    zugewiesenem Dark-Bild UND zweitem Bild gleichzeitig).
+                  {%- endcomment -%}
+                  <div
+                    class="card__media-image--dark"
+                    style="background-image: url({{ card_dark_media | image_url: width: 533 }});"
+                    role="img"
+                    aria-label="{{ card_product.featured_media.alt | escape }}"
+                  ></div>
                 {%- endif -%}
               </div>
             </div>
