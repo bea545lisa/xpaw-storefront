@@ -18,8 +18,14 @@
 
 .recently-viewed__card img {
   width: 100%;
+  /* Das HTML-height="200"-Attribut auf dem <img> (recently-viewed.js) liefert
+     eine eigene definite Hoehe - mit width:100% waeren dann BEIDE Dimensionen
+     definit gesetzt, wodurch aspect-ratio laut Spec wirkungslos bleibt (greift
+     nur, wenn mindestens eine Seite auto ist). height:auto hier macht die
+     Hoehe wieder von aspect-ratio abhaengig statt vom Attribut. */
+  height: auto;
   aspect-ratio: 1 / 1;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: var(--product-card-corner-radius, 0);
 }
 
