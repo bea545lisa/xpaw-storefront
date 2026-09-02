@@ -70,11 +70,14 @@
     # Sekundaeres Hover-Bild: bevorzugt ein Ambientebild (keiner Variante
     # zugeordnet, nicht das Titelbild selbst) statt stur media[1] zu nehmen -
     # media[1] kann je nach Upload-Reihenfolge zufaellig ein Variantenbild
-    # sein statt eines repraesentativen Lifestyle-/Ambientefotos. Gleiches
-    # Auswahlprinzip wie in snippets/configurator-preview.liquid.
+    # sein statt eines repraesentativen Lifestyle-/Ambientefotos.
+    # attached_to_variant? funktioniert zuverlaessig nur auf product.images
+    # (siehe variant_images in main-product.liquid) - auf product.media
+    # angewendet blieb der where-Filter wirkungslos und liess Variantenbilder
+    # durchrutschen.
     assign card_secondary_media = null
     if card_product.featured_media
-      assign card_ambient_media = card_product.media | where: 'attached_to_variant?', false
+      assign card_ambient_media = card_product.images | where: 'attached_to_variant?', false
       assign card_ambient_media = card_ambient_media | reject: 'id', card_product.featured_media.id
       if card_ambient_media.size > 0
         assign card_secondary_media = card_ambient_media.first
