@@ -84,9 +84,13 @@ function initializeScrollParallaxAnimationTrigger() {
   if (animationTriggerElements.length === 0) return;
 
   // Muss zum Bewegungsspielraum aus base.css passen (.animate--parallax > img
-  // ist dort 130% hoch / -15% versetzt) - groesser waere hier sonst,
-  // wuerden am oberen/unteren Rand Luecken sichtbar.
-  const maxShiftPercent = 15;
+  // ist dort 130% hoch / -15% versetzt, also 15% von der Rahmenhoehe
+  // Ueberhang oben/unten). In Pixeln der RAHMENHOEHE gerechnet, nicht als
+  // CSS-%-Wert auf translateY - eine %-Angabe bei translateY bezieht sich auf
+  // die eigene (vergroesserte, 130%) Bildhoehe statt auf den Rahmen, wodurch
+  // der tatsaechliche Versatz zu gross war und am Rand eine graue Luecke
+  // sichtbar wurde.
+  const maxShiftRatio = 0.15;
 
   animationTriggerElements.forEach((element) => {
     let elementIsVisible = false;
@@ -99,8 +103,9 @@ function initializeScrollParallaxAnimationTrigger() {
 
     const updateShift = () => {
       const progress = percentageSeen(element) / 100;
-      const shift = maxShiftPercent - progress * (maxShiftPercent * 2);
-      element.style.setProperty('--parallax-shift', `${shift}%`);
+      const maxShiftPx = element.offsetHeight * maxShiftRatio;
+      const shift = maxShiftPx - progress * (maxShiftPx * 2);
+      element.style.setProperty('--parallax-shift', `${shift}px`);
     };
     updateShift();
 
