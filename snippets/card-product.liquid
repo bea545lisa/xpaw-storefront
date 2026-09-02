@@ -78,7 +78,11 @@
     assign card_secondary_media = null
     if card_product.featured_media
       assign card_ambient_media = card_product.images | where: 'attached_to_variant?', false
-      assign card_ambient_media = card_ambient_media | reject: 'id', card_product.featured_media.id
+      # featured_image.id (nicht featured_media.id!) - product.images und
+      # product.featured_media verwenden unterschiedliche ID-Systeme, ein
+      # Vergleich gegen featured_media.id traf hier nie und liess das
+      # Titelbild sich selbst als "zweites Bild" durchrutschen.
+      assign card_ambient_media = card_ambient_media | reject: 'id', card_product.featured_image.id
       if card_ambient_media.size > 0
         assign card_secondary_media = card_ambient_media.first
       elsif card_product.media[1]
