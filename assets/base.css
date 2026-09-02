@@ -3340,8 +3340,14 @@ details-disclosure > details {
 
 .animate--parallax > img,
 .animate--parallax > .svg-wrapper {
-  height: 130%;
-  top: -15%;
+  /* !important noetig: ".media > :not(.zoom):not(.deferred-media__poster-
+     button)" (component-media Basisregel oben) hat durch die zwei :not()-
+     Klassen eine hoehere Spezifitaet (3 Klassen) als diese Regel (1 Klasse +
+     1 Typ) und gewann sonst trotz spaeterer Position im Stylesheet - height
+     blieb bei 100%/top bei 0, wodurch das Bild keinen Bewegungsspielraum
+     hatte und translateY() am Rand eine Luecke freilegte. */
+  height: 130% !important;
+  top: -15% !important;
   transition: transform var(--duration-short) linear;
   transform: translateY(var(--parallax-shift));
 }
