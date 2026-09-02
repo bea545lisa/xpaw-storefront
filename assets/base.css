@@ -3328,6 +3328,24 @@ details-disclosure > details {
   scale: var(--zoom-in-ratio);
 }
 
+/* Parallax: image scrolls slower than the page instead of at 1:1, driven by
+   assets/animations.js (initializeScrollParallaxAnimationTrigger, reuses
+   the same percentageSeen() helper as animate--zoom-in above). Image needs
+   to be taller than its frame (130%/-15% offset) so there's actual room to
+   shift within without exposing empty edges at the top/bottom. */
+.animate--parallax {
+  --parallax-shift: 0%;
+  overflow: hidden;
+}
+
+.animate--parallax > img,
+.animate--parallax > .svg-wrapper {
+  height: 130%;
+  top: -15%;
+  transition: transform var(--duration-short) linear;
+  transform: translateY(var(--parallax-shift));
+}
+
 /* Animations */
 
 @media (prefers-reduced-motion: no-preference) {

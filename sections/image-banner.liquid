@@ -38,7 +38,7 @@
     assign full_width = '120vw'
     assign stacked_sizes = '(min-width: 750px) 60vw, 120vw'
     assign widths = '450, 660, 900, 1320, 1800, 2136, 2400, 3600, 7680'
-  elsif section.settings.image_behavior == 'fixed' or section.settings.image_behavior == 'zoom-in'
+  elsif section.settings.image_behavior == 'fixed' or section.settings.image_behavior == 'zoom-in' or section.settings.image_behavior == 'parallax'
     assign half_width = '100vw'
     assign stacked_sizes = '100vw'
   else
@@ -55,6 +55,24 @@
   id="Banner-{{ section.id }}"
   class="banner banner--content-align-{{ section.settings.desktop_content_alignment }} banner--content-align-mobile-{{ section.settings.mobile_content_alignment }} banner--{{ section.settings.image_height }}{% if section.settings.stack_images_on_mobile and section.settings.image != blank and section.settings.image_2 != blank %} banner--stacked{% endif %}{% if section.settings.image_height == 'adapt' and section.settings.image != blank %} banner--adapt{% endif %}{% if section.settings.show_text_below %} banner--mobile-bottom{%- endif -%}{% if section.settings.show_text_box == false %} banner--desktop-transparent{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
 >
+  {%- for block in section.blocks -%}
+    {%- if block.type == 'logo_image' and block.settings.logo != blank and block.settings.logo_position_vertical != 'middle' -%}
+      <div
+        class="banner__logo banner__logo--v-{{ block.settings.logo_position_vertical }} banner__logo--h-{{ block.settings.logo_position_horizontal }}"
+        style="--logo-width: {{ block.settings.logo_width }}px;"
+        {{ block.shopify_attributes }}
+      >
+        {{
+          block.settings.logo
+          | image_url: width: 600
+          | image_tag:
+            class: 'banner__logo-image',
+            widths: '150, 300, 450, 600',
+            sizes: '(min-width: 750px) 20vw, 40vw'
+        }}
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
   {%- if section.settings.image != blank -%}
     <div class="banner__media media{% if section.settings.image == blank and section.settings.image_2 == blank %} placeholder{% endif %}{% if section.settings.image_2 != blank %} banner__media-half{% endif %}{% if section.settings.image_behavior != 'none' %} animate--{{ section.settings.image_behavior }}{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
       {%- liquid
@@ -130,6 +148,23 @@
             <div class="banner__text rte {{ block.settings.text_style }}" {{ block.shopify_attributes }}>
               <p>{{ block.settings.text }}</p>
             </div>
+          {%- when 'logo_image' -%}
+            {%- if block.settings.logo != blank and block.settings.logo_position_vertical == 'middle' -%}
+              <div
+                class="banner__logo banner__logo--inline banner__logo--h-{{ block.settings.logo_position_horizontal }}"
+                style="--logo-width: {{ block.settings.logo_width }}px;"
+                {{ block.shopify_attributes }}
+              >
+                {{
+                  block.settings.logo
+                  | image_url: width: 600
+                  | image_tag:
+                    class: 'banner__logo-image',
+                    widths: '150, 300, 450, 600',
+                    sizes: '(min-width: 750px) 20vw, 40vw'
+                }}
+              </div>
+            {%- endif -%}
           {%- when 'buttons' -%}
             <div
               class="banner__buttons{% if block.settings.button_label_1 != blank and block.settings.button_label_2 != blank %} banner__buttons--multiple{% endif %}"
@@ -214,6 +249,10 @@
         {
           "value": "large",
           "label": "t:sections.image-banner.settings.image_height.options__4.label"
+        },
+        {
+          "value": "fullscreen",
+          "label": "Vollbild (100% Bildschirmhöhe)"
         }
       ],
       "default": "medium",
@@ -238,6 +277,10 @@
         {
           "value": "zoom-in",
           "label": "t:sections.all.animation.image_behavior.options__4.label"
+        },
+        {
+          "value": "parallax",
+          "label": "t:sections.all.animation.image_behavior.options__5.label"
         }
       ],
       "default": "none",
@@ -361,6 +404,50 @@
     }
   ],
   "blocks": [
+    {
+      "type": "logo_image",
+      "name": "Logo",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "Logo-Bild"
+        },
+        {
+          "type": "range",
+          "id": "logo_width",
+          "label": "Größe",
+          "min": 40,
+          "max": 300,
+          "step": 10,
+          "unit": "px",
+          "default": 120
+        },
+        {
+          "type": "select",
+          "id": "logo_position_vertical",
+          "label": "Position vertikal",
+          "options": [
+            { "value": "top", "label": "Oben" },
+            { "value": "middle", "label": "Mitte" },
+            { "value": "bottom", "label": "Unten" }
+          ],
+          "default": "top"
+        },
+        {
+          "type": "select",
+          "id": "logo_position_horizontal",
+          "label": "Position horizontal",
+          "options": [
+            { "value": "left", "label": "Links" },
+            { "value": "center", "label": "Mitte" },
+            { "value": "right", "label": "Rechts" }
+          ],
+          "default": "center"
+        }
+      ]
+    },
     {
       "type": "heading",
       "name": "t:sections.image-banner.blocks.heading.name",

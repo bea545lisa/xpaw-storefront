@@ -494,6 +494,9 @@
           },
           "options__4": {
             "label": "Beim Scrollen heranzoomen"
+          },
+          "options__5": {
+            "label": "Parallax (langsamer mitscrollen)"
           }
         }
       }
