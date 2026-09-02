@@ -1,6 +1,7 @@
 const SCROLL_ANIMATION_TRIGGER_CLASSNAME = 'scroll-trigger';
 const SCROLL_ANIMATION_OFFSCREEN_CLASSNAME = 'scroll-trigger--offscreen';
 const SCROLL_ZOOM_IN_TRIGGER_CLASSNAME = 'animate--zoom-in';
+const SCROLL_PARALLAX_TRIGGER_CLASSNAME = 'animate--parallax';
 const SCROLL_ANIMATION_CANCEL_CLASSNAME = 'scroll-trigger--cancel';
 
 // Scroll in animation logic
@@ -71,6 +72,50 @@ function initializeScrollZoomAnimationTrigger() {
   });
 }
 
+// Parallax animation logic - image shifts a few percent up/down as it
+// scrolls through the viewport instead of moving 1:1 with the page,
+// reusing the same percentageSeen() progress helper as the zoom-in
+// animation above.
+function initializeScrollParallaxAnimationTrigger() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const animationTriggerElements = Array.from(document.getElementsByClassName(SCROLL_PARALLAX_TRIGGER_CLASSNAME));
+
+  if (animationTriggerElements.length === 0) return;
+
+  // Muss zum Bewegungsspielraum aus base.css passen (.animate--parallax > img
+  // ist dort 130% hoch / -15% versetzt) - groesser waere hier sonst,
+  // wuerden am oberen/unteren Rand Luecken sichtbar.
+  const maxShiftPercent = 15;
+
+  animationTriggerElements.forEach((element) => {
+    let elementIsVisible = false;
+    const observer = new IntersectionObserver((elements) => {
+      elements.forEach((entry) => {
+        elementIsVisible = entry.isIntersecting;
+      });
+    });
+    observer.observe(element);
+
+    const updateShift = () => {
+      const progress = percentageSeen(element) / 100;
+      const shift = maxShiftPercent - progress * (maxShiftPercent * 2);
+      element.style.setProperty('--parallax-shift', `${shift}%`);
+    };
+    updateShift();
+
+    window.addEventListener(
+      'scroll',
+      throttle(() => {
+        if (!elementIsVisible) return;
+
+        updateShift();
+      }),
+      { passive: true }
+    );
+  });
+}
+
 function percentageSeen(element) {
   const viewportHeight = window.innerHeight;
   const scrollY = window.scrollY;
@@ -94,6 +139,7 @@ function percentageSeen(element) {
 window.addEventListener('DOMContentLoaded', () => {
   initializeScrollAnimationTrigger();
   initializeScrollZoomAnimationTrigger();
+  initializeScrollParallaxAnimationTrigger();
 });
 
 if (Shopify.designMode) {

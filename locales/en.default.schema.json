@@ -439,6 +439,9 @@
           "options__4": {
             "label": "Zoom in on scroll"
           },
+          "options__5": {
+            "label": "Parallax (scrolls slower than the page)"
+          },
           "label": "Animation"
         }
       },
