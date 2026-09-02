@@ -397,7 +397,7 @@
      zweiten Bild), nie opacity, eine transition hatte. */
   .card-wrapper .media.media--hover-effect > img:first-child:not(:only-child),
   .card-wrapper .media.media--hover-effect > img + img {
-    transition: opacity var(--duration-long) ease;
+    transition: opacity 900ms ease;
   }
 
   .card-wrapper:hover .media.media--hover-effect > img:first-child:not(:only-child) {
@@ -414,7 +414,7 @@
      Hover zusaetzlich auf das echte zweite Foto ueberblenden, statt dass
      der Hover-Effekt im Dark-Mode komplett wirkungslos bleibt. */
   [data-theme="dark"] .card-wrapper .card__media--has-dark .card__media-image--dark {
-    transition: opacity var(--duration-long) ease;
+    transition: opacity 900ms ease;
   }
 
   [data-theme="dark"] .card-wrapper:hover .card__media--has-dark .card__media-image--dark {
@@ -430,7 +430,7 @@
      Hover stattdessen auf das einzige Foto ueberblenden statt ins Leere,
      analog zum Zoom-Verhalten ohne Dark-Bild oben. */
   [data-theme="dark"] .card-wrapper .card__media--has-dark .media > img:only-child {
-    transition: opacity var(--duration-long) ease, transform var(--duration-long) ease;
+    transition: opacity 900ms ease, transform 900ms ease;
   }
 
   [data-theme="dark"] .card-wrapper:hover .card__media--has-dark .media > img:only-child {
