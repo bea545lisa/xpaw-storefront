@@ -66,6 +66,22 @@
         endif
       endif
     endif
+
+    # Sekundaeres Hover-Bild: bevorzugt ein Ambientebild (keiner Variante
+    # zugeordnet, nicht das Titelbild selbst) statt stur media[1] zu nehmen -
+    # media[1] kann je nach Upload-Reihenfolge zufaellig ein Variantenbild
+    # sein statt eines repraesentativen Lifestyle-/Ambientefotos. Gleiches
+    # Auswahlprinzip wie in snippets/configurator-preview.liquid.
+    assign card_secondary_media = null
+    if card_product.featured_media
+      assign card_ambient_media = card_product.media | where: 'attached_to_variant?', false
+      assign card_ambient_media = card_ambient_media | reject: 'id', card_product.featured_media.id
+      if card_ambient_media.size > 0
+        assign card_secondary_media = card_ambient_media.first
+      elsif card_product.media[1]
+        assign card_secondary_media = card_product.media[1]
+      endif
+    endif
   -%}
 
   <product-component view-event-payload="{{ card_product | standard_event_data: 'view', context: product_view_context | escape }}">
@@ -112,24 +128,24 @@
                 >
                 {% comment %}theme-check-enable ImgLazyLoading{% endcomment %}
 
-                {%- if card_product.media[1] != null and show_secondary_image -%}
+                {%- if card_secondary_media != null and show_secondary_image -%}
                   <img
                     srcset="
-                      {%- if card_product.media[1].width >= 165 -%}{{ card_product.media[1] | image_url: width: 165 }} 165w,{%- endif -%}
-                      {%- if card_product.media[1].width >= 360 -%}{{ card_product.media[1] | image_url: width: 360 }} 360w,{%- endif -%}
-                      {%- if card_product.media[1].width >= 533 -%}{{ card_product.media[1] | image_url: width: 533 }} 533w,{%- endif -%}
-                      {%- if card_product.media[1].width >= 720 -%}{{ card_product.media[1] | image_url: width: 720 }} 720w,{%- endif -%}
-                      {%- if card_product.media[1].width >= 940 -%}{{ card_product.media[1] | image_url: width: 940 }} 940w,{%- endif -%}
-                      {%- if card_product.media[1].width >= 1066 -%}{{ card_product.media[1] | image_url: width: 1066 }} 1066w,{%- endif -%}
-                      {{ card_product.media[1] | image_url }} {{ card_product.media[1].width }}w
+                      {%- if card_secondary_media.width >= 165 -%}{{ card_secondary_media | image_url: width: 165 }} 165w,{%- endif -%}
+                      {%- if card_secondary_media.width >= 360 -%}{{ card_secondary_media | image_url: width: 360 }} 360w,{%- endif -%}
+                      {%- if card_secondary_media.width >= 533 -%}{{ card_secondary_media | image_url: width: 533 }} 533w,{%- endif -%}
+                      {%- if card_secondary_media.width >= 720 -%}{{ card_secondary_media | image_url: width: 720 }} 720w,{%- endif -%}
+                      {%- if card_secondary_media.width >= 940 -%}{{ card_secondary_media | image_url: width: 940 }} 940w,{%- endif -%}
+                      {%- if card_secondary_media.width >= 1066 -%}{{ card_secondary_media | image_url: width: 1066 }} 1066w,{%- endif -%}
+                      {{ card_secondary_media | image_url }} {{ card_secondary_media.width }}w
                     "
-                    src="{{ card_product.media[1] | image_url: width: 533 }}"
+                    src="{{ card_secondary_media | image_url: width: 533 }}"
                     sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)"
-                    alt="{{ card_product.media[1].alt | escape }}"
+                    alt="{{ card_secondary_media.alt | escape }}"
                     class="motion-reduce"
                     loading="lazy"
-                    width="{{ card_product.media[1].width }}"
-                    height="{{ card_product.media[1].height }}"
+                    width="{{ card_secondary_media.width }}"
+                    height="{{ card_secondary_media.height }}"
                   >
                 {%- endif -%}
 
