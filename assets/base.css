@@ -2457,7 +2457,7 @@ input[type='checkbox'] {
   .header--middle-left {
     grid-template-areas: 'heading navigation icons';
     grid-template-columns: auto auto 1fr;
-    column-gap: 2rem;
+    column-gap: 1rem;
   }
 
   .header--middle-center:not(.drawer-menu) {
@@ -3714,19 +3714,22 @@ details-disclosure > details {
 }
 
 /* Gleiches Prinzip für das Karten-Hauptbild (Produktkarten in Kollektionen,
-   "Das könnte dir auch gefallen", "Zuletzt angesehen" etc.). */
+   "Das könnte dir auch gefallen", "Zuletzt angesehen" etc.) - opacity statt
+   display:none (anders als beim Produktbild oben), damit component-card.css
+   im Dark-Mode per Hover weich auf ein zweites Bild ueberblenden kann;
+   display:none liesse sich nicht animieren/durchklicken. */
 .card__media-image--dark {
-  display: none !important;
+  opacity: 0;
   background-size: cover;
   background-position: center center;
 }
 
 [data-theme="dark"] .card__media--has-dark > .media > img {
-  display: none !important;
+  opacity: 0;
 }
 
 [data-theme="dark"] .card__media-image--dark {
-  display: block !important;
+  opacity: 1;
 }
 
 /* Sprach-/Länder-Dropdown im Dark Mode überall dunkel, nicht das ererbte

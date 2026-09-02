@@ -391,13 +391,50 @@
     transform: scale(1.03);
   }
 
+  /* transition auf dem Grundzustand (nicht nur :hover), damit der
+     Bildwechsel in BEIDE Richtungen weich abgeblendet wird statt hart
+     umzuschalten - wirkte vorher sprunghaft, weil nur transform (beim
+     zweiten Bild), nie opacity, eine transition hatte. */
+  .card-wrapper .media.media--hover-effect > img:first-child:not(:only-child),
+  .card-wrapper .media.media--hover-effect > img + img {
+    transition: opacity var(--duration-long) ease;
+  }
+
   .card-wrapper:hover .media.media--hover-effect > img:first-child:not(:only-child) {
     opacity: 0;
   }
 
   .card-wrapper:hover .media.media--hover-effect > img + img {
     opacity: 1;
-    transition: transform var(--duration-long) ease;
+    transform: scale(1.03);
+  }
+
+  /* Dasselbe Prinzip fuer Karten mit zugewiesenem Dark-Bild: per Default
+     (siehe base.css) deckt das Dark-Div beide <img> komplett ab - auf
+     Hover zusaetzlich auf das echte zweite Foto ueberblenden, statt dass
+     der Hover-Effekt im Dark-Mode komplett wirkungslos bleibt. */
+  [data-theme="dark"] .card-wrapper .card__media--has-dark .card__media-image--dark {
+    transition: opacity var(--duration-long) ease;
+  }
+
+  [data-theme="dark"] .card-wrapper:hover .card__media--has-dark .card__media-image--dark {
+    opacity: 0;
+  }
+
+  [data-theme="dark"] .card-wrapper:hover .card__media--has-dark .media > img + img {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+
+  /* Kein zweites Bild vorhanden (nur ein Foto + Dark-Bild) - dann beim
+     Hover stattdessen auf das einzige Foto ueberblenden statt ins Leere,
+     analog zum Zoom-Verhalten ohne Dark-Bild oben. */
+  [data-theme="dark"] .card-wrapper .card__media--has-dark .media > img:only-child {
+    transition: opacity var(--duration-long) ease, transform var(--duration-long) ease;
+  }
+
+  [data-theme="dark"] .card-wrapper:hover .card__media--has-dark .media > img:only-child {
+    opacity: 1;
     transform: scale(1.03);
   }
 
